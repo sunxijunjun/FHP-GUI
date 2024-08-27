@@ -1,16 +1,12 @@
 # Overview of the Project
 
-The project consists of two separate programs:
+The project consists of two separate programs: UI for data collection and UI for User. This repo contains User UI.
 
-## Data Analysis Program
-
-The program is responsible for determination of the relationship between user features and sensor data received from subjects
 
 ## GUI (Graphical User Interface)
 
-The simple app is responsible for user interaction with user authorization and personalization of the sensor data per user.
-The app includes graph to show the received data and functions to control Posture Monitoring
-This allows the user to determine posture dynamics throughout the experiments
+The app is responsible for user interaction with user authorization and personalization of the sensor data per user.
+
 
 ### Note:
 
