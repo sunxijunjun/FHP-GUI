@@ -1,0 +1,27 @@
+timestamp,local_time,sensor_2,sensor_4,bbox_x1,bbox_y1,bbox_x2,bbox_y2,mv_1,mv_2,mv_3,mv_4,left_eye_x,left_eye_y,right_eye_x,right_eye_y,nose_x,nose_y,mouth_left_x,mouth_left_y,mouth_right_x,mouth_right_y,fhp,prediction,notes,user_id,bad_posture_command,alarm_notification,notification_interval,feedback,model_threshold,model_notes
+2844014,2024-08-14 13:04:26,373,676,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,1,,-1,no,no,nan,nan
+2844024,2024-08-14 13:04:26,513,687,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,1,,-1,no,no,nan,nan
+2844034,2024-08-14 13:04:26,513,404,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,0,,-1,no,no,nan,nan
+2844044,2024-08-14 13:04:26,829,522,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,0,,-1,no,no,nan,nan
+2844054,2024-08-14 13:04:26,242,341,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,0,,-1,no,no,nan,nan
+2844064,2024-08-14 13:04:26,784,322,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,0,,-1,no,no,nan,nan
+2844074,2024-08-14 13:04:26,784,508,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,0,,-1,no,no,nan,nan
+2844084,2024-08-14 13:04:27,413,318,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,0,,-1,no,no,nan,nan
+2844094,2024-08-14 13:04:27,824,481,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,0,,-1,no,no,nan,nan
+2844104,2024-08-14 13:04:27,523,437,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,0,,-1,no,no,nan,nan
+2844114,2024-08-14 13:04:27,508,685,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,1,,-1,no,no,nan,nan
+2844124,2024-08-14 13:04:27,508,798,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,1,,-1,no,no,nan,nan
+2844134,2024-08-14 13:04:27,816,561,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,0,,-1,no,no,nan,nan
+2844144,2024-08-14 13:04:27,816,565,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,0,,-1,no,no,nan,nan
+2844154,2024-08-14 13:04:27,308,250,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,0,,-1,no,no,nan,nan
+2844164,2024-08-14 13:04:27,591,516,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,0,,-1,no,no,nan,nan
+2844174,2024-08-14 13:04:27,567,739,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,1,,-1,no,no,nan,nan
+2844184,2024-08-14 13:04:27,249,363,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,0,,-1,no,no,nan,nan
+2844194,2024-08-14 13:04:28,567,731,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,1,,-1,no,no,nan,nan
+2844204,2024-08-14 13:04:28,793,625,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,0,,-1,no,no,nan,nan
+2844214,2024-08-14 13:04:32,316,550,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,1,,-1,no,no,nan,nan
+2844224,2024-08-14 13:04:32,296,360,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,0,,-1,no,yes,0,nan
+2844234,2024-08-14 13:04:43,241,764,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,1,,-1,no,no,nan,nan
+2844244,2024-08-14 13:04:43,593,203,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,0,,-1,no,yes,0,nan
+2844254,2024-08-14 13:04:45,593,654,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,0,,-1,no,no,nan,nan
+2844264,2024-08-14 13:04:45,407,485,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,0,,-1,no,yes,1,nan

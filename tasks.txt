@@ -1,0 +1,15 @@
+1. Show multiple lines on one graph with legends (DONE)
+2. Create alarm detection and show it on the graph (DONE)
+3. Add time to determine processing time (DONE)
+4. Change position of the buttons and the graph (DONE)
+5. Create a simple database for storing user data. (DONE)
+6. Add data retrieve method (DONE)
+7. Add sing-in/sign-out methods (DONE)
+8. Add background color of the alarm detected (DONE)
+9. Fix image display (DONE)
+
+10. Improve the design !
+11. Add password encryption
+12. Code Refactoring
+
+13. Add reports generating fuction, including: user used the device for (duration), alarm generated during (local time), etc. So that user can understand their postural behavior.
