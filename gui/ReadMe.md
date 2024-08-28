@@ -71,8 +71,12 @@ The X axis shall be scaled according to the specified time interval and not the 
 git clone https://github.com/AltaJD/PostureResearchProject/tree/master/gui
 ```
 ### 2. Install the required dependencies:
-```pip install -r requirements.txt```
+```bash 
+pip install -r requirements.txt
+```
 ### 3. Run the application:
-```python main.py```
+```bash 
+python main.py
+```
 ## Contributing
 We welcome contributions to the project. If you find any issues or have ideas for improvements, please feel free to create a new issue or submit a pull request.
