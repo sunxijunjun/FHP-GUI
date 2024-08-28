@@ -64,7 +64,7 @@ class Logger:
             'left_eye_x', 'left_eye_y', 'right_eye_x', 'right_eye_y',
             'nose_x', 'nose_y', 'mouth_left_x', 'mouth_left_y',
             'mouth_right_x', 'mouth_right_y', 'fhp', 'prediction',
-            'notes', 'user_id', 'bad_posture_command', 'alarm_notification',
+            'notes', 'user_id', 'alarm_notification',
             'notification_interval', 'feedback', 'model_threshold', 'model_notes'
             ]
 
@@ -176,7 +176,7 @@ class Logger:
             df = Logger.process_notes_gaps(df)
         else:
             print("Warning! No Data Notes found!", file=sys.stderr)
-        df = Logger.process_bad_posture_command_col(df, replace_other_notes=False)
+        # df = Logger.process_bad_posture_command_col(df, replace_other_notes=False)
         df = Logger.process_alarm_notifications(df)
         df = Logger.process_models_thresholds_gaps(df)
         return df
@@ -253,10 +253,10 @@ class Logger:
     def update_last_timestamp(self, timestamp: str):
         self.last_timestamp = timestamp
 
-    def update_side_quest_status(self, new_status: str):
-        timestamp = self.last_timestamp
-        if timestamp in self.logs:
-            self.logs[timestamp]['bad_posture_command'] = new_status
+    # def update_side_quest_status(self, new_status: str):
+    #     timestamp = self.last_timestamp
+    #     if timestamp in self.logs:
+    #         self.logs[timestamp]['bad_posture_command'] = new_status
 
     def update_alarm_notification_status(self, interval: int, status='yes'):
         stamp = self.last_timestamp
@@ -318,34 +318,34 @@ class Logger:
             df.loc[row-2:row-1, col] = df.loc[row, col]
         return df
 
-    @staticmethod
-    def process_bad_posture_command_col(df: pd.DataFrame, replace_other_notes: bool) -> pd.DataFrame:
-        """ Function replace 'no' values in col bad_posture_command by 'yes' between notes, such as:
-        started and ended, which are also replaced by 'yes' comment
-        """
-        col_name = "bad_posture_command"
-        mask = df[col_name] != 'no'
-        indexes_with_notes = df.loc[mask].index
-        for i in range(len(indexes_with_notes)-1):
-            upper, lower = indexes_with_notes[i+1], indexes_with_notes[i]
-            note = df.iloc[lower][col_name]
-            if note == "ended":
-                # After the command is completed, the note should be by default no
-                # Do not fill out rows after ended
-                continue
-            if note == "appeared":
-                # Although the command is appeared it does not affect on the readings
-                # Do not fill out rows after appeared
-                continue
-            if note == "started":
-                note = "yes"
-            if replace_other_notes:
-                indexes = [i for i in range(lower, upper+1)]
-            else:
-                indexes = [i for i in range(lower+1, upper)]
-            df.loc[indexes, col_name] = note
-        result = df
-        return result
+    # @staticmethod
+    # def process_bad_posture_command_col(df: pd.DataFrame, replace_other_notes: bool) -> pd.DataFrame:
+    #     """ Function replace 'no' values in col bad_posture_command by 'yes' between notes, such as:
+    #     started and ended, which are also replaced by 'yes' comment
+    #     """
+    #     col_name = "bad_posture_command"
+    #     mask = df[col_name] != 'no'
+    #     indexes_with_notes = df.loc[mask].index
+    #     for i in range(len(indexes_with_notes)-1):
+    #         upper, lower = indexes_with_notes[i+1], indexes_with_notes[i]
+    #         note = df.iloc[lower][col_name]
+    #         if note == "ended":
+    #             # After the command is completed, the note should be by default no
+    #             # Do not fill out rows after ended
+    #             continue
+    #         if note == "appeared":
+    #             # Although the command is appeared it does not affect on the readings
+    #             # Do not fill out rows after appeared
+    #             continue
+    #         if note == "started":
+    #             note = "yes"
+    #         if replace_other_notes:
+    #             indexes = [i for i in range(lower, upper+1)]
+    #         else:
+    #             indexes = [i for i in range(lower+1, upper)]
+    #         df.loc[indexes, col_name] = note
+    #     result = df
+    #     return result
 
     @staticmethod
     def get_timestamps_by_interval(local_time: str, interval: int) -> list[str]:

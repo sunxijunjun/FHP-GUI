@@ -71,13 +71,13 @@ class App(ThemedTk):
         self.prev_alarm_pos = 0
         self.val_replacing_num = 0
         self.false_responses_limit = uc.Measurements.false_responses_limit.value
-        self.bad_posture_comm_limit = uc.Measurements.num_bad_posture_commands.value
+        # self.bad_posture_comm_limit = uc.Measurements.num_bad_posture_commands.value
         self.x_range = uc.Measurements.graph_x_limit.value
         self.dist_max = uc.Measurements.distance_max.value
         self.dist_min = uc.Measurements.distance_min.value
 
-        self.bpc_lr = uc.Measurements.rand_quest_popup.value[0]  # bad posture command pop up time LOWER range
-        self.bpc_hr = uc.Measurements.rand_quest_popup.value[1]  # bad posture command pop up time HIGHER range
+        # self.bpc_lr = uc.Measurements.rand_quest_popup.value[0]  # bad posture command pop up time LOWER range
+        # self.bpc_hr = uc.Measurements.rand_quest_popup.value[1]  # bad posture command pop up time HIGHER range
         self.bpc_popup_times = []  # store times when next popups will occur
         # Structure of each frame
         self.header_row = 0
@@ -311,16 +311,16 @@ class App(ThemedTk):
         self.p_tester.end()
         self.p_tester.show_time_summary(function_name=f"update_graph() with updated redrawing function",
                                         notes="Line 327 at app_ui.py", critical=True)
-        rand_moment = random.randint(self.bpc_lr,
-                                     self.bpc_hr)
-        if self.is_bad_posture_command_allowed(next_time_call=rand_moment):
-            self.bpc_popup_times.append(rand_moment)
-            self.bpc_lr = rand_moment
-            self.after(rand_moment, self.show_rand_quest)
-            self.bad_posture_comm_limit -= 1
-            print("Next time call: ", rand_moment)
-            print(f"Random Side Quest will be displayed after {rand_moment / 1000} seconds.\n"
-                  f"Number of side quests left: {self.bad_posture_comm_limit}")
+        # rand_moment = random.randint(self.bpc_lr,
+        #                              self.bpc_hr)
+        # if self.is_bad_posture_command_allowed(next_time_call=rand_moment):
+        #     self.bpc_popup_times.append(rand_moment)
+        #     self.bpc_lr = rand_moment
+        #     self.after(rand_moment, self.show_rand_quest)
+        #     self.bad_posture_comm_limit -= 1
+        #     print("Next time call: ", rand_moment)
+        #     print(f"Random Side Quest will be displayed after {rand_moment / 1000} seconds.\n"
+        #           f"Number of side quests left: {self.bad_posture_comm_limit}")
 
     def show_notify_log_success(self, subject: str) -> None:
         if self.log_notification_frame:
@@ -404,26 +404,26 @@ class App(ThemedTk):
         return ((self.check_boxes_frame.is_true(access_key=key) and interval >= required_time)
                 and not self.notification_frame)
 
-    def is_bad_posture_command_allowed(self, next_time_call: int) -> bool:
-        key = uc.CheckBoxesKeys.rand_bad_posture_command.value
-        # Analyze if the next popup will not override the existing one
-        user_allowed = self.check_boxes_frame.is_true(access_key=key)
-        enough_quotes = self.bad_posture_comm_limit > 0
-        no_quest_given = self.rand_quest_notification is None
-        not_overlapping = True
-        if len(self.bpc_popup_times) > 0:
-            required_time_call = self.bpc_popup_times[-1] + uc.Measurements.rand_quest_duration.value[1]*1000 + uc.Measurements.time_offset.value
-            not_overlapping = next_time_call > required_time_call
-        if not_overlapping is False and len(self.bpc_popup_times) >= 2:
-            # Get the first two elements
-            first_two = self.bpc_popup_times[:2]
-
-            # Delete the first two elements from the list
-            del self.bpc_popup_times[:2]
-            # Set new boundaries for random moment
-            self.bpc_lr = first_two[0]
-            self.bpc_hr = first_two[1]
-        return user_allowed and enough_quotes and no_quest_given and not_overlapping
+    # def is_bad_posture_command_allowed(self, next_time_call: int) -> bool:
+    #     key = uc.CheckBoxesKeys.rand_bad_posture_command.value
+    #     # Analyze if the next popup will not override the existing one
+    #     user_allowed = self.check_boxes_frame.is_true(access_key=key)
+    #     enough_quotes = self.bad_posture_comm_limit > 0
+    #     no_quest_given = self.rand_quest_notification is None
+    #     not_overlapping = True
+    #     if len(self.bpc_popup_times) > 0:
+    #         required_time_call = self.bpc_popup_times[-1] + uc.Measurements.rand_quest_duration.value[1]*1000 + uc.Measurements.time_offset.value
+    #         not_overlapping = next_time_call > required_time_call
+    #     if not_overlapping is False and len(self.bpc_popup_times) >= 2:
+    #         # Get the first two elements
+    #         first_two = self.bpc_popup_times[:2]
+    #
+    #         # Delete the first two elements from the list
+    #         del self.bpc_popup_times[:2]
+    #         # Set new boundaries for random moment
+    #         self.bpc_lr = first_two[0]
+    #         self.bpc_hr = first_two[1]
+    #     return user_allowed and enough_quotes and no_quest_given and not_overlapping
 
     def remove_notification(self) -> None:
         if not self.notification_frame:
@@ -849,18 +849,18 @@ class App(ThemedTk):
         self.x_range = new_range
         self.update_graph()
 
-    def show_rand_quest(self):
-        if self.rand_quest_notification is not None:
-            # do not overlap pop up notifications
-            return None
-        self.rand_quest_notification = RandomSideQuestNotification(self.footer_frame,
-                                                                   self.logger.update_side_quest_status,
-                                                                   self.forget_side_quest)
-        self.rand_quest_notification.show(x=uc.Positions.random_quest.value[0],
-                                          y=uc.Positions.random_quest.value[1],
-                                          callback=None)
-        self.logger.update_side_quest_status('appeared')
-        print("Bad Posture Command Activated!")
+    # def show_rand_quest(self):
+    #     if self.rand_quest_notification is not None:
+    #         # do not overlap pop up notifications
+    #         return None
+    #     self.rand_quest_notification = RandomSideQuestNotification(self.footer_frame,
+    #                                                                self.logger.update_side_quest_status,
+    #                                                                self.forget_side_quest)
+    #     self.rand_quest_notification.show(x=uc.Positions.random_quest.value[0],
+    #                                       y=uc.Positions.random_quest.value[1],
+    #                                       callback=None)
+    #     self.logger.update_side_quest_status('appeared')
+    #     print("Bad Posture Command Activated!")
 
     @staticmethod
     def get_alarm_logger_path() -> str:

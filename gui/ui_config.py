@@ -122,7 +122,7 @@ class FilePaths(Enum):
 class CheckBoxesKeys(Enum):
     notification_bad_posture = "notify_bad_posture"
     enable_sound = "enable_sound"
-    rand_bad_posture_command = "bad_posture_command"
+
 
 
 class Ports(Enum):

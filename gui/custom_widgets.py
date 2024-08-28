@@ -456,8 +456,7 @@ class CheckBoxesFrame(ttk.Frame):
                            add_input=True)
         self.add_check_box(text="Enable Sound",
                            access_key=ui_config.CheckBoxesKeys.enable_sound.value)
-        self.add_check_box(text="Include Random Bad Posture Command?",
-                           access_key=ui_config.CheckBoxesKeys.rand_bad_posture_command.value)
+
 
     def add_check_box(self, text: str, access_key: str, add_input=False) -> None:
         var = tk.BooleanVar(value=False)
