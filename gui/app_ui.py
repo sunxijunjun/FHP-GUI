@@ -464,87 +464,87 @@ class App(ThemedTk):
         self.alarm_text_label.pack(side=tk.LEFT, padx=10)
         return graph
 
-    def save_selected_data_notes(self) -> None:
-        data_dict = self.get_selected_values()
-        print("SELECTED DATA: ", file=sys.stderr)
-        print(data_dict)
-        if data_dict is None:
-            return None
-        max_length = len(data_dict[uc.ElementNames.sensor_names.value[0]])
-        # Add Notes to all values
-        notes: str = self.note_frame.get_notes()
-        data_dict["Notes"] = [notes for _ in range(max_length)]
+    # def save_selected_data_notes(self) -> None:
+    #     data_dict = self.get_selected_values()
+    #     print("SELECTED DATA: ", file=sys.stderr)
+    #     print(data_dict)
+    #     if data_dict is None:
+    #         return None
+    #     max_length = len(data_dict[uc.ElementNames.sensor_names.value[0]])
+    #     # Add Notes to all values
+    #     notes: str = self.note_frame.get_notes()
+    #     data_dict["Notes"] = [notes for _ in range(max_length)]
+    #
+    #     # Ensure all lists in data_dict are of the same length by padding with NaN
+    #     for key in data_dict:
+    #         while len(data_dict[key]) < max_length:
+    #             data_dict[key].append(np.nan)
+    #
+    #     result_df = pd.DataFrame(data_dict)
+    #     self.db_manager.session.update_marked_data(data=result_df)
+    #     self.remove_note_frame()
+    #     self.remove_graph_scrollbar()
+    #     if self.notification_frame:
+    #         self.remove_notification()
+    #     self.notification_frame = NotificationSuccessSave(self.footer_frame, subject="New Notes")
+    #     self.notification_frame.show(x=0, y=0, callback=self.remove_notification)
+    #     self.resume()
 
-        # Ensure all lists in data_dict are of the same length by padding with NaN
-        for key in data_dict:
-            while len(data_dict[key]) < max_length:
-                data_dict[key].append(np.nan)
-
-        result_df = pd.DataFrame(data_dict)
-        self.db_manager.session.update_marked_data(data=result_df)
-        self.remove_note_frame()
-        self.remove_graph_scrollbar()
-        if self.notification_frame:
-            self.remove_notification()
-        self.notification_frame = NotificationSuccessSave(self.footer_frame, subject="New Notes")
-        self.notification_frame.show(x=0, y=0, callback=self.remove_notification)
-        self.resume()
-
-    def get_selected_values(self) -> Union[None, dict[str, list[Union[str, int, float]]]]:
-        """ Get the values selected by the user in the format:
-        {Sensor 1: [x1, x2, x3],
-        Sensor N: [x1, x2, x3],
-        Time: [str, str, str]
-        }
-
-        Notes:
-            Each time is positioned respectively to the position of sensor data
-            Time has a format mentioned in the UI Config file
-        """
-        start, end = self.graph.selected_span
-        # Round indexes
-        start, end = round(start), round(end)
-        print(f"Selected span: {start} to {end} (both limits inclusive)")
-        data_dict = {'Time': []}
-        if self.graph.selected_span is None or start == end:
-            print("No data selected", file=sys.stderr)
-            if self.error_notify_frame:
-                self.remove_error_notification()
-            # Add new notification
-            self.error_notify_frame = ErrorNotification(self.footer_frame,
-                                                        error_message="Sensor data are not selected. "
-                                                                      "Please select range of values on graph and"
-                                                                      "try again")
-            self.error_notify_frame.show(x=uc.Positions.vals_validation.value[0],
-                                         y=uc.Positions.vals_validation.value[1],
-                                         callback=self.remove_error_notification)
-            return None
-        # Find the values between selected index window [start, end]
-        sensor_names = uc.ElementNames.sensor_names.value
-        data_dict[sensor_names[0]] = self.data_analyst.get_axes_values(sensor_values=self.sensor_values,
-                                                                       sensor_timestamps=self.elapsed_time,
-                                                                       sensor=sensor_names[0],
-                                                                       upper_limit=end+1,
-                                                                       lower_limit=start)[1]
-        data_dict[sensor_names[1]] = self.data_analyst.get_axes_values(sensor_values=self.sensor_values,
-                                                                       sensor_timestamps=self.elapsed_time,
-                                                                       sensor=sensor_names[1],
-                                                                       upper_limit=end+1,
-                                                                       lower_limit=start)[1]
-        # Get time by the indexes of selected values
-        timestamps = []
-        sensor_name = sensor_names[0]
-        selected_values = data_dict[sensor_name]
-        stored_values = self.sensor_values[sensor_name]
-        for v in selected_values:
-            if v in stored_values and len(stored_values) == len(self.sensor_time):
-                index = stored_values.index(v)
-                timestamp = self.sensor_time[index][0]  # find timestamp respectively to its position in the list
-                timestamps.append(timestamp)
-            else:
-                print(len(stored_values) == len(self.sensor_time))
-        data_dict["Time"] = timestamps
-        return data_dict
+    # def get_selected_values(self) -> Union[None, dict[str, list[Union[str, int, float]]]]:
+    #     """ Get the values selected by the user in the format:
+    #     {Sensor 1: [x1, x2, x3],
+    #     Sensor N: [x1, x2, x3],
+    #     Time: [str, str, str]
+    #     }
+    #
+    #     Notes:
+    #         Each time is positioned respectively to the position of sensor data
+    #         Time has a format mentioned in the UI Config file
+    #     """
+    #     start, end = self.graph.selected_span
+    #     # Round indexes
+    #     start, end = round(start), round(end)
+    #     print(f"Selected span: {start} to {end} (both limits inclusive)")
+    #     data_dict = {'Time': []}
+    #     if self.graph.selected_span is None or start == end:
+    #         print("No data selected", file=sys.stderr)
+    #         if self.error_notify_frame:
+    #             self.remove_error_notification()
+    #         # Add new notification
+    #         self.error_notify_frame = ErrorNotification(self.footer_frame,
+    #                                                     error_message="Sensor data are not selected. "
+    #                                                                   "Please select range of values on graph and"
+    #                                                                   "try again")
+    #         self.error_notify_frame.show(x=uc.Positions.vals_validation.value[0],
+    #                                      y=uc.Positions.vals_validation.value[1],
+    #                                      callback=self.remove_error_notification)
+    #         return None
+    #     # Find the values between selected index window [start, end]
+    #     sensor_names = uc.ElementNames.sensor_names.value
+    #     data_dict[sensor_names[0]] = self.data_analyst.get_axes_values(sensor_values=self.sensor_values,
+    #                                                                    sensor_timestamps=self.elapsed_time,
+    #                                                                    sensor=sensor_names[0],
+    #                                                                    upper_limit=end+1,
+    #                                                                    lower_limit=start)[1]
+    #     data_dict[sensor_names[1]] = self.data_analyst.get_axes_values(sensor_values=self.sensor_values,
+    #                                                                    sensor_timestamps=self.elapsed_time,
+    #                                                                    sensor=sensor_names[1],
+    #                                                                    upper_limit=end+1,
+    #                                                                    lower_limit=start)[1]
+    #     # Get time by the indexes of selected values
+    #     timestamps = []
+    #     sensor_name = sensor_names[0]
+    #     selected_values = data_dict[sensor_name]
+    #     stored_values = self.sensor_values[sensor_name]
+    #     for v in selected_values:
+    #         if v in stored_values and len(stored_values) == len(self.sensor_time):
+    #             index = stored_values.index(v)
+    #             timestamp = self.sensor_time[index][0]  # find timestamp respectively to its position in the list
+    #             timestamps.append(timestamp)
+    #         else:
+    #             print(len(stored_values) == len(self.sensor_time))
+    #     data_dict["Time"] = timestamps
+    #     return data_dict
 
     def create_alarms_label(self, txt_frame: str, txt: str) -> None:
         labelframe = ttk.LabelFrame(self.info_panel, text=txt_frame)

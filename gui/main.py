@@ -29,7 +29,7 @@ class ThreadManager:
     process: psutil.Process
     data_dict: dict[str, dict]
     prediction_dict: dict
-    notes_dict: dict
+    #notes_dict: dict
 
     def __init__(self, app_title: str):
         self.process = psutil.Process()
@@ -56,7 +56,7 @@ class ThreadManager:
                 "Timestamp", "LocalTime", "Sensor 2", "Sensor 4", "BBox X1", "BBox Y1", "BBox X2", "BBox Y2",
                 "MV 1", "MV 2", "MV 3", "MV 4", "Left Eye X", "Left Eye Y", "Right Eye X",
                 "Right Eye Y", "Nose X", "Nose Y", "Mouth Left X", "Mouth Left Y", "Mouth Right X",
-                "Mouth Right Y", "FHP", "Posture", "Prediction", "Notes"
+                "Mouth Right Y", "FHP", "Posture", "Prediction"
             ])
         print(f"CSV file created: {file_path}")
         return file_path
@@ -219,7 +219,7 @@ class ThreadManager:
             'mouth_right_y': np.nan,
             'fhp': np.nan,
             'prediction': np.nan,
-            'notes': "",
+            #'notes': "",
             'user_id': -1,
             'bad_posture_command': 'no',
             'alarm_notification': 'no',
@@ -244,9 +244,9 @@ def start_main_app():
     save_txt: str = uc.ElementNames.save_data_button_txt.value
     sign_in_txt: str = uc.ElementNames.sign_in_button_txt.value
     register_txt: str = uc.ElementNames.register_button_txt.value
-    add_notes_txt: str = uc.ElementNames.save_selected_button_txt.value
+    #add_notes_txt: str = uc.ElementNames.save_selected_button_txt.value
 
-    num_alarms_label: str = uc.ElementNames.alarm_num_label.value
+    num_alarms_label: str = uc.ElementNames.alarm_num_label.value #警报计数
     proc_time_label: str = uc.ElementNames.processing_time_label.value
 
     app_ui = test_proc.app
@@ -254,7 +254,7 @@ def start_main_app():
     app_ui.add_control_button(text=pause_graph_txt, func=app_ui.pause)
     app_ui.add_control_button(text=close_app_txt, func=test_proc.close_app)
     app_ui.add_control_button(text=save_txt, func=app_ui.save_all_log)
-    app_ui.add_control_button(text=add_notes_txt, func=app_ui.show_notes_entry)
+    #app_ui.add_control_button(text=add_notes_txt, func=app_ui.show_notes_entry)
     app_ui.add_menu_button(text=sign_in_txt, func=app_ui.show_sign_in_popup)
     app_ui.add_menu_button(text=register_txt, func=app_ui.show_register_popup)
     """ Add info panels """

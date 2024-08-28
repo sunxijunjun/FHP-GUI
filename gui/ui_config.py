@@ -22,7 +22,7 @@ class ElementNames(Enum):
     sensor_names = ["Sensor 2", "Sensor 4"]
 
     alarm_num_label = "Number of Alarms"
-    processing_time_label = "Processing Time"
+    processing_time_label = "Monitoring Time"
     data_notes_label = "Data Notes"
 
     pause_button_txt = "Pause Graph"
@@ -33,7 +33,7 @@ class ElementNames(Enum):
     sign_out_button_txt = "Sign out"
     register_button_txt = "Register"
     edit_photo_button_txt = "Edit Photo"
-    save_selected_button_txt = "Add Notes"
+    #save_selected_button_txt = "Add Notes"
 
     sign_in_error = "The user does not exists. Please try again!"
 
