@@ -562,110 +562,110 @@ class ErrorNotification(NotificationBar):
         self.set_notification_style(bg_color='yellow')
         self.content.config(height=2)
 
-
-class RandomSideQuestNotification(NotificationBar):
-    """ Show pop up notification to make incorrect posture """
-    title = "Side Quest!"
-    instructions = ("Please move your chin closer to the sensor until bad posture is detected!\n"
-                    "Keep your posture until the time below is over!\n\n"
-                    "Press START once the participant is ready!")
-    rand_range: list[int] = ui_config.Measurements.rand_quest_duration.value  # seconds
-    functions: dict[str, ttk.Button]
-    logger_callback: Union[None, Callable]
-    close_callback: Union[None, Callable]
-    timer: CountDownClock
-    time_interval: int  # seconds to maintain posture
-
-    def __init__(self, parent, logger_callback=None, end_callback=None):
-        super().__init__(parent, self.title, message=self.instructions)
-        self.logger_callback = logger_callback
-        self.close_callback = end_callback
-
-        self.set_notification_style(bg_color='yellow')
-        self.time_interval = random.randint(self.rand_range[0],
-                                            self.rand_range[1])
-        self.timer = CountDownClock(parent=self,
-                                    initial_time=self.time_interval,
-                                    close_callback=self.close,
-                                    start_callback=self.timer_started_callback)
-        self.content.config(height=5)
-
-    def show(self, x: int, y: int, callback: Union[None, Callable],
-             delay=ui_config.Measurements.notification_delay.value):  # self.update_time_interval()
-        # Calculate the screen width and height
-        screen_width = self.winfo_screenwidth()
-        screen_height = self.winfo_screenheight()
-
-        # Ensure the notification is within the screen boundaries
-        x = max(0, min(x, screen_width - self.winfo_width()))
-        y = max(0, min(y, screen_height - self.winfo_height()))
-
-        # Position the notification
-        self.place(x=x, y=y)
-
-    def timer_started_callback(self):
-        if self.logger_callback:
-            self.logger_callback('started')
-
-    def close(self):
-        if self.logger_callback:
-            self.logger_callback("ended")
-        self.close_callback()
-        self.destroy()
-
-    def update_time_interval(self):
-        self.time_interval = random.randint(self.rand_range[0],
-                                            self.rand_range[1])
-        self.timer.time_remaining = self.time_interval
-
-
-class XRangeSelectorFrame(ttk.LabelFrame):
-    title = "X Scale"
-    button_text = "Update"
-    placeholder = str(ui_config.Measurements.graph_x_limit.value)
-    entry: ttk.Entry
-    button: ttk.Button
-    update_graph_callback: Callable
-    pad_x = ui_config.Measurements.widgets_padding.value
-    pad_y = 5
-
-    def __init__(self, parent, row: int, col: int, func: Callable):
-        super().__init__(parent, text=self.title)
-        self.entry = self.add_num_entry_field()
-        self.button = self.add_button()
-        self.grid(row=row, column=col, padx=self.pad_x, pady=self.pad_y)
-        self.update_graph_callback = func
-
-    def add_num_entry_field(self) -> ttk.Entry:
-        field = ttk.Entry(self)
-        # Add placeholder
-        field.insert(0, self.placeholder)
-        field.bind(sequence="<FocusIn>", func=self.remove_placeholder)
-        # Adjust style
-        field.config(width=10)
-        field.pack(side=tk.TOP, padx=5, pady=5)
-        return field
-
-    def get_val(self) -> int:
-        default_value = ""
-        value = self.entry.get()
-        if value == default_value:
-            return ui_config.Measurements.graph_x_limit.value
-        return int(value)
-
-    def remove_placeholder(self, event=None) -> None:
-        if self.entry.get() == self.placeholder:
-            self.entry.delete(0, tk.END)
-
-    def add_button(self) -> ttk.Button:
-        button = ttk.Button(self, text=self.button_text, command=self.update_graph_scale)
-        button.pack(side=tk.TOP, padx=5, pady=5, fill=tk.X, expand=True)
-        return button
-
-    def update_graph_scale(self) -> None:
-        new_range = self.get_val()
-        self.update_graph_callback(new_range)
-
+#
+# class RandomSideQuestNotification(NotificationBar):
+#     """ Show pop up notification to make incorrect posture """
+#     title = "Side Quest!"
+#     instructions = ("Please move your chin closer to the sensor until bad posture is detected!\n"
+#                     "Keep your posture until the time below is over!\n\n"
+#                     "Press START once the participant is ready!")
+#     rand_range: list[int] = ui_config.Measurements.rand_quest_duration.value  # seconds
+#     functions: dict[str, ttk.Button]
+#     logger_callback: Union[None, Callable]
+#     close_callback: Union[None, Callable]
+#     timer: CountDownClock
+#     time_interval: int  # seconds to maintain posture
+#
+#     def __init__(self, parent, logger_callback=None, end_callback=None):
+#         super().__init__(parent, self.title, message=self.instructions)
+#         self.logger_callback = logger_callback
+#         self.close_callback = end_callback
+#
+#         self.set_notification_style(bg_color='yellow')
+#         self.time_interval = random.randint(self.rand_range[0],
+#                                             self.rand_range[1])
+#         self.timer = CountDownClock(parent=self,
+#                                     initial_time=self.time_interval,
+#                                     close_callback=self.close,
+#                                     start_callback=self.timer_started_callback)
+#         self.content.config(height=5)
+#
+#     def show(self, x: int, y: int, callback: Union[None, Callable],
+#              delay=ui_config.Measurements.notification_delay.value):  # self.update_time_interval()
+#         # Calculate the screen width and height
+#         screen_width = self.winfo_screenwidth()
+#         screen_height = self.winfo_screenheight()
+#
+#         # Ensure the notification is within the screen boundaries
+#         x = max(0, min(x, screen_width - self.winfo_width()))
+#         y = max(0, min(y, screen_height - self.winfo_height()))
+#
+#         # Position the notification
+#         self.place(x=x, y=y)
+#
+#     def timer_started_callback(self):
+#         if self.logger_callback:
+#             self.logger_callback('started')
+#
+#     def close(self):
+#         if self.logger_callback:
+#             self.logger_callback("ended")
+#         self.close_callback()
+#         self.destroy()
+#
+#     def update_time_interval(self):
+#         self.time_interval = random.randint(self.rand_range[0],
+#                                             self.rand_range[1])
+#         self.timer.time_remaining = self.time_interval
+#
+#
+# class XRangeSelectorFrame(ttk.LabelFrame):
+#     title = "X Scale"
+#     button_text = "Update"
+#     placeholder = str(ui_config.Measurements.graph_x_limit.value)
+#     entry: ttk.Entry
+#     button: ttk.Button
+#     update_graph_callback: Callable
+#     pad_x = ui_config.Measurements.widgets_padding.value
+#     pad_y = 5
+#
+#     def __init__(self, parent, row: int, col: int, func: Callable):
+#         super().__init__(parent, text=self.title)
+#         self.entry = self.add_num_entry_field()
+#         self.button = self.add_button()
+#         self.grid(row=row, column=col, padx=self.pad_x, pady=self.pad_y)
+#         self.update_graph_callback = func
+#
+#     def add_num_entry_field(self) -> ttk.Entry:
+#         field = ttk.Entry(self)
+#         # Add placeholder
+#         field.insert(0, self.placeholder)
+#         field.bind(sequence="<FocusIn>", func=self.remove_placeholder)
+#         # Adjust style
+#         field.config(width=10)
+#         field.pack(side=tk.TOP, padx=5, pady=5)
+#         return field
+#
+#     def get_val(self) -> int:
+#         default_value = ""
+#         value = self.entry.get()
+#         if value == default_value:
+#             return ui_config.Measurements.graph_x_limit.value
+#         return int(value)
+#
+#     def remove_placeholder(self, event=None) -> None:
+#         if self.entry.get() == self.placeholder:
+#             self.entry.delete(0, tk.END)
+#
+#     def add_button(self) -> ttk.Button:
+#         button = ttk.Button(self, text=self.button_text, command=self.update_graph_scale)
+#         button.pack(side=tk.TOP, padx=5, pady=5, fill=tk.X, expand=True)
+#         return button
+#
+#     def update_graph_scale(self) -> None:
+#         new_range = self.get_val()
+#         self.update_graph_callback(new_range)
+#
 
 class FeedbackCollector(ttk.LabelFrame):
     title = "Feedback"

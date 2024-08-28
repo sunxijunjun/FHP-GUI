@@ -21,8 +21,8 @@ from custom_widgets import (Clock,
                             NotificationIncorrectPosture,
                             NotificationSuccessSave,
                             ErrorNotification,
-                            RandomSideQuestNotification,
-                            XRangeSelectorFrame,
+                            # RandomSideQuestNotification,
+                            # XRangeSelectorFrame,
                             FeedbackCollector,
                             Graph)
 from dynamic_labelling import flex_median_g
@@ -129,10 +129,10 @@ class App(ThemedTk):
         self.check_boxes_frame = CheckBoxesFrame(self.control_frame,
                                                  row=1,
                                                  col=1)
-        self.x_range_selector_frame = XRangeSelectorFrame(self.control_frame,
-                                                          row=2,
-                                                          col=1,
-                                                          func=self.update_x_range)
+        # self.x_range_selector_frame = XRangeSelectorFrame(self.control_frame,
+        #                                                   row=2,
+        #                                                   col=1,
+        #                                                   func=self.update_x_range)
         self.model = load_model(uc.FilePaths.model_path.value)
         self.current_user_id = None
         self.current_user_features = None
