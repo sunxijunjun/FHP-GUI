@@ -257,6 +257,7 @@ def start_main_app():
     #app_ui.add_control_button(text=add_notes_txt, func=app_ui.show_notes_entry)
     app_ui.add_menu_button(text=sign_in_txt, func=app_ui.show_sign_in_popup)
     app_ui.add_menu_button(text=register_txt, func=app_ui.show_register_popup)
+    
     """ Add info panels """
     test_proc.app.create_alarms_label(num_alarms_label, str(0))
     test_proc.app.create_clock_label(proc_time_label)
