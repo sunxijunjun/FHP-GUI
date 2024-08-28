@@ -2,6 +2,10 @@
 This is a Tkinter-based application that allows users to monitor sensor data and detect potential alarms. The application provides a graphical user interface (GUI) where users can view real-time sensor data, detect anomalies, and manage user accounts.
 ![Simple GUI Overview](data/img/UI_Overview.png)
 ## Features
+<details>
+  
+<summary>See all features</summary>
+
 ### 1. Show multiple lines on one graph with legends (DONE)
 The application can display multiple sensor data streams on a single graph, with corresponding legends for easy identification.
 ### 2. Create alarm detection and show it on the graph (DONE)
@@ -64,6 +68,8 @@ Note: Needs to change the ranges for real testings
 Current live graph have delays of up to a few seconds. Ideally this delay should be less than one second.
 ### 29. Make X axis more readable (TODO)
 The X axis shall be scaled according to the specified time interval and not the number of data
+  
+</details>
 
 ## Installation and Usage
 ### 1. Clone the repository:
