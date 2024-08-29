@@ -29,6 +29,7 @@ class ElementNames(Enum):
     resume_button_txt = "Resume Graph"
     close_button_txt = "Close APP"
     save_data_button_txt = "Save All Data"
+    start_20timer_button_txt = "20-20-20 reminder"
     sign_in_button_txt = "Sign in"
     sign_out_button_txt = "Sign out"
     register_button_txt = "Register"

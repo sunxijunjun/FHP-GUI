@@ -1,4 +1,7 @@
 import threading
+
+from fontTools.merge import timer
+
 from app_ui import App
 import time
 import ui_config as uc
@@ -242,6 +245,7 @@ def start_main_app():
     pause_graph_txt: str = uc.ElementNames.pause_button_txt.value
     close_app_txt: str = uc.ElementNames.close_button_txt.value
     save_txt: str = uc.ElementNames.save_data_button_txt.value
+    time_reminder_txt: str = uc.ElementNames.start_20timer_button_txt.value
     sign_in_txt: str = uc.ElementNames.sign_in_button_txt.value
     register_txt: str = uc.ElementNames.register_button_txt.value
     #add_notes_txt: str = uc.ElementNames.save_selected_button_txt.value
@@ -257,6 +261,7 @@ def start_main_app():
     #app_ui.add_control_button(text=add_notes_txt, func=app_ui.show_notes_entry)
     app_ui.add_menu_button(text=sign_in_txt, func=app_ui.show_sign_in_popup)
     app_ui.add_menu_button(text=register_txt, func=app_ui.show_register_popup)
+    app_ui.add_menu_button(text=time_reminder_txt, func=app_ui.start_20_timer)  #open 20-20-20 reminder
     
     """ Add info panels """
     test_proc.app.create_alarms_label(num_alarms_label, str(0))

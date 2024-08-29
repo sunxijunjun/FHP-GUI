@@ -5,6 +5,8 @@ import serial
 from serial_manager import SerialManager
 import tkinter as tk
 from tkinter import ttk
+import ttkbootstrap as ttkbt
+from ttkbootstrap.constants import *
 from tkinter import filedialog
 from ttkthemes import ThemedTk
 from typing import Callable, Union
@@ -32,6 +34,7 @@ from custom_widgets import (Clock,
 from dynamic_labelling import flex_median_g
 from log_integration import save_integrated_csv
 from logger import Logger
+from reminder22 import TimerApp
 from performance_tester import PerformanceTester
 import numpy as np
 import os
@@ -819,6 +822,11 @@ class App(ThemedTk):
                                              "Please try to sign in.",
                                      row=popup.message_location[0],
                                      col=popup.message_location[1])
+
+    def start_20_timer(self):
+        timer_root = ttkbt.Toplevel()       #creat a new top level for 20-20-20 reminder
+        timer_app = TimerApp(timer_root)
+        timer_root.mainloop()
 
     def pause(self):
         self.pause_comm()
