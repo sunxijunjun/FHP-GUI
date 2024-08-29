@@ -1,5 +1,7 @@
 import tkinter as tk
 import serial
+from port_detection import GetPortName
+
 #设备有一些bug。没法直接关闭LED。
 #需要开→闪烁→关
 class LightControlApp:
@@ -11,7 +13,7 @@ class LightControlApp:
         self.light_control_var = tk.StringVar(value='disable')
 
         # 初始化串口通信
-        self.serial_port = serial.Serial(port='COM13', baudrate=115200, timeout=1)
+        self.serial_port = serial.Serial(port=GetPortName(), baudrate=115200, timeout=1)
 
         # 创建三个按钮来控制灯光
         self.disable_button = tk.Button(root, text="Disable Light", command=self.disable_light)
