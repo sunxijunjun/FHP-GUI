@@ -130,14 +130,12 @@ class App(ThemedTk):
 
         # 使用CheckBoxesFrame中的enable_sound_var
         enable_sound_var = self.check_boxes_frame.check_boxes[uc.CheckBoxesKeys.enable_sound.value][1]
-
         # 初始化 SoundControllerApp
         self.sound_controller = SoundControllerApp(enable_sound_var=enable_sound_var,
                                                    serial_manager=self.serial_manager)
 
         # 使用 CheckBoxesFrame 中的 enable_light_var
         enable_light_var = self.check_boxes_frame.check_boxes[uc.CheckBoxesKeys.enable_light.value][1]
-
         # 初始化 LightControllerApp
         self.light_controller = LightControllerApp(light_control_var=enable_light_var,
                                                    serial_manager=self.serial_manager)
@@ -177,18 +175,22 @@ class App(ThemedTk):
         sound_label = ttk.Label(settings_popup, text="Enable Sound")
         sound_label.grid(row=0, column=0, pady=(20, 5), padx=1, sticky="w")
 
-        sound_var = tk.BooleanVar(value=self.check_boxes_frame.is_true(uc.CheckBoxesKeys.enable_sound.value))
-        sound_check = ttk.Checkbutton(settings_popup, variable=sound_var,
-                                      command=lambda: self.toggle_feature(sound_var, "sound"))
+        # 直接使用原始的 enable_sound_var
+        sound_check = ttk.Checkbutton(settings_popup,
+                                      variable=self.check_boxes_frame.check_boxes[uc.CheckBoxesKeys.enable_sound.value][
+                                          1],
+                                      command=lambda: self.toggle_feature("sound"))
         sound_check.grid(row=0, column=1, pady=5, padx=1, sticky="w")
 
         # 灯光控制
         light_label = ttk.Label(settings_popup, text="Enable Light")
         light_label.grid(row=2, column=0, pady=(20, 5), padx=1, sticky="w")
 
-        light_var = tk.BooleanVar(value=self.check_boxes_frame.is_true(uc.CheckBoxesKeys.enable_light.value))
-        light_check = ttk.Checkbutton(settings_popup, variable=light_var,
-                                      command=lambda: self.toggle_feature(light_var, "light"))
+        # 直接使用原始的 enable_light_var
+        light_check = ttk.Checkbutton(settings_popup,
+                                      variable=self.check_boxes_frame.check_boxes[uc.CheckBoxesKeys.enable_light.value][
+                                          1],
+                                      command=lambda: self.toggle_feature("light"))
         light_check.grid(row=2, column=1, pady=5, padx=1, sticky="w")
 
         close_button = ttk.Button(settings_popup, text="Close", command=settings_popup.destroy)
@@ -196,21 +198,17 @@ class App(ThemedTk):
 
         self.resume()
 
-    def toggle_feature(self, var, feature_type):
+    def toggle_feature(self, feature_type):
         if feature_type == "sound":
-            if var.get():
+            if self.check_boxes_frame.check_boxes[uc.CheckBoxesKeys.enable_sound.value][1].get():
                 print("Sound enabled")
             else:
                 print("Sound disabled")
-            self.on_check_button_changed()
-
         elif feature_type == "light":
-            if var.get():
+            if self.check_boxes_frame.check_boxes[uc.CheckBoxesKeys.enable_light.value][1].get():
                 print("Light enabled")
             else:
                 print("Light disabled")
-            # Add additional logic here for light control if needed
-
 
     def forget_feedback_collector(self):
         if self.feedback_collector:
