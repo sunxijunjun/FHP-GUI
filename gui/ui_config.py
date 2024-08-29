@@ -2,14 +2,14 @@ import os.path
 from enum import Enum
 
 
-main_theme = 'blue'
+main_theme = 'adapta'
 
 
 class FrameColors(Enum):
     graph = "#2C3E50"  # 深海蓝
     control = "#34495E"  # 午夜蓝
     header = "#2980B9"  # 贝壳蓝
-    body = "#ECF0F1"  # 云雾白
+    body = "#D3D3D3"  # 浅灰色
     footer = "#2ECC71"  # 翡翠绿
 
 

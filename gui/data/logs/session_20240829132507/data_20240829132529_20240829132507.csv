@@ -1,0 +1,15 @@
+timestamp,local_time,sensor_2,sensor_4,bbox_x1,bbox_y1,bbox_x2,bbox_y2,mv_1,mv_2,mv_3,mv_4,left_eye_x,left_eye_y,right_eye_x,right_eye_y,nose_x,nose_y,mouth_left_x,mouth_left_y,mouth_right_x,mouth_right_y,fhp,prediction,notes,user_id,alarm_notification,notification_interval,feedback,model_threshold,model_notes
+4847898,2024-08-29 13:25:29,nan,nan,78,86,154,180,nan,nan,nan,nan,97,124,132,122,114,145,102,158,131,156,nan,nan,2,no,no,nan,nan
+4847968,2024-08-29 13:25:29,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,133,nan,2,no,no,nan,nan
+4847978,2024-08-29 13:25:29,nan,nan,79,86,154,180,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,2,no,no,nan,nan
+4847978,2024-08-29 13:25:29,nan,nan,79,86,154,180,nan,nan,nan,nan,98,124,132,123,115,144,103,158,132,157,nan,nan,2,no,no,nan,nan
+4848058,2024-08-29 13:25:29,nan,nan,78,86,152,179,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,2,no,no,nan,nan
+4848058,2024-08-29 13:25:29,nan,nan,78,86,152,179,nan,nan,nan,nan,97,125,132,122,115,145,102,159,132,156,nan,nan,2,no,no,nan,nan
+4848068,2024-08-29 13:25:29,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,133,nan,2,no,no,nan,nan
+4848138,2024-08-29 13:25:29,nan,nan,77,84,152,179,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,2,no,no,nan,nan
+4848138,2024-08-29 13:25:29,nan,nan,77,84,152,179,nan,nan,nan,nan,97,123,131,122,113,144,102,158,130,157,nan,nan,2,no,no,nan,nan
+4848168,2024-08-29 13:25:29,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,2,no,no,nan,nan
+4848168,2024-08-29 13:25:29,nan,nan,nan,nan,nan,nan,545,545,545,547,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,2,no,no,nan,nan
+4848168,2024-08-29 13:25:29,nan,nan,nan,nan,nan,nan,545,545,545,547,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,2,no,no,nan,nan
+4848178,2024-08-29 13:25:29,nan,nan,nan,nan,nan,nan,657,657,658,658,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,2,no,no,nan,nan
+4848178,2024-08-29 13:25:29,nan,nan,nan,nan,nan,nan,657,657,658,658,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,2,no,no,nan,nan

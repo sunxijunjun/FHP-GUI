@@ -218,12 +218,7 @@ class ReportWriter:
         | --- | --- |
         | Alarm Total Time | {self.session.get_total_alarm_time()} |
         | Number of Alarms | {self.session.get_total_alarm_num()} |
-        | Elapsed Time | {self.session.get_session_elapsed_time()} |
-        | Age | {self.session.user_details.age} |
-        | Gender | {self.session.user_details.gender} |
-        | Shoulder Size | {self.session.user_details.shoulder_size} |
-        | Weight | {self.session.user_details.weight} |
-        | Height | {self.session.user_details.height} |\n
+        | Elapsed Time | {self.session.get_session_elapsed_time()} |\n
         User photo:\n
         ![User Photo]({self.session.user_details.photo_path})\n
         """

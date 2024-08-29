@@ -1,7 +1,7 @@
 import random
 
 import serial
-
+from sound_controller import SoundControllerApp
 from serial_manager import SerialManager
 import tkinter as tk
 from tkinter import ttk
@@ -42,29 +42,25 @@ from tensorflow.keras.models import load_model
 
 
 class App(ThemedTk):
-    """ GUI to show Data Storage
-    sensor_values is a dict of list of the values from the sensors:
-    {"Sensor #:
-        [1, 2, 3],
-    }
-    data_thread is a side thread to read data async
-    """
-
     def __init__(self, title: str, fullscreen=False, test=False):
         super().__init__()
         self.theme = uc.main_theme
         self.set_theme(theme_name="adapta")
-        # Update app attributes
+        self.configure(background=uc.FrameColors.body.value)
         self.is_test_mode = test
         self.p_tester = PerformanceTester(critical_file=True)
         self.title(title)
         self.attributes("-fullscreen", fullscreen)
         self.geometry(uc.Measurements.window_size.value)
-        # Standard variables
+
+        # 初始化串口管理器
+        self.serial_manager = SerialManager()
+
+        # 创建各个框架和UI元素
         self.sensor_values = dict()
-        self.sensor_time = list()  # list[(str, int)]
-        self.alarm_texts = list()  # list[str]
-        self.elapsed_time = list()  # list[str]. Elements are times when the new value has been parsed
+        self.sensor_time = list()
+        self.alarm_texts = list()
+        self.elapsed_time = list()
         self.alarm_num = 0
         self.button_num = 0
         self.menu_button_num = 0
@@ -75,15 +71,11 @@ class App(ThemedTk):
         self.prev_alarm_pos = 0
         self.val_replacing_num = 0
         self.false_responses_limit = uc.Measurements.false_responses_limit.value
-        # self.bad_posture_comm_limit = uc.Measurements.num_bad_posture_commands.value
         self.x_range = uc.Measurements.graph_x_limit.value
         self.dist_max = uc.Measurements.distance_max.value
         self.dist_min = uc.Measurements.distance_min.value
+        self.bpc_popup_times = []
 
-        # self.bpc_lr = uc.Measurements.rand_quest_popup.value[0]  # bad posture command pop up time LOWER range
-        # self.bpc_hr = uc.Measurements.rand_quest_popup.value[1]  # bad posture command pop up time HIGHER range
-        self.bpc_popup_times = []  # store times when next popups will occur
-        # Structure of each frame
         self.header_row = 0
         self.header_frame = ttk.Frame(self)
         self.body_row = 1
@@ -93,7 +85,7 @@ class App(ThemedTk):
         self.db_manager = DatabaseManager()
         self.logger = Logger(session_id=self.db_manager.session.id, test=test)
         self.data_analyst = DataAnalyst()
-        # Set tk objects to remember
+
         self.info_panel = ttk.Frame(self.body_frame)
         self.info_panel.grid(row=self.body_row, column=0, padx=10, pady=5)
 
@@ -102,7 +94,7 @@ class App(ThemedTk):
         self.notification_frame = None
         self.error_notify_frame = None
         self.log_notification_frame = None
-        # Graph
+
         self.graph_scroll_bar = None
         self.scroll_bar_frame = None
 
@@ -118,13 +110,14 @@ class App(ThemedTk):
 
         self.rand_quest_notification = None
         self.control_buttons = dict()
-        # Set up frames and object instances
+
+        # 初始化主UI
         self.create_major_frames()
         self.add_header_elements(title=uc.ElementNames.app_title.value)
         self.graph = self.create_graph()
         self.create_control_frame()
 
-        # Custom Frames
+        # 初始化自定义框架和其他组件
         self.time_interval_frame = TimeIntervalSelectorFrame(self.control_frame,
                                                              row=0,
                                                              col=1,
@@ -133,10 +126,14 @@ class App(ThemedTk):
         self.check_boxes_frame = CheckBoxesFrame(self.control_frame,
                                                  row=1,
                                                  col=1)
-        # self.x_range_selector_frame = XRangeSelectorFrame(self.control_frame,
-        #                                                   row=2,
-        #                                                   col=1,
-        #                                                   func=self.update_x_range)
+
+        # 使用CheckBoxesFrame中的enable_sound_var
+        enable_sound_var = self.check_boxes_frame.check_boxes[uc.CheckBoxesKeys.enable_sound.value][1]
+
+        # 初始化 SoundControllerApp
+        self.sound_controller = SoundControllerApp(enable_sound_var=enable_sound_var,
+                                                   serial_manager=self.serial_manager)
+
         self.model = load_model(uc.FilePaths.model_path.value)
         self.current_user_id = None
         self.current_user_features = None
@@ -145,18 +142,13 @@ class App(ThemedTk):
         self.sensor_values = {"Sensor 2": [], "Sensor 4": []}
         self.alarm_text_file_path = self.get_alarm_logger_path()
         self.feedback_collector = None
-        # 在App类的__init__方法中调用add_setting_button
+
+        # 添加设置按钮
         self.add_setting_button()
 
-        self.enable_sound_var = tk.BooleanVar(value=False)
-        self.check_button = ttk.Checkbutton(
-            self, text="Enable Sound", variable=self.enable_sound_var, command=self.on_check_button_changed
-        )
-        self.check_button.pack()
-
-
+        # 需要用户登录后才能进行数据采集
         if not test:
-            self.after(500, func=self.show_sign_in_popup)  # require sign in before data collection
+            self.after(500, func=self.show_sign_in_popup)
 
     # 在App类中添加设置按钮
     def add_setting_button(self):
@@ -913,34 +905,6 @@ class App(ThemedTk):
             return '!lef1#'
         return '!lef0#'
 
-    def get_sound_command(self) -> str:
-        """ Return sensor command to enable or disable the sound
-        1. Sound enable: '!s1#'
-        2. Sound disable: '!s0#'.
-        '!sa1#': sound alarm 1 (Note: this isn't used in the current function)
-        returns string
-        """
-        return '!s1#' if self.enable_sound_var.get() else '!s0#'
-
-    def on_check_button_changed(self):
-        command = self.get_sound_command()
-        self.send_command(command)
-
-    def send_command(self, command: str):
-        """ A method in App to send the command using SerialManager """
-        print(f"Generated command: {command}")
-        self.send_sound_command(command)
-
-    def send_sound_command(self, command: str):
-        """ Send the sound command to the device via SerialManager """
-        if self.serial_manager.ser:  # 确保串口已经初始化
-            try:
-                self.serial_manager.ser.write(command.encode())  # 使用 SerialManager 发送命令
-                print(f"Command sent: {command}")
-            except serial.SerialException as e:
-                print(f"Error sending command: {e}")
-        else:
-            print("Serial port is not initialized")
 
     def update_x_range(self, new_range: int):
         self.x_range = new_range
