@@ -1,4 +1,8 @@
 import random
+
+import serial
+
+from serial_manager import SerialManager
 import tkinter as tk
 from tkinter import ttk
 from tkinter import filedialog
@@ -141,9 +145,72 @@ class App(ThemedTk):
         self.sensor_values = {"Sensor 2": [], "Sensor 4": []}
         self.alarm_text_file_path = self.get_alarm_logger_path()
         self.feedback_collector = None
+        # 在App类的__init__方法中调用add_setting_button
+        self.add_setting_button()
+
+        self.enable_sound_var = tk.BooleanVar(value=False)
+        self.check_button = ttk.Checkbutton(
+            self, text="Enable Sound", variable=self.enable_sound_var, command=self.on_check_button_changed
+        )
+        self.check_button.pack()
+
 
         if not test:
             self.after(500, func=self.show_sign_in_popup)  # require sign in before data collection
+
+    # 在App类中添加设置按钮
+    def add_setting_button(self):
+        self.add_menu_button("Settings", self.show_settings_window)
+
+    # 显示设置窗口的方法
+    def show_settings_window(self):
+        self.pause()
+        settings_popup = tk.Toplevel(self)
+        settings_popup.title("Settings")
+        settings_popup.geometry("300x150")
+
+        # 设置布局
+        settings_popup.columnconfigure(0, weight=1)
+        settings_popup.rowconfigure([0, 1, 2, 3, 4], weight=1)  # 为每一行配置权重
+
+        # 声音控制
+        sound_label = ttk.Label(settings_popup, text="Enable Sound")
+        sound_label.grid(row=0, column=0, pady=(20, 5), padx=1, sticky="w")
+
+        sound_var = tk.BooleanVar(value=self.check_boxes_frame.is_true(uc.CheckBoxesKeys.enable_sound.value))
+        sound_check = ttk.Checkbutton(settings_popup, variable=sound_var,
+                                      command=lambda: self.toggle_feature(sound_var, "sound"))
+        sound_check.grid(row=0, column=1, pady=5, padx=1, sticky="w")
+
+        # 灯光控制
+        light_label = ttk.Label(settings_popup, text="Enable Light")
+        light_label.grid(row=2, column=0, pady=(20, 5), padx=1, sticky="w")
+
+        light_var = tk.BooleanVar(value=self.check_boxes_frame.is_true(uc.CheckBoxesKeys.enable_light.value))
+        light_check = ttk.Checkbutton(settings_popup, variable=light_var,
+                                      command=lambda: self.toggle_feature(light_var, "light"))
+        light_check.grid(row=2, column=1, pady=5, padx=1, sticky="w")
+
+        close_button = ttk.Button(settings_popup, text="Close", command=settings_popup.destroy)
+        close_button.grid(row=4, column=0, pady=20, padx=10, sticky="n")
+
+        self.resume()
+
+    def toggle_feature(self, var, feature_type):
+        if feature_type == "sound":
+            if var.get():
+                print("Sound enabled")
+            else:
+                print("Sound disabled")
+            self.on_check_button_changed()
+
+        elif feature_type == "light":
+            if var.get():
+                print("Light enabled")
+            else:
+                print("Light disabled")
+            # Add additional logic here for light control if needed
+
 
     def forget_feedback_collector(self):
         if self.feedback_collector:
@@ -834,16 +901,46 @@ class App(ThemedTk):
         time.sleep(interval)  # seconds
         self.resume()
 
-    def get_sound_command(self) -> str:
-        """ Return sensor command to enable or disable the sound
-        1. Sound enable:'!s1#'
-        2. Sound disable:'!s0#'.
+    def get_light_command(self) -> str:
+        """ Return sensor command to enable or disable the light
+        '!le0#': LED disable
+        '!le1#': LED enable
+        '!lef1#': LED flash 1
         returns string
         """
-        key = uc.CheckBoxesKeys.enable_sound.value
+        key = uc.CheckBoxesKeys.enable_light.value
         if self.check_boxes_frame.is_true(key):
-            return '!s1#'
-        return '!s0#'
+            return '!lef1#'
+        return '!lef0#'
+
+    def get_sound_command(self) -> str:
+        """ Return sensor command to enable or disable the sound
+        1. Sound enable: '!s1#'
+        2. Sound disable: '!s0#'.
+        '!sa1#': sound alarm 1 (Note: this isn't used in the current function)
+        returns string
+        """
+        return '!s1#' if self.enable_sound_var.get() else '!s0#'
+
+    def on_check_button_changed(self):
+        command = self.get_sound_command()
+        self.send_command(command)
+
+    def send_command(self, command: str):
+        """ A method in App to send the command using SerialManager """
+        print(f"Generated command: {command}")
+        self.send_sound_command(command)
+
+    def send_sound_command(self, command: str):
+        """ Send the sound command to the device via SerialManager """
+        if self.serial_manager.ser:  # 确保串口已经初始化
+            try:
+                self.serial_manager.ser.write(command.encode())  # 使用 SerialManager 发送命令
+                print(f"Command sent: {command}")
+            except serial.SerialException as e:
+                print(f"Error sending command: {e}")
+        else:
+            print("Serial port is not initialized")
 
     def update_x_range(self, new_range: int):
         self.x_range = new_range

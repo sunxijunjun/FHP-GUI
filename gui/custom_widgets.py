@@ -456,7 +456,7 @@ class CheckBoxesFrame(ttk.Frame):
                            add_input=True)
         self.add_check_box(text="Enable Sound",
                            access_key=ui_config.CheckBoxesKeys.enable_sound.value)
-
+        self.add_check_box("Enable Light", access_key=ui_config.CheckBoxesKeys.enable_light.value)
 
     def add_check_box(self, text: str, access_key: str, add_input=False) -> None:
         var = tk.BooleanVar(value=False)
