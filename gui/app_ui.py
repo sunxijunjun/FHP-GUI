@@ -53,7 +53,7 @@ class App(ThemedTk):
     def __init__(self, title: str, fullscreen=False, test=False):
         super().__init__()
         self.theme = uc.main_theme
-        self.set_theme(theme_name=self.theme)
+        self.set_theme(theme_name="adapta")
         # Update app attributes
         self.is_test_mode = test
         self.p_tester = PerformanceTester(critical_file=True)

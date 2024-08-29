@@ -2,15 +2,15 @@ import os.path
 from enum import Enum
 
 
-main_theme = 'yaru'
+main_theme = 'blue'
 
 
 class FrameColors(Enum):
-    graph = "black"
-    control = "black"
-    header = "red"
-    body = "white"
-    footer = "green"
+    graph = "#2C3E50"  # 深海蓝
+    control = "#34495E"  # 午夜蓝
+    header = "#2980B9"  # 贝壳蓝
+    body = "#ECF0F1"  # 云雾白
+    footer = "#2ECC71"  # 翡翠绿
 
 
 class ElementNames(Enum):
@@ -59,8 +59,8 @@ class ElementNames(Enum):
 
 
 class Measurements(Enum):
-    window_size = "1600x900"
-    graph_size = (9, 3)
+    window_size = "1000x600"
+    graph_size = (6, 3)
     graph_x_limit = 50  # show up to last X values or None for infinite number
     header_h = 200
     body_h = 500
@@ -95,9 +95,9 @@ class Measurements(Enum):
 
 
 class Fonts(Enum):
-    info_panel_font = ("Helvetica", 48)
-    button_font = None
-    title_font = None
+    info_panel_font = ("Roboto", 36, "bold")
+    button_font = ("Arial", 14, "bold")
+    title_font = ("Helvetica", 24, "bold")
 
 
 class FilePaths(Enum):
