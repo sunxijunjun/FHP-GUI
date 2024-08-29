@@ -2,6 +2,7 @@ import random
 
 import serial
 from sound_controller import SoundControllerApp
+from light_controller import LightControllerApp
 from serial_manager import SerialManager
 import tkinter as tk
 from tkinter import ttk
@@ -132,6 +133,13 @@ class App(ThemedTk):
 
         # 初始化 SoundControllerApp
         self.sound_controller = SoundControllerApp(enable_sound_var=enable_sound_var,
+                                                   serial_manager=self.serial_manager)
+
+        # 使用 CheckBoxesFrame 中的 enable_light_var
+        enable_light_var = self.check_boxes_frame.check_boxes[uc.CheckBoxesKeys.enable_light.value][1]
+
+        # 初始化 LightControllerApp
+        self.light_controller = LightControllerApp(light_control_var=enable_light_var,
                                                    serial_manager=self.serial_manager)
 
         self.model = load_model(uc.FilePaths.model_path.value)
@@ -892,19 +900,6 @@ class App(ThemedTk):
         interval = self.time_interval_frame.get_interval()
         time.sleep(interval)  # seconds
         self.resume()
-
-    def get_light_command(self) -> str:
-        """ Return sensor command to enable or disable the light
-        '!le0#': LED disable
-        '!le1#': LED enable
-        '!lef1#': LED flash 1
-        returns string
-        """
-        key = uc.CheckBoxesKeys.enable_light.value
-        if self.check_boxes_frame.is_true(key):
-            return '!lef1#'
-        return '!lef0#'
-
 
     def update_x_range(self, new_range: int):
         self.x_range = new_range
