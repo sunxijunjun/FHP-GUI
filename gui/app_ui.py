@@ -151,10 +151,38 @@ class App(ThemedTk):
 
         # 添加设置按钮
         self.add_setting_button()
+        self.add_guide_button()
 
         # 需要用户登录后才能进行数据采集
         if not test:
             self.after(500, func=self.show_sign_in_popup)
+
+    def add_guide_button(self):
+        self.add_menu_button("User Guide", self.show_user_guide_window)
+
+    def show_user_guide_window(self):
+        guide_window = tk.Toplevel(self)
+        guide_window.title("User Guide")
+        guide_window.geometry("400x300")  # 调整窗口大小
+
+        guide_text = (
+            "Welcome to the Beta Prototype. \n\n"
+            "This device will help detect poor posture while you are using a computer.\n\n"
+            "To achieve optimal accuracy, please follow "
+            "the calibration steps below:\n\n"
+            "1. Please take a seat.\n\n"
+            "2. Adjust the height of your chair and screen so that the top edge of the screen "
+            "is at or slightly below your eye level.\n\n"
+            "3. Position the device in the center of your screen. \n\n"
+            "You should see your face appear "
+            "in the center of the camera view with a small green frame around it."
+        )
+
+        guide_label = tk.Label(guide_window, text=guide_text, font=("Arial", 12), justify="left")
+        guide_label.pack(pady=30)
+
+        close_button = ttk.Button(guide_window, text="Close", command=guide_window.destroy)
+        close_button.pack(pady=10)
 
     # 在App类中添加设置按钮
     def add_setting_button(self):
@@ -165,16 +193,15 @@ class App(ThemedTk):
         self.pause()
         settings_popup = tk.Toplevel(self)
         settings_popup.title("Settings")
-        settings_popup.geometry("300x150")
+        settings_popup.geometry("300x300")
 
         # 设置布局
         settings_popup.columnconfigure(0, weight=1)
-        settings_popup.rowconfigure([0, 1, 2, 3, 4], weight=1)  # 为每一行配置权重
+        settings_popup.rowconfigure([0, 1, 2, 3, 4], weight=1)  # 小窗口行数
 
         # 声音控制
         sound_label = ttk.Label(settings_popup, text="Enable Sound")
         sound_label.grid(row=0, column=0, pady=(20, 5), padx=1, sticky="w")
-
         # 直接使用原始的 enable_sound_var
         sound_check = ttk.Checkbutton(settings_popup,
                                       variable=self.check_boxes_frame.check_boxes[uc.CheckBoxesKeys.enable_sound.value][
@@ -185,7 +212,6 @@ class App(ThemedTk):
         # 灯光控制
         light_label = ttk.Label(settings_popup, text="Enable Light")
         light_label.grid(row=2, column=0, pady=(20, 5), padx=1, sticky="w")
-
         # 直接使用原始的 enable_light_var
         light_check = ttk.Checkbutton(settings_popup,
                                       variable=self.check_boxes_frame.check_boxes[uc.CheckBoxesKeys.enable_light.value][
@@ -193,8 +219,22 @@ class App(ThemedTk):
                                       command=lambda: self.toggle_feature("light"))
         light_check.grid(row=2, column=1, pady=5, padx=1, sticky="w")
 
+
+        # 错误通知控制
+        error_notify_label = ttk.Label(settings_popup, text="Notify Bad Posture After")
+        error_notify_label.grid(row=3, column=0, pady=(20, 5), padx=1, sticky="w")
+
+        error_notify_input = self.check_boxes_frame.check_boxes[uc.CheckBoxesKeys.notification_bad_posture.value][2]
+        if error_notify_input:
+            error_notify_input.grid(row=3, column=1, pady=5, padx=1, sticky="w")
+
+        # 创建 Save 按钮
+        save_button = ttk.Button(settings_popup, text="Save", command=lambda: None)
+        save_button.grid(row=4, column=0, pady=5, padx=(10, 5), sticky="n")
+
+        # 创建 Close 按钮
         close_button = ttk.Button(settings_popup, text="Close", command=settings_popup.destroy)
-        close_button.grid(row=4, column=0, pady=20, padx=10, sticky="n")
+        close_button.grid(row=4, column=1, pady=5, padx=(5, 10), sticky="n")
 
         self.resume()
 
