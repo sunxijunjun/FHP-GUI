@@ -54,6 +54,23 @@ class App(ThemedTk):
         self.attributes("-fullscreen", fullscreen)
         self.geometry(uc.Measurements.window_size.value)
 
+        # 创建一个 ttk.Style 实例
+        style = ttk.Style()
+
+        # 配置颜色样式之 白底荧光绿
+        style.configure('TFrame', background='#E8F4F8')
+        style.configure('TLabel', background='#E8F4F8', foreground='#2ECC71')
+        style.configure('TButton', background='#D1F2EB', foreground='#2ECC71')
+
+        # 配置颜色样式之 浅蓝活力橙
+        # style.configure('TFrame', background='#E3F2FD')
+        # style.configure('TLabel', background='#BBDEFB', foreground='#FF5722')
+        # style.configure('TButton', background='#90CAF9', foreground='#FF5722')
+        # 配置颜色样式之 粉红色
+        # style.configure('TFrame', background='#FDFDFD')
+        # style.configure('TLabel', background='#F5F5F5', foreground='#FF1744')
+        # style.configure('TButton', background='#FFEBEE', foreground='#FF1744')
+
         # 初始化串口管理器
         self.serial_manager = SerialManager()
 
