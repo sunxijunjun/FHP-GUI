@@ -1,5 +1,5 @@
 from serial.tools import list_ports
-from serial_manager import SerialManager
+import serial
 import tkinter as tk
 from tkinter import messagebox
 
@@ -25,8 +25,11 @@ def ReadPortName():
         return ""
 
 def CheckPortAvailability(port_name):
-    serial_manager = SerialManager(port=port_name)
-    return serial_manager.ser is not None
+    try:
+        serial.Serial(port_name, baudrate = 115200, timeout = 1)
+        return True
+    except:
+        return False
 
 def ComparePorts(initial, updated):
     if len(updated) == len(initial) + 1:
