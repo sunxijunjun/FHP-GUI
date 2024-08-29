@@ -1,4 +1,5 @@
-# Sensor Monitoring Dashboard
+# GUI for Data Collection Features
+This page describes most of the features used for data collection. Some of these features will be deleted from the user interface.
 This is a Tkinter-based application that allows users to monitor sensor data and detect potential alarms. The application provides a graphical user interface (GUI) where users can view real-time sensor data, detect anomalies, and manage user accounts.
 ![Simple GUI Overview](data/img/UI_Overview.png)
 ## Features
