@@ -44,8 +44,8 @@ import pandas as pd
 import sys
 import time
 from tensorflow.keras.models import load_model
-
-
+from database_manager import ReportWriter
+import re
 class App(ThemedTk):
     def __init__(self, title: str, fullscreen=False, test=False):
         super().__init__()
@@ -173,10 +173,22 @@ class App(ThemedTk):
         # 添加设置按钮
         self.add_setting_button()
         self.add_guide_button()
+        self.add_generate_report_button()
 
         # 需要用户登录后才能进行数据采集
         if not test:
             self.after(500, func=self.show_sign_in_popup)
+
+    def add_generate_report_button(self):
+        self.add_menu_button("Generate Report", self.show_generate_report_window)
+
+    def show_generate_report_window(self):
+        report_window = tk.Toplevel(self)
+        report_window.title("Generate Report")
+        report_window.geometry("350x600")  # 调整窗口大小
+        ###.md文件的内容移动到这里　TODO
+
+
 
     def add_guide_button(self):
         self.add_menu_button("User Guide", self.show_user_guide_window)
@@ -721,7 +733,7 @@ class App(ThemedTk):
     def create_alarms_label(self, txt_frame: str, txt: str) -> None:
         labelframe = ttk.LabelFrame(self.info_panel, text=txt_frame)
         labelframe.grid(row=self.info_panel_wnum, column=0, padx=10, pady=5)
-        label = ttk.Label(labelframe, text=txt, font=("Helvetica", 48))
+        label = ttk.Label(labelframe, text=txt, font=("Helvetica", 20)) #左侧警报数量
         label.pack()
         self.alarm_num_label = label
         self.info_panel_wnum += 1
