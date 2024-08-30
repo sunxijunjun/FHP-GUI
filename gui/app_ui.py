@@ -7,6 +7,7 @@ from serial_manager import SerialManager
 import tkinter as tk
 from tkinter import ttk
 import ttkbootstrap as ttkbt
+from ttkbootstrap import Style
 from ttkbootstrap.constants import *
 from tkinter import filedialog
 from ttkthemes import ThemedTk
@@ -58,7 +59,7 @@ class App(ThemedTk):
         self.geometry(uc.Measurements.window_size.value)
 
         # 创建一个 ttk.Style 实例
-        style = ttk.Style()
+        style = ttkbt.Style('flatly')
 
         # 配置颜色样式之 白底荧光绿
         style.configure('TFrame', background='#E8F4F8')
