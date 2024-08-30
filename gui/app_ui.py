@@ -184,26 +184,61 @@ class App(ThemedTk):
     def show_user_guide_window(self):
         guide_window = tk.Toplevel(self)
         guide_window.title("User Guide")
-        guide_window.geometry("400x300")  # 调整窗口大小
+        guide_window.geometry("350x500")  # 调整窗口大小
 
-        guide_text = (
-            "Welcome to the Beta Prototype. \n\n"
-            "This device will help detect poor posture while you are using a computer.\n\n"
-            "To achieve optimal accuracy, please follow "
-            "the calibration steps below:\n\n"
-            "1. Please take a seat.\n\n"
-            "2. Adjust the height of your chair and screen so that the top edge of the screen "
-            "is at or slightly below your eye level.\n\n"
-            "3. Position the device in the center of your screen. \n\n"
-            "You should see your face appear "
-            "in the center of the camera view with a small green frame around it."
-        )
+        # 多语言文本字典
+        guide_texts = {
+            "English": (
+                "Welcome to the Beta Prototype. \n\n"
+                "This device will help detect poor posture while you are using a computer.\n\n"
+                "To achieve optimal accuracy, please follow "
+                "the calibration steps below:\n\n"
+                "1. Please take a seat.\n\n"
+                "2. Adjust the height of your chair and screen so that the top edge of the screen "
+                "is at or slightly below your eye level.\n\n"
+                "3. Position the device in the center of your screen. \n\n"
+                "You should see your face appear "
+                "in the center of the camera view with a small green frame around it."
+            ),
+            "中文": (
+                "欢迎使用Beta原型。\n\n"
+                "此设备将帮助您在使用计算机时检测不良姿势。\n\n"
+                "为了达到最佳准确性，请按照以下校准步骤操作：\n\n"
+                "1. 请坐下。\n\n"
+                "2. 调整椅子和屏幕的高度，使屏幕的上边缘位于或略低于您的眼睛水平。\n\n"
+                "3. 将设备放置在屏幕的中心。\n\n"
+                "您应该看到您的脸出现在相机视图的中心，并且周围有一个小的绿色框。"
+            ),
+            "粤语": (
+                "歡迎使用Beta原型。\n\n"
+                "此設備將幫助您在使用計算機時檢測不良姿勢。\n\n"
+                "為了達到最佳準確性，請按照以下校準步驟操作：\n\n"
+                "1. 請坐下。\n\n"
+                "2. 調整椅子和屏幕的高度，使屏幕的上邊緣位於或略低於您的眼睛水平。\n\n"
+                "3. 將設備放置在屏幕的中心。\n\n"
+                "您應該看到您的臉出現在相機視圖的中心，並且周圍有一個小的綠色框。"
+            )
+        }
 
-        guide_label = tk.Label(guide_window, text=guide_text, font=("Arial", 12), justify="left")
-        guide_label.pack(pady=30)
+        # 默认显示的语言是英语
+        guide_label = tk.Label(guide_window, text=guide_texts["English"], font=("Arial", 12), justify="left",
+                               wraplength=300)
+        guide_label.pack(pady=20)
 
+        # 选择语言的下拉菜单
+        def update_language(event):
+            selected_language = language_combobox.get()
+            guide_label.config(text=guide_texts[selected_language])
+
+        language_combobox = ttk.Combobox(guide_window, values=["English", "中文", "粤语"])
+        language_combobox.current(0)  # 默认选择英语
+        language_combobox.bind("<<ComboboxSelected>>", update_language)
+        language_combobox.pack(pady=10)
+
+        # 关闭按钮
         close_button = ttk.Button(guide_window, text="Close", command=guide_window.destroy)
         close_button.pack(pady=10)
+
 
     # 在App类中添加设置按钮
     def add_setting_button(self):
