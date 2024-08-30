@@ -168,7 +168,6 @@ class ThreadManager:
 
         bbox_match = bbox_pattern.search(data)
         if bbox_match:
-
             data_entry['bbox_x1'], data_entry['bbox_y1'], data_entry['bbox_x2'], data_entry['bbox_y2'] = [
                 int(bbox_match.group(i)) for i in range(1, 5)]
 
