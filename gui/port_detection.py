@@ -2,6 +2,7 @@ from serial.tools import list_ports
 import serial
 import tkinter as tk
 from tkinter import messagebox
+from serial_manager import SerialManager
 
 def PopupMessage(title, message):
     root = tk.Tk()
@@ -25,11 +26,8 @@ def ReadPortName():
         return ""
 
 def CheckPortAvailability(port_name):
-    try:
-        serial.Serial(port_name, baudrate = 115200, timeout = 1)
-        return True
-    except:
-        return False
+    serial_manager = SerialManager(port=port_name)
+    return serial_manager.ser is not None
 
 def ComparePorts(initial, updated):
     if len(updated) == len(initial) + 1:
