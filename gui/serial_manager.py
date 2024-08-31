@@ -9,15 +9,12 @@ class SerialManager:
     _lock = threading.Lock()
 
     def __new__(cls, port='COM13', baudrate=115200, timeout=1):
-        if cls._instance is None:
-            with cls._lock:
-                if cls._instance is None:  # Double-checked locking
-                    cls._instance = super(SerialManager, cls).__new__(cls)
-                    try:
-                        cls._instance.ser = serial.Serial(port, baudrate, timeout=timeout)
-                    except serial.SerialException as e:
-                        print(f"Error opening serial port: {e}")
-                        cls._instance.ser = None
+        cls._instance = super(SerialManager, cls).__new__(cls)
+        try:
+            cls._instance.ser = serial.Serial(port, baudrate, timeout=timeout)
+        except serial.SerialException as e:
+            print(f"Error opening serial port: {e}")
+            cls._instance.ser = None
         return cls._instance
 
     def read_line(self) -> Union[str, None]:
