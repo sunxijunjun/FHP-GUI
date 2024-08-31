@@ -3,8 +3,23 @@ from ttkbootstrap.constants import *
 import pystray
 from pystray import MenuItem as Item
 from PIL import Image, ImageTk
-import winsound
 import time
+import platform
+
+# Detect the operating system
+current_os = platform.system()
+
+# Conditional import based on the operating system
+if current_os == "Windows":
+    import winsound
+elif current_os == "Darwin":  # macOS
+    import os
+    import subprocess
+elif current_os == "Linux":
+    import os
+    import subprocess
+else:
+    print(f"Unsupported operating system for sound playing: {current_os}")
 
 class TimerApp:
     def __init__(self, root):
@@ -104,7 +119,14 @@ class TimerApp:
         self.root.destroy()
 
     def play_sound(self):
-        winsound.PlaySound("twenty_reminder_sound.wav", winsound.SND_FILENAME | winsound.SND_ASYNC)
+        if current_os == "Windows":
+            winsound.PlaySound("twenty_reminder_sound.wav", winsound.SND_FILENAME | winsound.SND_ASYNC)
+        elif current_os == "Darwin":  # macOS
+            subprocess.run(["afplay", "twenty_reminder_sound.wav"])
+        elif current_os == "Linux":
+            subprocess.run(["aplay", "twenty_reminder_sound.wav"])
+        else:
+            print("Sound playback is not supported on this operating system.")
 
     def show_reminder(self):
         if self.reminder_window is not None and self.reminder_window.winfo_exists():
