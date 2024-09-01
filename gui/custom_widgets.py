@@ -121,7 +121,7 @@ class AbstractWindow(tk.Toplevel):
         if self.message_frame:
             self.message_frame.destroy()
 
-    def show_message_frame(self, subject: str, details: str, row=3, col=0):
+    def show_message_frame(self, subject: str, details: str, row=4, col=0):
         self.clear_messages()  # remove previous messages
         frame = ttk.LabelFrame(self, text=subject)
         frame.grid(row=row, column=col, padx=10, pady=10)
@@ -139,7 +139,7 @@ class AbstractWindow(tk.Toplevel):
     def add_button(self, txt: str, func: Callable):
         # Submit button
         submit_button = ttk.Button(self, text=txt, command=func)
-        submit_button.grid(row=2, column=self.button_nums, padx=10, pady=10)
+        submit_button.grid(row=3, column=self.button_nums, padx=10, pady=10)
         self.submission_button = submit_button
         self.button_nums += 1
 
@@ -151,9 +151,20 @@ class AbstractWindow(tk.Toplevel):
 class UserDetailsWindow(AbstractWindow):
     def __init__(self, parent, title: str):
         super().__init__(parent, title)
-        # Remember the fields
         self.full_name_entry = None
         self.password_entry = None
+
+        #try to get data from user_account.txt
+        try:
+            with open('user_account.txt', 'r') as file:
+                # read the first line as user name
+                self.remember_name = file.readline().strip()
+                # read the first line as password
+                self.remember_password  = file.readline().strip()
+        except FileNotFoundError:
+            #defalt
+            pass
+
         # Create the widgets
         self.create_widgets()
 
@@ -163,12 +174,19 @@ class UserDetailsWindow(AbstractWindow):
         full_name_label.grid(row=0, column=0, padx=10, pady=10, sticky="e")
         self.full_name_entry = ttk.Entry(self)
         self.full_name_entry.grid(row=0, column=1, padx=10, pady=10)
+        self.full_name_entry.insert(0, self.remember_name)
 
         # Password label and entry
         password_label = ttk.Label(self, text="Password:")
         password_label.grid(row=1, column=0, padx=10, pady=10, sticky="e")
         self.password_entry = ttk.Entry(self, show="*")
         self.password_entry.grid(row=1, column=1, padx=10, pady=10)
+        self.password_entry.insert(0, self.remember_password)
+
+        # "Remember me" checkbox
+        self.remember_var = tk.BooleanVar()
+        remember_check = ttk.Checkbutton(self, text="Remember me", variable=self.remember_var)
+        remember_check.grid(row=2, columnspan=2, pady=5)
 
     def get_entered_details(self) -> UserDetails:
         """ Get the values from popupfields as str
@@ -178,6 +196,15 @@ class UserDetailsWindow(AbstractWindow):
         full_name: str = self.full_name_entry.get()
         password: str = self.password_entry.get()
         details = UserDetails(full_name, password)
+
+        #save user_account
+        if self.remember_var.get():
+            with open("user_account.txt", "w") as f:
+                f.write(f"{full_name}\n{password}")
+        else:
+            with open("user_account.txt", "w") as f:
+                f.write("")
+
         return details
 
 
@@ -185,7 +212,7 @@ class UserRegistrationWindow(UserDetailsWindow):
     def __init__(self, parent, title):
         super().__init__(parent, title)
         # Basic memory cells
-        self.data_entries_num = 3  # minimum is 3, because other 3 [0-2] are taken for name, password, and buttons
+        self.data_entries_num = 4  # minimum is 4, because other 4 [0-3] are taken for name, password, remember, and buttons
         self.message_location = (7, 3)
         self.category_selection = None
         # Add Shoulder Size categories
