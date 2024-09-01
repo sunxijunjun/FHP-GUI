@@ -84,7 +84,8 @@ class ThreadManager:
         time.sleep(0.1)
         self.check_memory_usage()
         self.app.save_last_data()
-        time.sleep(2)
+        if self.reading_thread and self.reading_thread.is_alive():
+            self.reading_thread.join()  # Wait for the thread to finish
         self.app.destroy()
 
     def connect(self, data_entry=None) -> None:
@@ -109,8 +110,8 @@ class ThreadManager:
                                                  user_id=self.app.db_manager.session.user_id)
                 self.app.logger.add_to_buffer(data_entry=data_entry,
                                               success_callback=self.app.show_notify_log_success)
-                print("Data Parsed and Logged:")
-                print(data_entry)
+                # print("Data Parsed and Logged:")
+                # print(data_entry)
             time.sleep(self.time_delay)
         else:
             print("Data Parsing has been stopped")
@@ -149,6 +150,7 @@ class ThreadManager:
 
         self.app.update_sensor_values(sens_2=entry_modified["sensor_2"],
                                       sens_4=entry_modified["sensor_4"],
+                                      timestamp = int(self.app.logger.last_timestamp),
                                       local_time=entry['local_time'])
         return self.app.logger.last_timestamp, entry_modified
 

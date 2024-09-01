@@ -21,7 +21,7 @@ class ElementNames(Enum):
     graph_x = "Number of Data"
     sensor_names = ["Sensor 2", "Sensor 4"]
 
-    alarm_num_label = "Duration of Alarms" #目前是计数，需要改成计时　TODO
+    alarm_num_label = "Duration of Alarms" #目前是计数，需要改成计时　TODO -> DONE
     processing_time_label = "Monitoring Time"
     data_notes_label = "Data Notes"
 

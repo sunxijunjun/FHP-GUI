@@ -46,6 +46,8 @@ import time
 from tensorflow.keras.models import load_model
 from database_manager import ReportWriter
 import re
+import math
+
 class App(ThemedTk):
     def __init__(self, title: str, fullscreen=False, test=False):
         super().__init__()
@@ -84,6 +86,9 @@ class App(ThemedTk):
         self.alarm_texts = list()
         self.elapsed_time = list()
         self.alarm_num = 0
+        self.alarm_duration = 0
+        self.last_alarm_time = None
+        self.last_sensor_time = None
         self.button_num = 0
         self.menu_button_num = 0
         self.is_stopped = False
@@ -423,6 +428,7 @@ class App(ThemedTk):
             self.show_alarm(pos=anomaly_graph_position)
             print("Alarm raised.")
         else:
+            self.last_alarm_time = None
             self.db_manager.session.alarm_times.append("|")
 
     def update_graph(self, event=None, lower_range=None, upper_range=None):
@@ -481,12 +487,13 @@ class App(ThemedTk):
                                          callback=None)  # keep the notification
         return sens_2, sens_4
 
-    def update_sensor_values(self, sens_2: int, sens_4: int, local_time: str) -> None:
+    def update_sensor_values(self, sens_2: int, sens_4: int, timestamp: int, local_time: str) -> None:
         if pd.isna(sens_2) or pd.isna(sens_4):
             return None
         values = self.sensor_values
         values["Sensor 2"].append(sens_2)
         values["Sensor 4"].append(sens_4)
+        self.last_sensor_time = timestamp
         self.sensor_values = values
         self.sensor_time.append((local_time, self.db_manager.session.user_id))
         self.elapsed_time.append(self.p_tester.get_this_timestamp().split(' ')[-1])
@@ -508,9 +515,10 @@ class App(ThemedTk):
 
     def show_notify_log_success(self, subject: str) -> None:
         if self.log_notification_frame:
-            if not self.log_notification_frame:
-                return None
-            self.log_notification_frame.destroy()
+            try:
+                self.log_notification_frame.destroy()
+            except Exception as e:
+                print(f"Error destroying log_notification_frame: {e}")
             self.log_notification_frame = None
         self.log_notification_frame = NotificationSuccessSave(self.footer_frame, subject=subject)
         # reduce size of the notification frame
@@ -526,7 +534,15 @@ class App(ThemedTk):
         if not self.alarm_num_label or not self.graph.ax or pos == self.prev_alarm_pos:
             return None
         self.alarm_num += 1
-        self.alarm_num_label.config(text=str(self.alarm_num))
+        
+        if self.last_sensor_time is not None:
+            if self.last_alarm_time is None:
+                self.last_alarm_time = self.last_sensor_time
+            else:
+                self.alarm_duration += self.last_sensor_time - self.last_alarm_time
+            self.last_alarm_time = self.last_sensor_time
+        alarm_duration_text = str(datetime.timedelta(seconds=math.ceil(int(self.alarm_duration) / 1000)))
+        self.alarm_num_label.config(text=alarm_duration_text)
         self.graph.draw_vert_span(x=pos)
         self.prev_alarm_pos = pos
         self.add_alarm_text()
