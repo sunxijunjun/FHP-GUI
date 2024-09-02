@@ -44,7 +44,7 @@ import pandas as pd
 import sys
 import time
 from tensorflow.keras.models import load_model
-from database_manager import ReportWriter
+from database_manager import ReportWriter, SessionInstance
 import re
 import math
 
@@ -79,6 +79,10 @@ class App(ThemedTk):
 
         # 初始化串口管理器
         self.serial_manager = SerialManager()
+
+        # 初始化 SessionInstance 和 ReportWriter
+        self.session = SessionInstance()
+        self.report_writer = ReportWriter(session=self.session)
 
         # 创建各个框架和UI元素
         self.sensor_values = dict()
@@ -192,6 +196,19 @@ class App(ThemedTk):
         report_window.title("Generate Report")
         report_window.geometry("350x600")  # 调整窗口大小
         ###.md文件的内容移动到这里　TODO
+        # 生成报告内容
+        report_content = self.report_writer.get_header() + self.report_writer.get_stats()
+
+        # 显示报告内容
+        report_label = tk.Label(report_window, text=report_content, justify=tk.LEFT)
+        report_label.pack(pady=10)
+
+        # 保存报告功能
+        def save_report():
+            self.report_writer.save_report()
+
+        save_button = tk.Button(report_window, text="Save Report", command=save_report)
+        save_button.pack(pady=10)
 
 
 
