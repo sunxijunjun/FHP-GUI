@@ -42,7 +42,7 @@ class ThreadManager:
         self.reading_thread = threading.Thread(target=self.connect, daemon=False)
         self.time_delay = 0.01  # Set to a shorter delay for faster reading
         self.alarm_num = 0
-        self.serial_manager = SerialManager(port=GetPortName())
+        self.serial_manager = self.app.serial_manager
         if self.serial_manager.ser is None:
             raise Exception("Failed to open serial port")
 

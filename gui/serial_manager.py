@@ -8,7 +8,7 @@ class SerialManager:
     _instance = None
     _lock = threading.Lock()
 
-    def __new__(cls, port='COM13', baudrate=115200, timeout=1):
+    def __new__(cls, port=None, baudrate=115200, timeout=1):
         cls._instance = super(SerialManager, cls).__new__(cls)
         try:
             cls._instance.ser = serial.Serial(port, baudrate, timeout=timeout)

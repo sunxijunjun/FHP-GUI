@@ -47,6 +47,7 @@ from tensorflow.keras.models import load_model
 from database_manager import ReportWriter, SessionInstance
 import re
 import math
+from port_detection import GetPortName
 
 class App(ThemedTk):
     def __init__(self, title: str, fullscreen=False, test=False):
@@ -78,7 +79,7 @@ class App(ThemedTk):
         # style.configure('TButton', background='#FFEBEE', foreground='#FF1744')
 
         # 初始化串口管理器
-        self.serial_manager = SerialManager()
+        self.serial_manager = SerialManager(port=GetPortName())
 
         # 初始化 SessionInstance 和 ReportWriter
         self.session = SessionInstance()
