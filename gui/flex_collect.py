@@ -164,6 +164,7 @@ class PostureDataCollection(tk.Tk):
                     "Right Eye Y", "Nose X", "Nose Y", "Mouth Left X", "Mouth Left Y", "Mouth Right X",
                     "Mouth Right Y", "FHP", "Posture"
                 ])
+                
             for row in data:
                 print(f"Writing row: {row}")  # Debug print
                 writer.writerow(row)
