@@ -15,7 +15,6 @@ import csv
 import os
 import datetime
 from performance_tester import PerformanceTester
-from port_detection import GetPortName
 
 
 class ThreadManager:
