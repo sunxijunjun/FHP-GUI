@@ -81,10 +81,6 @@ class App(ThemedTk):
         # 初始化串口管理器
         self.serial_manager = SerialManager(port=GetPortName())
 
-        # 初始化 SessionInstance 和 ReportWriter
-        self.session = SessionInstance()
-        self.report_writer = ReportWriter(session=self.session)
-
         # 创建各个框架和UI元素
         self.sensor_values = dict()
         self.sensor_time = list()
@@ -198,7 +194,7 @@ class App(ThemedTk):
         report_window.geometry("350x600")  # 调整窗口大小
         ###.md文件的内容移动到这里　TODO
         # 生成报告内容
-        report_content = self.report_writer.get_header() + self.report_writer.get_stats()
+        report_content = self.db_manager.report_writer.get_header() + self.db_manager.report_writer.get_stats()
 
         # 显示报告内容
         report_label = tk.Label(report_window, text=report_content, justify=tk.LEFT)
@@ -206,7 +202,7 @@ class App(ThemedTk):
 
         # 保存报告功能
         def save_report():
-            self.report_writer.save_report()
+            self.db_manager.report_writer.save_report()
 
         save_button = tk.Button(report_window, text="Save Report", command=save_report)
         save_button.pack(pady=10)
@@ -555,9 +551,10 @@ class App(ThemedTk):
         
         if self.last_sensor_time is not None:
             if self.last_alarm_time is None:
-                self.last_alarm_time = self.last_sensor_time
+                interval = 0
             else:
-                self.alarm_duration += self.last_sensor_time - self.last_alarm_time
+                interval = self.last_sensor_time - self.last_alarm_time # in milliseconds
+            self.alarm_duration += interval
             self.last_alarm_time = self.last_sensor_time
         alarm_duration_text = str(datetime.timedelta(seconds=math.ceil(int(self.alarm_duration) / 1000)))
         self.alarm_num_label.config(text=alarm_duration_text)
@@ -567,7 +564,8 @@ class App(ThemedTk):
         this_time = datetime.datetime.now().strftime(uc.Measurements.time_format.value)
         self.db_manager.session.alarm_times.append(this_time)
         # Show alarm notification
-        interval = self.data_analyst.get_time_interval(self.db_manager.session.alarm_times)
+        # interval = self.data_analyst.get_time_interval(self.db_manager.session.alarm_times)
+        interval /= 1000 # convert to seconds
         self.db_manager.session.update_total_alarm_time(interval)
         if not self.is_bad_posture_notification_required(interval):
             return None
