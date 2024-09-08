@@ -48,6 +48,8 @@ from database_manager import ReportWriter, SessionInstance
 import re
 import math
 from port_detection import GetPortName
+import markdown2
+from tkhtmlview import HTMLLabel
 
 class App(ThemedTk):
     def __init__(self, title: str, fullscreen=False, test=False):
@@ -196,9 +198,17 @@ class App(ThemedTk):
         # 生成报告内容
         report_content = self.db_manager.report_writer.get_header() + self.db_manager.report_writer.get_stats()
 
-        # 显示报告内容
-        report_label = tk.Label(report_window, text=report_content, justify=tk.LEFT)
-        report_label.pack(pady=10)
+        # Convert markdown to HTML
+        report_content = "\n".join(line.strip() for line in report_content.splitlines())
+        html_content = markdown2.markdown(report_content, extras=["tables", "fenced-code-blocks"])
+        print(html_content)
+
+        # Create an HTMLLabel widget
+        report_label = HTMLLabel(
+            report_window, 
+            html=html_content,
+        )
+        report_label.pack(pady=10, fill="both", expand=True)
 
         # 保存报告功能
         def save_report():
