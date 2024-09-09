@@ -30,6 +30,7 @@ class ElementNames(Enum):
     close_button_txt = "Close APP"
     save_data_button_txt = "Save All Data"
     start_20timer_button_txt = "20-20-20 reminder"
+    calibration_button_txt = "Calibration"
     sign_in_button_txt = "Sign in"
     sign_out_button_txt = "Sign out"
     register_button_txt = "Register"

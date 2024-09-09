@@ -1009,6 +1009,10 @@ class App(ThemedTk):
         timer_app = TimerApp(timer_root)
         timer_root.mainloop()
 
+    def calibration(self):
+        pass
+
+
     def pause(self):
         self.pause_comm()
         self.graph.pause()
