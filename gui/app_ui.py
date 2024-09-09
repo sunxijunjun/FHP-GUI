@@ -336,13 +336,28 @@ class App(ThemedTk):
         if error_notify_input:
             error_notify_input.grid(row=3, column=1, pady=5, padx=1, sticky="w")
 
+        # 编辑个人资料照片按钮
+        edit_profile_photo_button = ttk.Button(settings_popup, text="Edit Profile Photo", command=self.show_edit_photo_popup)
+        edit_profile_photo_button.grid(row=4, column=0, pady=5, padx=(10, 5), columnspan=2, sticky="n")
+
+        # 保存数据
+        save_all_data_button = ttk.Button(settings_popup, text="Save All Data", command=lambda: None)
+        save_all_data_button.grid(row=5, column=0, pady=5, padx=(10, 5), columnspan=2, sticky="n")
+
+        # 暂停监控
+        pause_monitor_button = ttk.Button(settings_popup, text="Pause Monitor for X min", command=lambda: None)
+        pause_monitor_button.grid(row=6, column=0, pady=5, padx=(10, 5), columnspan=2, sticky="n")
+        pause_monitor_input = self.check_boxes_frame.check_boxes[uc.CheckBoxesKeys.notification_bad_posture.value][2] #改成正确路径
+        if pause_monitor_input:
+            pause_monitor_input.grid(row=6, column=1, pady=5, padx=1, sticky="w")
+
         # 创建 Save 按钮
         save_button = ttk.Button(settings_popup, text="Save", command=lambda: None)
-        save_button.grid(row=4, column=0, pady=5, padx=(10, 5), sticky="n")
+        save_button.grid(row=7, column=0, pady=5, padx=(10, 5), sticky="n")
 
         # 创建 Close 按钮
         close_button = ttk.Button(settings_popup, text="Close", command=settings_popup.destroy)
-        close_button.grid(row=4, column=1, pady=5, padx=(5, 10), sticky="n")
+        close_button.grid(row=7, column=1, pady=5, padx=(5, 10), sticky="n")
 
         self.resume()
 
