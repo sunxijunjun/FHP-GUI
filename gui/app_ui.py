@@ -599,9 +599,9 @@ class App(ThemedTk):
         this_time = datetime.datetime.now().strftime(uc.Measurements.time_format.value)
         self.db_manager.session.alarm_times.append(this_time)
         # Show alarm notification
-        # interval = self.data_analyst.get_time_interval(self.db_manager.session.alarm_times)
         interval /= 1000 # convert to seconds
         self.db_manager.session.update_total_alarm_time(interval)
+        interval = self.data_analyst.get_time_interval(self.db_manager.session.alarm_times)
         if not self.is_bad_posture_notification_required(interval):
             return None
         self.notification_frame = NotificationIncorrectPosture(self.footer_frame,
