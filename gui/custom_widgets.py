@@ -184,7 +184,7 @@ class UserDetailsWindow(AbstractWindow):
         self.password_entry.insert(0, self.remember_password)
 
         # "Remember me" checkbox
-        self.remember_var = tk.BooleanVar()
+        self.remember_var = tk.BooleanVar(value=True)
         remember_check = ttk.Checkbutton(self, text="Remember me", variable=self.remember_var)
         remember_check.grid(row=2, columnspan=2, pady=5)
 
