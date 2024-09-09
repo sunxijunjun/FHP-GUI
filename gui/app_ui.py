@@ -304,6 +304,10 @@ class App(ThemedTk):
         settings_popup.geometry("300x300")
         settings_popup.attributes('-topmost', True)
 
+        enable_sound = tk.BooleanVar(value=self.check_boxes_frame.check_boxes[uc.CheckBoxesKeys.enable_sound.value][1].get())
+        enable_light = tk.BooleanVar(value=self.check_boxes_frame.check_boxes[uc.CheckBoxesKeys.enable_light.value][1].get())
+        notification_bad_posture = tk.BooleanVar(value=self.check_boxes_frame.check_boxes[uc.CheckBoxesKeys.notification_bad_posture.value][1].get())
+
         # 设置列和行的布局
         settings_popup.columnconfigure([0, 1, 2], weight=1, uniform="columns")  # Adjusting 3 columns
         settings_popup.rowconfigure([0, 1, 2, 3, 4, 5, 6, 7], weight=1)  # Adjusting row heights
@@ -313,8 +317,7 @@ class App(ThemedTk):
         sound_label.grid(row=0, column=0, pady=(20, 5), padx=1, sticky="w")
         # 直接使用原始的 enable_sound_var
         sound_check = ttk.Checkbutton(settings_popup,
-                                      variable=self.check_boxes_frame.check_boxes[uc.CheckBoxesKeys.enable_sound.value][
-                                          1],
+                                      variable=enable_sound,
                                       command=lambda: self.toggle_feature("sound"))
         sound_check.grid(row=0, column=1, pady=5, padx=1, sticky="w")
 
@@ -323,8 +326,7 @@ class App(ThemedTk):
         light_label.grid(row=2, column=0, pady=(20, 5), padx=1, sticky="w")
         # 直接使用原始的 enable_light_var
         light_check = ttk.Checkbutton(settings_popup,
-                                      variable=self.check_boxes_frame.check_boxes[uc.CheckBoxesKeys.enable_light.value][
-                                          1],
+                                      variable=enable_light,
                                       command=lambda: self.toggle_feature("light"))
         light_check.grid(row=2, column=1, pady=5, padx=1, sticky="w")
 
@@ -334,15 +336,13 @@ class App(ThemedTk):
 
         # Check button for 'Notify Bad Posture After' setting
         error_notify_check = ttk.Checkbutton(settings_popup,
-                                             variable=self.check_boxes_frame.check_boxes[
-                                                 uc.CheckBoxesKeys.notification_bad_posture.value][1])
+                                             variable=notification_bad_posture)
         error_notify_check.grid(row=3, column=1, pady=5, padx=1, sticky="w")
 
         # Input box (entry field) for 'Notify Bad Posture After' time window
-
-
-
-
+        notify_time_entry = ttk.Entry(settings_popup)
+        notify_time_entry.grid(row=3, column=2, padx=5)
+        notify_time_entry.config(width=5)
 
         # 编辑个人资料照片按钮
         edit_profile_photo_button = ttk.Button(settings_popup, text="Edit Profile Photo", command=self.show_edit_photo_popup)
@@ -362,7 +362,13 @@ class App(ThemedTk):
             pause_monitor_input.grid(row=6, column=1, pady=5, padx=1, sticky="w")
 
         # 创建 Save 按钮
-        save_button = ttk.Button(settings_popup, text="Save", command=lambda: None)
+        def save_settings():
+            self.check_boxes_frame.check_boxes[uc.CheckBoxesKeys.enable_sound.value][1].set(enable_sound.get())
+            self.check_boxes_frame.check_boxes[uc.CheckBoxesKeys.enable_light.value][1].set(enable_light.get())
+            self.check_boxes_frame.check_boxes[uc.CheckBoxesKeys.notification_bad_posture.value] = (error_notify_check, notification_bad_posture, notify_time_entry)
+            settings_popup.destroy()
+       
+        save_button = ttk.Button(settings_popup, text="Save", command=save_settings)
         save_button.grid(row=7, column=0, pady=5, padx=(10, 5), sticky="n")
 
         # 创建 Close 按钮
