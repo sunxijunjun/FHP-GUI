@@ -302,10 +302,11 @@ class App(ThemedTk):
         settings_popup = tk.Toplevel(self)
         settings_popup.title("Settings")
         settings_popup.geometry("300x300")
+        settings_popup.attributes('-topmost', True)
 
-        # 设置布局
-        settings_popup.columnconfigure(0, weight=1)
-        settings_popup.rowconfigure([0, 1, 2, 3, 4], weight=1)  # 小窗口行数
+        # 设置列和行的布局
+        settings_popup.columnconfigure([0, 1, 2], weight=1, uniform="columns")  # Adjusting 3 columns
+        settings_popup.rowconfigure([0, 1, 2, 3, 4, 5, 6, 7], weight=1)  # Adjusting row heights
 
         # 声音控制
         sound_label = ttk.Label(settings_popup, text="Enable Sound")
@@ -327,27 +328,36 @@ class App(ThemedTk):
                                       command=lambda: self.toggle_feature("light"))
         light_check.grid(row=2, column=1, pady=5, padx=1, sticky="w")
 
-
         # 错误通知控制
         error_notify_label = ttk.Label(settings_popup, text="Notify Bad Posture After")
-        error_notify_label.grid(row=3, column=0, pady=(20, 5), padx=1, sticky="w")
+        error_notify_label.grid(row=3, column=0, pady=5, padx=1, sticky="w")
 
-        error_notify_input = self.check_boxes_frame.check_boxes[uc.CheckBoxesKeys.notification_bad_posture.value][2]
-        if error_notify_input:
-            error_notify_input.grid(row=3, column=1, pady=5, padx=1, sticky="w")
+        # Check button for 'Notify Bad Posture After' setting
+        error_notify_check = ttk.Checkbutton(settings_popup,
+                                             variable=self.check_boxes_frame.check_boxes[
+                                                 uc.CheckBoxesKeys.notification_bad_posture.value][1])
+        error_notify_check.grid(row=3, column=1, pady=5, padx=1, sticky="w")
+
+        # Input box (entry field) for 'Notify Bad Posture After' time window
+
+
+
+
 
         # 编辑个人资料照片按钮
         edit_profile_photo_button = ttk.Button(settings_popup, text="Edit Profile Photo", command=self.show_edit_photo_popup)
         edit_profile_photo_button.grid(row=4, column=0, pady=5, padx=(10, 5), columnspan=2, sticky="n")
 
-        # 保存数据
-        save_all_data_button = ttk.Button(settings_popup, text="Save All Data", command=lambda: None)
+        # 保存监控数据
+        save_all_data_button = ttk.Button(settings_popup, text="Save All Data", command=self.save_all_log)
         save_all_data_button.grid(row=5, column=0, pady=5, padx=(10, 5), columnspan=2, sticky="n")
 
-        # 暂停监控
-        pause_monitor_button = ttk.Button(settings_popup, text="Pause Monitor for X min", command=lambda: None)
+        # 暂停监控按钮
+        pause_monitor_button = ttk.Button(settings_popup, text="Pause Monitor for X min", command=self.pause_for)
         pause_monitor_button.grid(row=6, column=0, pady=5, padx=(10, 5), columnspan=2, sticky="n")
-        pause_monitor_input = self.check_boxes_frame.check_boxes[uc.CheckBoxesKeys.notification_bad_posture.value][2] #改成正确路径
+
+        # 暂停监控的输入框来自 time_interval_frame
+        pause_monitor_input = self.time_interval_frame
         if pause_monitor_input:
             pause_monitor_input.grid(row=6, column=1, pady=5, padx=1, sticky="w")
 
