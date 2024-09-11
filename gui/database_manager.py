@@ -9,6 +9,12 @@ from pathlib import Path
 import re
 from data_analyst import DataAnalyst
 import random
+import matplotlib.pyplot as plt
+from pathlib import Path
+import os
+import re
+from tkinter import filedialog
+from typing import Union
 
 
 class UserDetails:
@@ -204,6 +210,13 @@ class SessionInstance:
         return converted_times
 
 
+import matplotlib.pyplot as plt
+from pathlib import Path
+import os
+import re
+from tkinter import filedialog
+from typing import Union
+
 class ReportWriter:
     path: Union[None, Path]
     session: SessionInstance
@@ -211,22 +224,65 @@ class ReportWriter:
     def __init__(self, session: SessionInstance):
         self.session = session
         self.path = None
+        # 创建 report pie plot 文件夹
+        self.pie_chart_dir = Path('report pie plot')
+        self.pie_chart_dir.mkdir(exist_ok=True)
 
     def get_stats(self) -> str:
+        # 获取数据
+        elapsed_time_str = self.session.get_session_elapsed_time()  # 假设返回的是 'HH:MM:SS' 格式的字符串
+        alarm_total_time_str = self.session.get_total_alarm_time()  #TODO 传递正确的警报时间
+
+        # 将 'HH:MM:SS' 格式转换为秒数
+        elapsed_time = self.convert_time_to_seconds(elapsed_time_str)
+        alarm_total_time = self.convert_time_to_seconds(alarm_total_time_str)
+
+        # 计算非警报时间
+        non_alarm_time = elapsed_time - alarm_total_time
+
+        # 生成饼图数据
+        labels = ['Alarm Duration', 'Monitoring Duration']
+        sizes = [alarm_total_time, non_alarm_time]
+        colors = ['#ff9999', '#66b3ff']
+
+        # 生成饼图
+        plt.figure(figsize=(5, 5))
+        plt.pie(sizes, labels=labels, colors=colors, autopct='%1.1f%%', startangle=140)
+        plt.axis('equal')
+        plt.title("Alarm Time vs Elapsed Time")
+
+        # 保存饼图为图片文件
+        pie_chart_path = self.pie_chart_dir / 'pie_chart.png'
+        plt.savefig(pie_chart_path)
+        plt.close()
+
+        # 生成统计文本
         content = f"""## User Details:\n
         | Name | {self.session.user_details.get_full_name()} |
         | --- | --- |
-        | Alarm Total Time | {self.session.get_total_alarm_time()} |
+        | Alarm Total Time | {alarm_total_time} seconds |
         | Number of Alarms | {self.session.get_total_alarm_num()} |
-        | Elapsed Time | {self.session.get_session_elapsed_time()} |\n
-        User photo:\n
-        ![User Photo]({self.session.user_details.photo_path})\n
+        | Elapsed Time | {elapsed_time} seconds |\n
         """
+
+        # 将饼图加入内容
+        content += f"![Pie Chart]({pie_chart_path})\n"
+
         return content
+
+    def convert_time_to_seconds(self, time_str: str) -> float:
+        """将 'HH:MM:SS' 格式的时间字符串转换为秒数"""
+        print(f"Converting time: {time_str}")  # 调试信息
+        try:
+            h, m, s = map(int, time_str.split(':'))
+            return h * 3600 + m * 60 + s
+        except ValueError:
+            print(f"Invalid time format: {time_str}")
+            return 0.0  # 如果格式不正确，返回0或其他默认值
 
     def get_header(self) -> str:
         content = f"""# User Report\n
-        The report represents the basics information over the usage of the app\n
+        The report represents the basic information over the usage of the app\n
         ## Sensor Readings:\n
         ![Sensor Values]({self.session.get_graph_save_path()})\n
         """
@@ -249,6 +305,7 @@ class ReportWriter:
         new_path = filedialog.asksaveasfilename(filetypes=[("Text Files", ["*.txt", "*.md"])])
         self.path = Path(new_path)
         return self.path
+
 
 
 class DatabaseManager:

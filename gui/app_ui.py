@@ -358,7 +358,7 @@ class App(ThemedTk):
 
         #颜色控制
         choose_color_button = ttk.Button(settings_popup, text="Choose Theme Color", command=self.show_color_chooser)
-        choose_color_button.grid(row=7, column=1, pady=5, padx=(10, 5), columnspan=2, sticky="n")
+        choose_color_button.grid(row=7, column=0, pady=5, padx=(10, 5), columnspan=2, sticky="n")
 
         # 创建 Save 按钮
         def save_settings():
