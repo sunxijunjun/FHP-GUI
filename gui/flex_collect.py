@@ -16,7 +16,7 @@ class PostureDataCollection(tk.Tk):
         super().__init__()
         self.title("Dynamic Data Collection")
         #self.attributes("-fullscreen", True)
-        self.geometry("400x300")
+        self.geometry("580x300")
 
         # 判断操作系统并选择对应的串行端口
         if platform.system() == "Linux":
@@ -32,12 +32,12 @@ class PostureDataCollection(tk.Tk):
 
     def init_ui(self):
         instruction = (
-            "65 Remain in a round shoulder with poking chin posture for 30 seconds\n"
-            "65 Remain in a straight shoulder with neck extension for 30 seconds\n"
-            "70 Remain in a round shoulder with poking chin posture for 30 seconds\n"
-            "70 Remain in a straight shoulder with neck extension for 30 seconds\n"
-            "80 Remain in a round shoulder with poking chin posture for 30 seconds\n"
-            "80 Remain in a straight shoulder with neck extension for 30 seconds\n"
+            "65 Remain in a \tround shoulder\t with \tpoking chin posture\t for 30 seconds\n"
+            "65 Remain in a \tstraight shoulder\t with \tneck extension\t\t for 30 seconds\n"
+            "70 Remain in a \tround shoulder\t with \tpoking chin posture\t for 30 seconds\n"
+            "70 Remain in a \tstraight shoulder\t with \tneck extension\t\t for 30 seconds\n"
+            "80 Remain in a \tround shoulder\t with \tpoking chin posture\t for 30 seconds\n"
+            "80 Remain in a \tstraight shoulder\t with \tneck extension\t\t for 30 seconds\n"
         )
         self.instruction_text = tk.Label(self, text=instruction)
         self.instruction_text.pack(pady=15)
