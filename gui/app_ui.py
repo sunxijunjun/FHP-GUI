@@ -154,11 +154,6 @@ class App(ThemedTk):
         self.create_control_frame()
 
         # 初始化自定义框架和其他组件
-        self.time_interval_frame = TimeIntervalSelectorFrame(self.control_frame,
-                                                             row=0,
-                                                             col=1,
-                                                             txt="Pause For (MM:SS):",
-                                                             func=self.pause_for)
         self.check_boxes_frame = CheckBoxesFrame(self.control_frame,
                                                  row=1,
                                                  col=1)
@@ -349,6 +344,7 @@ class App(ThemedTk):
         notify_time_entry = ttk.Entry(settings_popup)
         notify_time_entry.grid(row=3, column=2, padx=5)
         notify_time_entry.config(width=5)
+        notify_time_entry.insert(0, self.check_boxes_frame.check_boxes[uc.CheckBoxesKeys.notification_bad_posture.value][2].get())
 
         # 编辑个人资料照片按钮
         edit_profile_photo_button = ttk.Button(settings_popup, text="Edit Profile Photo", command=self.show_edit_photo_popup)
@@ -358,14 +354,7 @@ class App(ThemedTk):
         save_all_data_button = ttk.Button(settings_popup, text="Save All Data", command=self.save_all_log)
         save_all_data_button.grid(row=5, column=0, pady=5, padx=(10, 5), columnspan=2, sticky="n")
 
-        # 暂停监控按钮
-        pause_monitor_button = ttk.Button(settings_popup, text="Pause Monitor for X min", command=self.pause_for)
-        pause_monitor_button.grid(row=6, column=0, pady=5, padx=(10, 5), columnspan=2, sticky="n")
-
-        # 暂停监控的输入框来自 time_interval_frame
-        pause_monitor_input = self.time_interval_frame
-        if pause_monitor_input:
-            pause_monitor_input.grid(row=6, column=1, pady=5, padx=1, sticky="w")
+        self.time_interval_frame = TimeIntervalSelectorFrame(settings_popup, row=6, col=0, txt="Pause For (MM:SS):", func=self.pause_for)
 
         #颜色控制
         choose_color_button = ttk.Button(settings_popup, text="Choose Theme Color", command=self.show_color_chooser)
@@ -375,7 +364,13 @@ class App(ThemedTk):
         def save_settings():
             self.check_boxes_frame.check_boxes[uc.CheckBoxesKeys.enable_sound.value][1].set(enable_sound.get())
             self.check_boxes_frame.check_boxes[uc.CheckBoxesKeys.enable_light.value][1].set(enable_light.get())
-            self.check_boxes_frame.check_boxes[uc.CheckBoxesKeys.notification_bad_posture.value] = (error_notify_check, notification_bad_posture, notify_time_entry)
+            # Retrieve the current tuple for 'Notify Bad Posture After' setting
+            current_tuple = self.check_boxes_frame.check_boxes[uc.CheckBoxesKeys.notification_bad_posture.value]
+            current_tuple[2].delete(0, tk.END)
+            current_tuple[2].insert(0, notify_time_entry.get())
+            self.check_boxes_frame.check_boxes[uc.CheckBoxesKeys.notification_bad_posture.value] = \
+                (current_tuple[0], notification_bad_posture, current_tuple[2])
+            
             settings_popup.destroy()
        
         save_button = ttk.Button(settings_popup, text="Save", command=save_settings)
@@ -737,8 +732,9 @@ class App(ThemedTk):
         self.alarm_texts.append(alarm_text)
 
     def create_control_frame(self) -> None:
-        frame = ttk.Frame(self.body_frame)
+        frame = ttk.Frame(self.body_frame, width=250, height=200)
         frame.grid(row=self.body_row, column=2, padx=10, pady=5)
+        frame.grid_propagate(False)  # Disable grid propagation to keep the buttons in place
         self.control_frame = frame  # save the frame
 
     def create_graph(self) -> Graph:

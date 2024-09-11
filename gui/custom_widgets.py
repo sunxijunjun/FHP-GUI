@@ -424,22 +424,24 @@ class TimeIntervalSelectorFrame(ttk.Frame):
 
     def __init__(self, parent, row: int, col: int, txt: str, func: Callable):
         super().__init__(parent)
+        self.parent = parent
+        self.row = row
+        self.col = col
         self.time_format = "MM:SS"  # minutes:seconds, which acts as placeholder
         self.interval_field = ttk.Entry()
         self.add_button(txt, func)
         self.add_timer_selection_field()
-        self.grid(row=row, column=col, padx=self.pad_x, pady=self.pad_y)
 
     def add_button(self, text: str, func: Callable) -> None:
-        button = ttk.Button(self, text=text, command=func)
-        button.pack(side=tk.TOP, padx=10)
+        button = ttk.Button(self.parent, text=text, command=func)
+        button.grid(row=self.row, column=self.col, pady=5, padx=(10, 5), columnspan=2, sticky="n")
 
     def add_timer_selection_field(self) -> None:
-        field = ttk.Entry(self)
+        field = ttk.Entry(self.parent)
         # set placeholder
         field.insert(0, self.time_format)
         field.bind(sequence="<FocusIn>", func=self.remove_placeholder)
-        field.pack(side=tk.TOP, padx=10, pady=5)
+        field.grid(row=self.row, column=self.col + 2, pady=5, padx=(10, 5), sticky="n")
         self.interval_field = field
 
     def remove_placeholder(self, event=None) -> None:
@@ -484,6 +486,7 @@ class CheckBoxesFrame(ttk.Frame):
         self.add_check_box(text="Enable Sound",
                            access_key=ui_config.CheckBoxesKeys.enable_sound.value)
         self.add_check_box("Enable Light", access_key=ui_config.CheckBoxesKeys.enable_light.value)
+        self.grid_remove()
 
     def add_check_box(self, text: str, access_key: str, add_input=False) -> None:
         var = tk.BooleanVar(value=False)
