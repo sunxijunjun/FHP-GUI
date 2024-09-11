@@ -39,6 +39,7 @@ from dynamic_labelling import flex_median_g
 from log_integration import save_integrated_csv
 from logger import Logger
 from reminder22 import TimerApp
+from flex_collect import PostureDataCollection
 from performance_tester import PerformanceTester
 import numpy as np
 import os
@@ -52,6 +53,7 @@ import math
 from port_detection import GetPortName
 import markdown2
 from tkhtmlview import HTMLLabel
+
 
 class App(ThemedTk):
     def __init__(self, title: str, fullscreen=False, test=False):
@@ -1041,6 +1043,7 @@ class App(ThemedTk):
         timer_root.mainloop()
 
     def calibration(self):
+        PostureDataCollection()
         pass
 
 
