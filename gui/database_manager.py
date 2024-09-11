@@ -231,10 +231,11 @@ class ReportWriter:
     def get_stats(self) -> str:
         # 获取数据
         elapsed_time_str = self.session.get_session_elapsed_time()  # 假设返回的是 'HH:MM:SS' 格式的字符串
+        alarm_total_time_str = self.session.get_total_alarm_time()  #TODO 传递正确的警报时间
 
         # 将 'HH:MM:SS' 格式转换为秒数
         elapsed_time = self.convert_time_to_seconds(elapsed_time_str)
-        alarm_total_time = self.session.total_alarm_time
+        alarm_total_time = self.convert_time_to_seconds(alarm_total_time_str)
 
         # 计算非警报时间
         non_alarm_time = elapsed_time - alarm_total_time

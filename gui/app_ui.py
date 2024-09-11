@@ -7,7 +7,7 @@ from sound_controller import SoundControllerApp
 from light_controller import LightControllerApp
 from serial_manager import SerialManager
 import tkinter as tk
-from tkinter import ttk, messagebox
+from tkinter import ttk
 import ttkbootstrap as ttkbt
 from ttkbootstrap import Style
 from ttkbootstrap.constants import *
@@ -130,7 +130,7 @@ class App(ThemedTk):
         self.alarm_num_label = None
         self.alarm_text_label = None
         self.notification_frame = None
-        self.error_notify_messagebox = None
+        self.error_notify_frame = None
         self.log_notification_frame = None
 
         self.graph_scroll_bar = None
@@ -557,10 +557,15 @@ class App(ThemedTk):
             self.val_replacing_num = 0  # reset
             self.remove_error_notification()
         self.logger.update_notes(timestamp=self.logger.last_timestamp, notes=notes)
-        if not self.error_notify_messagebox \
+        if not self.error_notify_frame \
                 and not is_valid \
                 and self.val_replacing_num >= uc.Measurements.val_replacing_limit.value:
-            self.error_notify_messagebox = messagebox.showerror("Error", "Sensor cannot detect distance to participant!\nPlease adjust the posture or sensor!")
+            self.error_notify_frame = ErrorNotification(self.footer_frame,
+                                                        error_message="Sensor cannot detect distance to participant!\n"
+                                                                      "Please adjust the posture or sensor!")
+            self.error_notify_frame.show(x=uc.Positions.vals_validation.value[0],
+                                         y=uc.Positions.vals_validation.value[1],
+                                         callback=None)  # keep the notification
         return sens_2, sens_4
 
     def update_sensor_values(self, sens_2: int, sens_4: int, timestamp: int, local_time: str) -> None:
@@ -716,9 +721,10 @@ class App(ThemedTk):
         self.notification_frame = None
 
     def remove_error_notification(self) -> None:
-        if not self.error_notify_messagebox:
+        if not self.error_notify_frame:
             return None
-        self.error_notify_messagebox = None
+        self.error_notify_frame.destroy()
+        self.error_notify_frame = None
 
     def add_alarm_text(self) -> None:
         current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
