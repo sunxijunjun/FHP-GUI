@@ -511,7 +511,7 @@ class CheckBoxesFrame(ttk.Frame):
     def get_input_value(self, access_key: str) -> str:
         input_field = self.check_boxes[access_key][2]
         value = ""
-        if input_field:
+        if input_field and input_field.winfo_exists():  # 检查输入框是否仍然存在
             value = input_field.get()
         if value == "":
             return "0.0"

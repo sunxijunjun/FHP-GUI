@@ -1,4 +1,6 @@
 import random
+import tkinter as tk
+from tkinter import ttk, colorchooser  # 导入 colorchooser
 
 import serial
 from sound_controller import SoundControllerApp
@@ -56,6 +58,10 @@ class App(ThemedTk):
         super().__init__()
         self.theme = uc.main_theme
         self.set_theme(theme_name="adapta")
+
+        # 在 set_theme 之后，重新配置样式
+        self.apply_custom_style()
+
         self.configure(background=uc.FrameColors.body.value)
         self.is_test_mode = test
         self.p_tester = PerformanceTester(critical_file=True)
@@ -361,6 +367,10 @@ class App(ThemedTk):
         if pause_monitor_input:
             pause_monitor_input.grid(row=6, column=1, pady=5, padx=1, sticky="w")
 
+        #颜色控制
+        choose_color_button = ttk.Button(settings_popup, text="Choose Theme Color", command=self.show_color_chooser)
+        choose_color_button.grid(row=7, column=1, pady=5, padx=(10, 5), columnspan=2, sticky="n")
+
         # 创建 Save 按钮
         def save_settings():
             self.check_boxes_frame.check_boxes[uc.CheckBoxesKeys.enable_sound.value][1].set(enable_sound.get())
@@ -369,13 +379,32 @@ class App(ThemedTk):
             settings_popup.destroy()
        
         save_button = ttk.Button(settings_popup, text="Save", command=save_settings)
-        save_button.grid(row=7, column=0, pady=5, padx=(10, 5), sticky="n")
+        save_button.grid(row=10, column=0, pady=5, padx=(10, 5), sticky="n")
 
         # 创建 Close 按钮
         close_button = ttk.Button(settings_popup, text="Close", command=settings_popup.destroy)
-        close_button.grid(row=7, column=1, pady=5, padx=(5, 10), sticky="n")
+        close_button.grid(row=10, column=1, pady=5, padx=(5, 10), sticky="n")
 
         self.resume()
+
+    def apply_custom_style(self):
+        style = ttkbt.Style('flatly')
+        style.configure('TFrame', background='#E8F4F8')
+        style.configure('TLabel', background='#E8F4F8', foreground='#2ECC71')
+        style.configure('TButton', background='#D1F2EB', foreground='#2ECC71')
+    def show_color_chooser(self):
+        color_code = colorchooser.askcolor(title="Choose color")[1]  # 直接使用 colorchooser
+        if color_code:
+            self.apply_theme_color(color_code)
+
+    def apply_theme_color(self, color_code):
+        # 使用 ttk.Style 来改变背景颜色，而不是使用 configure(bg=...)
+        style = ttk.Style()
+        style.configure("TFrame", background=color_code)  # 设置所有 Frame 的背景颜色
+        style.configure("TLabel", background=color_code)  # 设置所有 Label 的背景颜色
+
+        # 手动设置其它需要改变的组件
+        self.check_boxes_frame.configure(style="TFrame")
 
     def toggle_feature(self, feature_type):
         if feature_type == "sound":
