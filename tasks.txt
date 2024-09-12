@@ -13,3 +13,5 @@
 12. Code Refactoring
 
 13. Add reports generating fuction, including: user used the device for (duration), alarm generated during (local time), etc. So that user can understand their postural behavior.
+14. (by qg)change file path of icon, sound to /data/img/
+15. merge rememberme_useraccount into /data/users/logins.csv
