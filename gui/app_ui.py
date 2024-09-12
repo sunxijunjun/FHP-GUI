@@ -35,7 +35,7 @@ from custom_widgets import (Clock,
                             # XRangeSelectorFrame,
                             FeedbackCollector,
                             Graph)
-from dynamic_labelling import flex_median_g
+import dynamic_labelling
 from log_integration import save_integrated_csv
 from logger import Logger
 from reminder22 import TimerApp
@@ -1038,6 +1038,12 @@ class App(ThemedTk):
 
     def calibration(self):
         PostureDataCollection()
+        # 确保 dynamic_labelling.py 中的代码已经运行
+        dynamic_labelling.use_flex_median()
+
+        # 访问 flex_median_g 变量
+        flex_median_g = dynamic_labelling.flex_median_g
+        print(f"flex_median_g = {flex_median_g}")
         pass
 
 
