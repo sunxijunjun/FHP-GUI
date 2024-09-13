@@ -36,6 +36,7 @@ from custom_widgets import (Clock,
                             FeedbackCollector,
                             Graph)
 import dynamic_labelling
+from dynamic_labelling import flex_median_g
 from log_integration import save_integrated_csv
 from logger import Logger
 from reminder22 import TimerApp
