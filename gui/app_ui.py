@@ -54,6 +54,7 @@ import math
 from port_detection import GetPortName
 import markdown2
 from tkhtmlview import HTMLLabel
+from sound_player import play_sound_in_thread
 
 
 class App(ThemedTk):
@@ -561,6 +562,7 @@ class App(ThemedTk):
         if not self.error_notify_messagebox \
                 and not is_valid \
                 and self.val_replacing_num >= uc.Measurements.val_replacing_limit.value:
+            play_sound_in_thread()
             self.error_notify_messagebox = messagebox.showerror("Error", "Sensor cannot detect distance to participant!\nPlease adjust the posture or sensor!")
         return sens_2, sens_4
 
