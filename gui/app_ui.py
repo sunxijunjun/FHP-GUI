@@ -654,6 +654,8 @@ class App(ThemedTk):
                                      timestamp=self.logger.last_timestamp,
                                      local_time=self.logger.get_last_local_time(),
                                      x_position=pos)
+        self.sound_controller.send_command(self.sound_controller.get_sound_command())
+        self.light_controller.send_command(self.light_controller.get_light_command())
 
     def update_model_thresholds(self, response: bool) -> None:
         if response is True:
