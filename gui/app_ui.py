@@ -35,6 +35,7 @@ from custom_widgets import (Clock,
                             # XRangeSelectorFrame,
                             FeedbackCollector,
                             Graph)
+import dynamic_labelling
 from dynamic_labelling import flex_median_g
 from log_integration import save_integrated_csv
 from logger import Logger
@@ -53,6 +54,7 @@ import math
 from port_detection import GetPortName
 import markdown2
 from tkhtmlview import HTMLLabel
+from sound_player import play_sound_in_thread
 
 
 class App(ThemedTk):
@@ -560,6 +562,7 @@ class App(ThemedTk):
         if not self.error_notify_messagebox \
                 and not is_valid \
                 and self.val_replacing_num >= uc.Measurements.val_replacing_limit.value:
+            play_sound_in_thread()
             self.error_notify_messagebox = messagebox.showerror("Error", "Sensor cannot detect distance to participant!\nPlease adjust the posture or sensor!")
         return sens_2, sens_4
 
@@ -651,6 +654,8 @@ class App(ThemedTk):
                                      timestamp=self.logger.last_timestamp,
                                      local_time=self.logger.get_last_local_time(),
                                      x_position=pos)
+        self.sound_controller.send_command(self.sound_controller.get_sound_command())
+        self.light_controller.send_command(self.light_controller.get_light_command())
 
     def update_model_thresholds(self, response: bool) -> None:
         if response is True:
@@ -1038,6 +1043,12 @@ class App(ThemedTk):
 
     def calibration(self):
         PostureDataCollection()
+        # 确保 dynamic_labelling.py 中的代码已经运行
+        dynamic_labelling.use_flex_median()
+
+        # 访问 flex_median_g 变量
+        flex_median_g = dynamic_labelling.flex_median_g
+        print(f"flex_median_g = {flex_median_g}")
         pass
 
 
