@@ -697,14 +697,14 @@ class ErrorNotification(NotificationBar):
 #         self.update_graph_callback(new_range)
 #
 
-class FeedbackCollector(ttk.LabelFrame):
-    title = "Feedback"
+class FeedbackCollector(ttk.Toplevel):
+    title_text = "Feedback"
     content = "Please indicate if the alarm generated at:\n %local_time!\nX-axis: %position"
     confirmation_content = "Thank you for your response!"
     buttons_num = 0
     logger: Logger
     callback: Callable  # call function upon timer is over
-    response_callback: Callable  # call function when any repsonse has been received
+    response_callback: Callable  # call function when any response has been received
     content_field: tk.Text
     timestamp: str
     content_row = 0
@@ -712,7 +712,8 @@ class FeedbackCollector(ttk.LabelFrame):
     buttons_frame: ttk.Frame
 
     def __init__(self, parent, logger: Logger, closing_callback: Callable, response_callback: Callable):
-        super().__init__(parent, text=self.title)
+        super().__init__(parent)
+        self.title(self.title_text)
         self.logger = logger
         self.callback = closing_callback
         self.response_callback = response_callback
@@ -736,7 +737,7 @@ class FeedbackCollector(ttk.LabelFrame):
         y = max(0, min(y, screen_height - self.winfo_height()))
 
         # Position the notification
-        self.place(x=x, y=y)
+        self.geometry(f"+{x}+{y}")
 
     def add_content_field(self) -> tk.Text:
         text_field = tk.Text(self, height=5, width=45)
@@ -770,7 +771,6 @@ class FeedbackCollector(ttk.LabelFrame):
     def update_content(self, new_text: str):
         self.content_field.delete(1.0, tk.END)
         self.content_field.insert(tk.END, new_text)
-
 
 class Graph:
     frame: ttk.Frame
