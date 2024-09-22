@@ -391,6 +391,8 @@ class App(ThemedTk):
         style.configure('TFrame', background='#E8F4F8')
         style.configure('TLabel', background='#E8F4F8', foreground='#2ECC71')
         style.configure('TButton', background='#D1F2EB', foreground='#2ECC71')
+        #style.configure('TFrame', background='#E8F4F8', foreground='#2ECC71')
+
     def show_color_chooser(self):
         color_code = colorchooser.askcolor(title="Choose color")[1]  # 直接使用 colorchooser
         if color_code:
