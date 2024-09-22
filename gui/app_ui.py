@@ -997,8 +997,8 @@ class App(ThemedTk):
         sign_in_button: ttk.Button = self.control_buttons[uc.ElementNames.sign_in_button_txt.value]
         sign_in_button.configure(text=uc.ElementNames.sign_out_button_txt.value, command=self.sign_out)
         # Add button
-        edit_button_txt = uc.ElementNames.edit_photo_button_txt.value
-        self.add_menu_button(text=edit_button_txt, func=self.show_edit_photo_popup)
+        # edit_button_txt = uc.ElementNames.edit_photo_button_txt.value
+        # self.add_menu_button(text=edit_button_txt, func=self.show_edit_photo_popup)
         self.add_user_name_label(name=self.db_manager.session.user_details.get_full_name(),
                                  row=self.footer_row,
                                  col=0,
