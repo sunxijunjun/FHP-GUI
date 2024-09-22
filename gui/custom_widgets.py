@@ -697,7 +697,7 @@ class ErrorNotification(NotificationBar):
 #         self.update_graph_callback(new_range)
 #
 
-class FeedbackCollector(ttk.Toplevel):
+class FeedbackCollector(tk.Toplevel):
     title_text = "Feedback"
     content = "Please indicate if the alarm generated at:\n %local_time!\nX-axis: %position"
     confirmation_content = "Thank you for your response!"
