@@ -125,6 +125,8 @@ class App(ThemedTk):
         self.db_manager = DatabaseManager()
         self.logger = Logger(session_id=self.db_manager.session.id, test=test)
         self.data_analyst = DataAnalyst()
+        self.settings_popup = None
+        self.countdown_time = 0
 
         self.info_panel = ttk.Frame(self.body_frame)
         self.info_panel.grid(row=self.body_row, column=0, padx=10, pady=5)
@@ -304,64 +306,64 @@ class App(ThemedTk):
     # 显示设置窗口的方法
     def show_settings_window(self):
         self.pause()
-        settings_popup = tk.Toplevel(self)
-        settings_popup.title("Settings")
-        settings_popup.geometry("300x300")
-        settings_popup.attributes('-topmost', True)
+        self.settings_popup = tk.Toplevel(self)
+        self.settings_popup.title("Settings")
+        self.settings_popup.geometry("300x300")
+        self.settings_popup.attributes('-topmost', True)
 
         enable_sound = tk.BooleanVar(value=self.check_boxes_frame.check_boxes[uc.CheckBoxesKeys.enable_sound.value][1].get())
         enable_light = tk.BooleanVar(value=self.check_boxes_frame.check_boxes[uc.CheckBoxesKeys.enable_light.value][1].get())
         notification_bad_posture = tk.BooleanVar(value=self.check_boxes_frame.check_boxes[uc.CheckBoxesKeys.notification_bad_posture.value][1].get())
 
         # 设置列和行的布局
-        settings_popup.columnconfigure([0, 1, 2], weight=1, uniform="columns")  # Adjusting 3 columns
-        settings_popup.rowconfigure([0, 1, 2, 3, 4, 5, 6, 7], weight=1)  # Adjusting row heights
+        self.settings_popup.columnconfigure([0, 1, 2], weight=1, uniform="columns")  # Adjusting 3 columns
+        self.settings_popup.rowconfigure([0, 1, 2, 3, 4, 5, 6, 7], weight=1)  # Adjusting row heights
 
         # 声音控制
-        sound_label = ttk.Label(settings_popup, text="Enable Sound")
+        sound_label = ttk.Label(self.settings_popup, text="Enable Sound")
         sound_label.grid(row=0, column=0, pady=(20, 5), padx=1, sticky="w")
         # 直接使用原始的 enable_sound_var
-        sound_check = ttk.Checkbutton(settings_popup,
+        sound_check = ttk.Checkbutton(self.settings_popup,
                                       variable=enable_sound,
                                       command=lambda: self.toggle_feature("sound"))
         sound_check.grid(row=0, column=1, pady=5, padx=1, sticky="w")
 
         # 灯光控制
-        light_label = ttk.Label(settings_popup, text="Enable Light")
+        light_label = ttk.Label(self.settings_popup, text="Enable Light")
         light_label.grid(row=2, column=0, pady=(20, 5), padx=1, sticky="w")
         # 直接使用原始的 enable_light_var
-        light_check = ttk.Checkbutton(settings_popup,
+        light_check = ttk.Checkbutton(self.settings_popup,
                                       variable=enable_light,
                                       command=lambda: self.toggle_feature("light"))
         light_check.grid(row=2, column=1, pady=5, padx=1, sticky="w")
 
         # 错误通知控制
-        error_notify_label = ttk.Label(settings_popup, text="Notify Bad Posture After")
+        error_notify_label = ttk.Label(self.settings_popup, text="Notify Bad Posture After")
         error_notify_label.grid(row=3, column=0, pady=5, padx=1, sticky="w")
 
         # Check button for 'Notify Bad Posture After' setting
-        error_notify_check = ttk.Checkbutton(settings_popup,
+        error_notify_check = ttk.Checkbutton(self.settings_popup,
                                              variable=notification_bad_posture)
         error_notify_check.grid(row=3, column=1, pady=5, padx=1, sticky="w")
 
         # Input box (entry field) for 'Notify Bad Posture After' time window
-        notify_time_entry = ttk.Entry(settings_popup)
+        notify_time_entry = ttk.Entry(self.settings_popup)
         notify_time_entry.grid(row=3, column=2, padx=5)
         notify_time_entry.config(width=5)
         notify_time_entry.insert(0, self.check_boxes_frame.check_boxes[uc.CheckBoxesKeys.notification_bad_posture.value][2].get())
 
         # 编辑个人资料照片按钮
-        edit_profile_photo_button = ttk.Button(settings_popup, text="Edit Profile Photo", command=self.show_edit_photo_popup)
+        edit_profile_photo_button = ttk.Button(self.settings_popup, text="Edit Profile Photo", command=self.show_edit_photo_popup)
         edit_profile_photo_button.grid(row=4, column=0, pady=5, padx=(10, 5), columnspan=2, sticky="n")
 
         # 保存监控数据
-        save_all_data_button = ttk.Button(settings_popup, text="Save All Data", command=self.save_all_log)
+        save_all_data_button = ttk.Button(self.settings_popup, text="Save All Data", command=self.save_all_log)
         save_all_data_button.grid(row=5, column=0, pady=5, padx=(10, 5), columnspan=2, sticky="n")
 
-        self.time_interval_frame = TimeIntervalSelectorFrame(settings_popup, row=6, col=0, txt="Pause For (MM:SS):", func=self.pause_for)
+        self.time_interval_frame = TimeIntervalSelectorFrame(self.settings_popup, row=6, col=0, txt="Pause For (MM:SS):", func=self.pause_for)
 
         #颜色控制
-        choose_color_button = ttk.Button(settings_popup, text="Choose Theme Color", command=self.show_color_chooser)
+        choose_color_button = ttk.Button(self.settings_popup, text="Choose Theme Color", command=self.show_color_chooser)
         choose_color_button.grid(row=7, column=0, pady=5, padx=(10, 5), columnspan=2, sticky="n")
 
         # 创建 Save 按钮
@@ -374,17 +376,18 @@ class App(ThemedTk):
             current_tuple[2].insert(0, notify_time_entry.get())
             self.check_boxes_frame.check_boxes[uc.CheckBoxesKeys.notification_bad_posture.value] = \
                 (current_tuple[0], notification_bad_posture, current_tuple[2])
-            
-            settings_popup.destroy()
+            close_settings()
+
+        def close_settings():
+            self.resume()
+            self.settings_popup.destroy()
        
-        save_button = ttk.Button(settings_popup, text="Save", command=save_settings)
+        save_button = ttk.Button(self.settings_popup, text="Save", command=save_settings)
         save_button.grid(row=10, column=0, pady=5, padx=(10, 5), sticky="n")
 
         # 创建 Close 按钮
-        close_button = ttk.Button(settings_popup, text="Close", command=settings_popup.destroy)
+        close_button = ttk.Button(self.settings_popup, text="Close", command=close_settings)
         close_button.grid(row=10, column=1, pady=5, padx=(5, 10), sticky="n")
-
-        self.resume()
 
     def apply_custom_style(self):
         style = ttkbt.Style('flatly')
@@ -1057,7 +1060,9 @@ class App(ThemedTk):
 
     def pause(self):
         self.pause_comm()
+        print("self.pause() called. self.ispaused:",self.is_paused)
         self.graph.pause()
+        print("self.graph.pause() called.")
         button = self.control_buttons[uc.ElementNames.pause_button_txt.value]
         resume_txt: str = uc.ElementNames.resume_button_txt.value
         button.config(text=resume_txt, command=self.resume)
@@ -1129,12 +1134,67 @@ class App(ThemedTk):
             print(f"Error processing user info: {e}")
             return None
 
+    def close_settings_popup(self):
+        """ Close the settings frame """
+        if self.settings_popup is not None:
+            self.settings_popup.destroy()
+            self.settings_popup = None
+
+    def lock_main_page(self):
+        """ Lock the main page to avoid unexpected user operations """
+        for frame in [self.header_frame, self.body_frame, self.footer_frame]:
+            for widget in frame.winfo_children():
+                if isinstance(widget, (ttk.Button, ttk.Entry, ttk.Checkbutton, ttk.Radiobutton)):
+                    widget.state(['disabled'])
+
+    def unlock_main_page(self):
+        """ Unlock the main page """
+        for frame in [self.header_frame, self.body_frame, self.footer_frame]:
+            for widget in frame.winfo_children():
+                if isinstance(widget, (ttk.Button, ttk.Entry, ttk.Checkbutton, ttk.Radiobutton)):
+                    widget.state(['!disabled'])
+
+    def show_countdown_popup(self, countdown_time: int):
+        """ Show a pop-up with a countdown """
+        self.close_settings_popup()
+        self.lock_main_page()
+
+        self.countdown_popup = tk.Toplevel(self)
+        self.countdown_popup.title("Countdown")
+
+        self.countdown_label = tk.Label(self.countdown_popup, text=f"Pausing...\n{datetime.timedelta(seconds = self.countdown_time)}")
+        self.countdown_label.pack(pady=20)
+
+        self.break_button = tk.Button(self.countdown_popup, text="Break Countdown", command=self.break_countdown)
+        self.break_button.pack(pady=10)
+
+        self.countdown_time = countdown_time
+        self.update_countdown()
+
+    def update_countdown(self):
+        """ Update the countdown timer """
+        if self.countdown_time > 0:
+            self.countdown_label.config(text=f"Pausing...\n{datetime.timedelta(seconds = self.countdown_time)}")
+            self.countdown_time -= 1
+            self.after(1000, self.update_countdown)
+        else:
+            self.countdown_popup.destroy()
+            self.continue_after_countdown()
+
+    def break_countdown(self):
+        """ Break the countdown and continue the app """
+        self.countdown_time = 0
+        self.countdown_popup.destroy()
+        self.continue_after_countdown()
+
+    def continue_after_countdown(self):
+        """ Continue after the countdown """
+        self.unlock_main_page()
+        self.resume()
+
     def pause_for(self):
         """ The function set pause for certain amount of time in seconds """
-        self.pause()
-        interval = self.time_interval_frame.get_interval()
-        time.sleep(interval)  # seconds
-        self.resume()
+        self.show_countdown_popup(int(self.time_interval_frame.get_interval()))
 
     def update_x_range(self, new_range: int):
         self.x_range = new_range
