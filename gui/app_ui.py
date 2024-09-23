@@ -53,7 +53,7 @@ import re
 import math
 from port_detection import GetPortName
 import markdown2
-from tkhtmlview import HTMLLabel
+from tkinterweb import HtmlFrame
 from sound_player import play_sound_in_thread
 
 
@@ -208,14 +208,15 @@ class App(ThemedTk):
         # Convert markdown to HTML
         report_content = "\n".join(line.strip() for line in report_content.splitlines())
         html_content = markdown2.markdown(report_content, extras=["tables", "fenced-code-blocks"])
+        html_content = html_content.replace('<h1>', '<h1 style="font-size: 200%; text-align: center;">')
+        html_content = html_content.replace('<img ', '<img style="width: 300px; height: auto;" ')
+        html_content = html_content.replace('<th>', '<th style="padding: 8px; text-align: left;">')
+        html_content = html_content.replace('<td>', '<td style="padding: 8px; text-align: left">')
         print(html_content)
 
-        # Create an HTMLLabel widget
-        report_label = HTMLLabel(
-            report_window, 
-            html=html_content,
-        )
-        report_label.pack(pady=10, fill="both", expand=True)
+        frame = HtmlFrame(report_window)
+        frame.load_html(html_content)
+        frame.pack(fill="both", expand=True)
 
         # 保存报告功能
         def save_report():
