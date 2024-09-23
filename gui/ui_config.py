@@ -61,7 +61,7 @@ class ElementNames(Enum):
 
 
 class Measurements(Enum):
-    window_size = "1000x600"
+    window_size = "1100x600"
     graph_size = (6, 3)
     graph_x_limit = 50  # show up to last X values or None for infinite number
     header_h = 200

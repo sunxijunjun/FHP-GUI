@@ -887,6 +887,7 @@ class App(ThemedTk):
     def show_edit_photo_popup(self):
         self.pause()
         popup = FileUploadWindow(self, "File Upload")
+        popup.attributes('-topmost', True)
         popup.add_button(txt="Select File", func=self.select_file)
         popup.add_button(txt="Upload", func=self.submit_new_user_photo)
         popup.add_button(txt="Cancel", func=popup.close)
