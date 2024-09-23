@@ -7,6 +7,7 @@ If no file name is provided, the default sound file is 'notification.wav'.
 
 import platform
 import threading
+import os
 
 # Detect the operating system
 current_os = platform.system()
@@ -15,10 +16,8 @@ current_os = platform.system()
 if current_os == "Windows":
     import winsound
 elif current_os == "Darwin":  # macOS
-    import os
     import subprocess
 elif current_os == "Linux":
-    import os
     import subprocess
 else:
     print(f"Unsupported operating system for sound playing: {current_os}")
