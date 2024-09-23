@@ -15,6 +15,7 @@ from matplotlib.axes import Axes
 import random
 from logger import Logger
 from tkinter import ttk
+from sound_player import play_sound_in_thread
 
 
 class TkCustomImage:
@@ -738,6 +739,7 @@ class FeedbackCollector(tk.Toplevel):
 
         # Position the notification
         self.geometry(f"+{x}+{y}")
+        play_sound_in_thread()
 
     def add_content_field(self) -> tk.Text:
         text_field = tk.Text(self, height=5, width=45)
