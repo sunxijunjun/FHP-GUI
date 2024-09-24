@@ -198,6 +198,8 @@ class App(ThemedTk):
         self.add_menu_button("Generate Report", self.show_generate_report_window)
 
     def show_generate_report_window(self):
+        self.save_graph()
+        
         report_window = tk.Toplevel(self)
         report_window.title("Generate Report")
         report_window.geometry("350x600")  # 调整窗口大小
@@ -1061,9 +1063,7 @@ class App(ThemedTk):
 
     def pause(self):
         self.pause_comm()
-        print("self.pause() called. self.ispaused:",self.is_paused)
         self.graph.pause()
-        print("self.graph.pause() called.")
         button = self.control_buttons[uc.ElementNames.pause_button_txt.value]
         resume_txt: str = uc.ElementNames.resume_button_txt.value
         button.config(text=resume_txt, command=self.resume)
