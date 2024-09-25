@@ -1149,6 +1149,7 @@ class App(ThemedTk):
             for widget in frame.winfo_children():
                 if isinstance(widget, (ttk.Button, ttk.Entry, ttk.Checkbutton, ttk.Radiobutton)):
                     widget.state(['disabled'])
+        self.withdraw()
 
     def unlock_main_page(self):
         """ Unlock the main page """
@@ -1156,6 +1157,7 @@ class App(ThemedTk):
             for widget in frame.winfo_children():
                 if isinstance(widget, (ttk.Button, ttk.Entry, ttk.Checkbutton, ttk.Radiobutton)):
                     widget.state(['!disabled'])
+        self.deiconify()
 
     def show_countdown_popup(self, countdown_time: int):
         """ Show a pop-up with a countdown """
