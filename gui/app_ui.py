@@ -308,6 +308,8 @@ class App(ThemedTk):
 
     # 显示设置窗口的方法
     def show_settings_window(self):
+        if self.settings_popup is not None:
+            return
         self.pause()
         self.settings_popup = tk.Toplevel(self)
         self.settings_popup.title("Settings")
