@@ -202,7 +202,7 @@ class App(ThemedTk):
         
         report_window = tk.Toplevel(self)
         report_window.title("Generate Report")
-        report_window.geometry("350x600")  # 调整窗口大小
+        report_window.geometry("375x900")  # 调整窗口大小
         ###.md文件的内容移动到这里　TODO
         # 生成报告内容
         report_content = self.db_manager.report_writer.get_header() + self.db_manager.report_writer.get_stats()
@@ -210,8 +210,8 @@ class App(ThemedTk):
         # Convert markdown to HTML
         report_content = "\n".join(line.strip() for line in report_content.splitlines())
         html_content = markdown2.markdown(report_content, extras=["tables", "fenced-code-blocks"])
-        html_content = html_content.replace('<h1>', '<h1 style="font-size: 200%; text-align: center;">')
-        html_content = html_content.replace('<img ', '<img style="width: 300px; height: auto;" ')
+        html_content = html_content.replace('<h1>', '<h1 style="font-size: 175%; text-align: center;">')
+        html_content = html_content.replace('<img ', '<img style="width: 350px; height: auto;" ')
         html_content = html_content.replace('<th>', '<th style="padding: 8px; text-align: left;">')
         html_content = html_content.replace('<td>', '<td style="padding: 8px; text-align: left">')
         print(html_content)
@@ -1161,13 +1161,17 @@ class App(ThemedTk):
         self.lock_main_page()
 
         self.countdown_popup = tk.Toplevel(self)
-        self.countdown_popup.title("Countdown")
+        self.countdown_popup.title("Monitoring Paused")
+        self.countdown_popup.geometry("300x200")
 
-        self.countdown_label = tk.Label(self.countdown_popup, text=f"Pausing...\n{datetime.timedelta(seconds = self.countdown_time)}")
+        self.countdown_title = tk.Label(self.countdown_popup, text="Pausing...", font=("Helvetica", 18))
+        self.countdown_title.pack(pady=20)
+
+        self.countdown_label = tk.Label(self.countdown_popup, text=f"{datetime.timedelta(seconds = self.countdown_time)}", font=("Helvetica", 32, "bold"))
         self.countdown_label.pack(pady=20)
 
-        self.break_button = tk.Button(self.countdown_popup, text="Break Countdown", command=self.break_countdown)
-        self.break_button.pack(pady=10)
+        self.continue_button = tk.Button(self.countdown_popup, text="Continue", command=self.break_countdown)
+        self.continue_button.pack(side="bottom", pady=10, anchor="s")
 
         self.countdown_time = countdown_time
         self.update_countdown()
@@ -1175,7 +1179,7 @@ class App(ThemedTk):
     def update_countdown(self):
         """ Update the countdown timer """
         if self.countdown_time > 0:
-            self.countdown_label.config(text=f"Pausing...\n{datetime.timedelta(seconds = self.countdown_time)}")
+            self.countdown_label.config(text=f"{datetime.timedelta(seconds = self.countdown_time)}")
             self.countdown_time -= 1
             self.after(1000, self.update_countdown)
         else:
