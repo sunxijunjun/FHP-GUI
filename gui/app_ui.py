@@ -241,46 +241,41 @@ class App(ThemedTk):
         guide_texts = {
             "English": (
                 "Welcome to the Beta Prototype. \n\n"
-                "This device will help detect poor posture while you are using a computer.\n\n"
-                "To achieve optimal accuracy, please follow "
-                "the calibration steps below:\n\n"
-                "1. Please take a seat.\n\n"
-                "2. Adjust the height of your chair and screen so that the top edge of the screen "
-                "is at or slightly below your eye level.\n\n"
-                "3. Position the device in the center of your screen. \n\n"
-                "You should see your face appear "
-                "in the center of the camera view with a small green frame around it."
+                "This device will detect poor posture while you are using a computer.\n\n"
+                "To achieve optimal accuracy, please follow the calibration steps below:\n\n"
+                "1. Fix the device in the center of the top edge of your monitor.\n\n"
+                "2. Adjust the height of your chair and screen so that the top edge of the screen is at or slightly below your eye level.\n\n"
+                "3. You should now see your face in the center of the camera view with a small green frame around it.\n\n"
+                "4. Calibration is complete!"
             ),
             "中文": (
-                "欢迎使用Beta原型机测试版UI。\n\n"
-                "此设备将帮助您在使用计算机时检测不良姿势。\n\n"
+                "欢迎使用Beta原型机。\n\n"
+                "此设备将检测您在使用计算机时的不良姿势。\n\n"
                 "为了达到最佳准确性，请按照以下校准步骤操作：\n\n"
-                "1. 请坐下。\n\n"
-                "2. 调整椅子和屏幕的高度，使屏幕的上边缘位于或略低于您的眼睛水平。\n\n"
-                "3. 将设备放置在屏幕的中心。\n\n"
-                "您应该看到您的脸出现在相机视图的中心，并且周围有一个小的绿色框。"
+                "1.将设备固定在显示器上边缘的中央。\n\n"
+                "2.调整椅子和屏幕的高度，使屏幕上边缘的高度应该平齐于或略低于您的眼睛。\n\n"
+                "3.这时您应该看到您的脸出现在相机视图的中心，并且周围有一个小的绿色框。\n\n"
+                "4.准备工作已经完成，太棒了！"
             ),
             "粤语": (
-                "歡迎使用Beta原型机测试版UI。\n\n"
-                "此設備將幫助您在使用計算機時檢測不良姿勢。\n\n"
+                "歡迎使用Beta原型機。\n\n"
+                "此設備將檢測您在使用電腦時的不良姿勢。\n\n"
                 "為了達到最佳準確性，請按照以下校準步驟操作：\n\n"
-                "1. 請坐下。\n\n"
-                "2. 調整椅子和屏幕的高度，使屏幕的上邊緣位於或略低於您的眼睛水平。\n\n"
-                "3. 將設備放置在屏幕的中心。\n\n"
-                "您應該看到您的臉出現在相機視圖的中心，並且周圍有一個小的綠色框。"
+                "1.將設備固定在顯示器上邊緣的中央。\n\n"
+                "2.調整椅子和屏幕的高度，令屏幕上邊緣應與您的眼睛平齊或略低於眼睛水平。\n\n"
+                "3.您應該看到自己的臉出現在相機畫面的中央，並且周圍有一個小的綠色框。\n\n"
+                "4.校準已完成！"
             ),
             "Deutsch": (
                 "Willkommen zum Beta-Prototyp. \n\n"
-                "Dieses Gerät hilft Ihnen dabei, eine schlechte Haltung zu erkennen, während Sie am Computer arbeiten.\n\n"
-                "Um optimale Genauigkeit zu erreichen, folgen Sie bitte den Kalibrierungsschritten unten:\n\n"
-                "1. Bitte nehmen Sie Platz.\n\n"
-                "2. Passen Sie die Höhe Ihres Stuhls und Bildschirms so an, dass die Oberkante des Bildschirms "
-                "auf oder leicht unter Augenhöhe ist.\n\n"
-                "3. Positionieren Sie das Gerät in der Mitte Ihres Bildschirms. \n\n"
-                "Sie sollten Ihr Gesicht im Zentrum der Kameraansicht sehen, umrahmt von einem kleinen grünen Rahmen."
+                "Dieses Gerät erkennt eine schlechte Haltung, während Sie den Computer benutzen.\n\n"
+                "Um eine optimale Genauigkeit zu erreichen, folgen Sie bitte den Kalibrierungsschritten unten:\n\n"
+                "1. Befestigen Sie das Gerät in der Mitte der oberen Kante Ihres Monitors.\n\n"
+                "2. Passen Sie die Höhe Ihres Stuhls und Bildschirms so an, dass die Oberkante des Bildschirms auf oder leicht unter Augenhöhe ist.\n\n"
+                "3. Sie sollten jetzt Ihr Gesicht in der Mitte des Kamerabildes sehen, umrahmt von einem kleinen grünen Rahmen.\n\n"
+                "4. Die Kalibrierung ist abgeschlossen!"
             )
         }
-
 
         # 默认显示的语言是英语
         guide_label = tk.Label(guide_window, text=guide_texts["English"], font=("Arial", 12), justify="left",
