@@ -380,8 +380,10 @@ class App(ThemedTk):
 
         def close_settings():
             self.resume()
-            self.settings_popup.destroy()
+            self.close_settings_popup()
        
+        self.settings_popup.protocol("WM_DELETE_WINDOW", close_settings)
+        
         save_button = ttk.Button(self.settings_popup, text="Save", command=save_settings)
         save_button.grid(row=10, column=0, pady=5, padx=(10, 5), sticky="n")
 
