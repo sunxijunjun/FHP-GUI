@@ -152,7 +152,7 @@ class SessionInstance:
     def get_total_alarm_num(self) -> int:
         return len(self.alarm_times)
 
-    def get_graph_save_path(self, ask_path=False) -> str:
+    def get_graph_save_path(self, type = "graph", ask_path = False) -> str:
         if ask_path:
             path = filedialog.asksaveasfilename(filetypes=[("Image Files", ["*.png", "*.jpeg"])])
             if ".png" not in path:
@@ -161,9 +161,13 @@ class SessionInstance:
                 path += ".jpeg"
             return path
         today = datetime.datetime.now()
-        file_name = f"/graph_{today.strftime('%Y%m%d%H%M%S')}_"
-        path = ui_config.FilePaths.graph_folder_path.value + file_name + str(self.user_id) + ".png"
-        return path
+        file_name = f"{type}_{today.strftime('%Y%m%d%H%M%S')}_{str(self.user_id)}.png"
+        base_path = os.path.dirname(os.path.abspath(__file__))
+        if type == "graph":
+            path = os.path.join(base_path, ui_config.FilePaths.graph_folder_path.value, file_name)
+        elif type == "piechart":
+            path = os.path.join(base_path, ui_config.FilePaths.piechart_folder_path.value, file_name)
+        return os.path.normpath(path)
 
     def update_marked_data(self, data: pd.DataFrame):
         self.marked_data = pd.concat([self.marked_data, data], ignore_index=True)
@@ -225,8 +229,16 @@ class ReportWriter:
         self.session = session
         self.path = None
         # 创建 report pie plot 文件夹
-        self.pie_chart_dir = Path('report pie plot')
+        self.pie_chart_dir = Path(ui_config.FilePaths.piechart_folder_path.value)
         self.pie_chart_dir.mkdir(exist_ok=True)
+
+    def convert_path_to_url(self, path):
+        """ Convert a local file path to a URL path """
+        path = os.path.abspath(path)
+        path = os.path.normpath(path)
+        path = path.replace(os.sep, "/")
+        path = "file:///" + path
+        return path
 
     def get_stats(self) -> str:
         # 获取数据
@@ -251,9 +263,12 @@ class ReportWriter:
         plt.title("Alarm Time vs Elapsed Time")
 
         # 保存饼图为图片文件
-        pie_chart_path = self.pie_chart_dir / 'pie_chart.png'
+        pie_chart_path = self.session.get_graph_save_path(type = "piechart")
         plt.savefig(pie_chart_path)
         plt.close()
+
+        # Convert the pie chart path to a URL path
+        pie_chart_path = self.convert_path_to_url(pie_chart_path)
 
         # 生成统计文本
         content = f"""## User Details:\n
@@ -280,10 +295,12 @@ class ReportWriter:
             return 0.0  # 如果格式不正确，返回0或其他默认值
 
     def get_header(self) -> str:
+        graph_path = self.session.get_graph_save_path()
+        graph_path = self.convert_path_to_url(graph_path)
         content = f"""# User Report\n
         The report represents the basic information over the usage of the app\n
         ## Sensor Readings:\n
-        ![Sensor Values]({self.session.get_graph_save_path()})\n
+        ![Sensor Values]({graph_path})\n
         """
         return content
 

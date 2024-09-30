@@ -117,6 +117,7 @@ class FilePaths(Enum):
     """ Folder paths """
     values_folder_path = project_root + "/data/values"
     graph_folder_path = project_root + "/data/img/graphs"
+    piechart_folder_path = project_root + "/data/img/piecharts"
     reports_folder_path = project_root + "/data/reports"
     logs_folder_path = project_root + "/data/logs"
 
