@@ -237,7 +237,7 @@ class ReportWriter:
         path = os.path.abspath(path)
         path = os.path.normpath(path)
         path = path.replace(os.sep, "/")
-        path = "file:///" + path
+        path = "file:///" + path.lstrip("/")
         return path
 
     def get_stats(self) -> str:
