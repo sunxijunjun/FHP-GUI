@@ -32,12 +32,13 @@ class PostureDataCollection(tk.Tk):
 
     def init_ui(self):
         instruction = (
-            "65 Remain in a \tround shoulder\t with \tpoking chin posture\t for 30 seconds\n"
-            "65 Remain in a \tstraight shoulder\t with \tneck extension\t\t for 30 seconds\n"
-            "70 Remain in a \tround shoulder\t with \tpoking chin posture\t for 30 seconds\n"
-            "70 Remain in a \tstraight shoulder\t with \tneck extension\t\t for 30 seconds\n"
-            "80 Remain in a \tround shoulder\t with \tpoking chin posture\t for 30 seconds\n"
-            "80 Remain in a \tstraight shoulder\t with \tneck extension\t\t for 30 seconds\n"
+            "TODO: Will be added when 2nd phase data analysis results is ready"
+            # "65 Remain in a \tround shoulder\t with \tpoking chin posture\t for 30 seconds\n"
+            # "65 Remain in a \tstraight shoulder\t with \tneck extension\t\t for 30 seconds\n"
+            # "70 Remain in a \tround shoulder\t with \tpoking chin posture\t for 30 seconds\n"
+            # "70 Remain in a \tstraight shoulder\t with \tneck extension\t\t for 30 seconds\n"
+            # "80 Remain in a \tround shoulder\t with \tpoking chin posture\t for 30 seconds\n"
+            # "80 Remain in a \tstraight shoulder\t with \tneck extension\t\t for 30 seconds\n"
         )
         self.instruction_text = tk.Label(self, text=instruction)
         self.instruction_text.pack(pady=15)

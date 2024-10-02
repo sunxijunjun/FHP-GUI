@@ -49,15 +49,6 @@ class DataAnalyst:
         # 定义传感器名称
         sensor_2, sensor_4 = "Sensor 2", "Sensor 4"
 
-        # 定义阈值，分别对应不同肩宽的用户
-        # thresholds = {
-        #     0: 58.5,  # XS
-        #     1: 59.5,  # S
-        #     2: 62.5,  # M
-        #     3: 55.5,  # L
-        #     4: 91.5  # XL
-        # }
-
         # 检查传感器数据是否存在并且有效
         if sensor_2 in data and sensor_4 in data and data[sensor_2] and data[sensor_4]:
             print(f"recent_data: Sensor 2: {data[sensor_2][-1]}, Sensor 4: {data[sensor_4][-1]}")
