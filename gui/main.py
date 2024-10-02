@@ -82,7 +82,7 @@ class ThreadManager:
         self.interrupt()
         time.sleep(0.1)
         self.check_memory_usage()
-        self.app.save_last_data()
+        #self.app.save_last_data()
         if self.reading_thread and self.reading_thread.is_alive():
             self.reading_thread.join()  # Wait for the thread to finish
         self.app.destroy()
