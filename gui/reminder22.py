@@ -10,7 +10,7 @@ class TimerApp:
     def __init__(self, root):
         self.root = root
         self.root.title("20-20-20 Reminder")
-        self.root.geometry("600x600")
+        self.root.geometry("600x1200")
 
         # Disable window resizing
         self.root.resizable(False, False)
@@ -63,6 +63,9 @@ class TimerApp:
 
         # Override window close event
         self.root.protocol("WM_DELETE_WINDOW", self.on_closing)
+
+        # Add explanatory text box
+        self.add_explanatory_text()
 
     def on_closing(self):
         self.minimize_window()
@@ -168,6 +171,28 @@ class TimerApp:
 
     def _restore_window(self):
         self.root.deiconify()
+
+    def add_explanatory_text(self):
+        # Create a Labelframe for the explanatory text
+        explanatory_frame = ttk.Labelframe(self.root, text="20-20-20 Rule Explanation", padding=(10, 10))
+        explanatory_frame.pack(pady=20, fill="both", expand=False)
+
+        # Add the explanatory text inside the Labelframe
+        explanatory_text = ttk.Label(explanatory_frame,
+                                     text="The 20-20-20 rule is a technique to prevent digital eye strain caused by staring at screens for long periods. To follow this rule: Every 20 minutes, take a 20-second break from looking at the screen. During the break, focus on an object at least 20 feet away to relax the eye muscles.\n\nRefer: ",
+                                     wraplength=500, justify="left")
+        explanatory_text.pack(side="top")
+
+        # Add the hyperlink inside the Labelframe
+        link = ttk.Label(explanatory_frame, text="AOA website", foreground="blue", cursor="hand2")
+        link.pack(side="bottom")
+        link.bind("<Button-1>", lambda e: self.open_link(
+            "https://www.aoa.org/healthy-eyes/eye-and-vision-conditions/computer-vision-syndrome?sso=y"))
+
+    def open_link(self, url):
+        import webbrowser
+        webbrowser.open_new(url)
+
 
 if __name__ == "__main__":
     root = ttk.Window(themename="litera")  # Choose a theme
