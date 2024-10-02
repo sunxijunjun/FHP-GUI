@@ -10,7 +10,7 @@ class TimerApp:
     def __init__(self, root):
         self.root = root
         self.root.title("20-20-20 Reminder")
-        self.root.geometry("600x1200")
+        self.root.geometry("600x600")
 
         # Disable window resizing
         self.root.resizable(False, False)
