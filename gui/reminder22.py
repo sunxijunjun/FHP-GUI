@@ -16,11 +16,11 @@ class TimerApp:
         self.root.resizable(False, False)
 
         # Set custom icon for the main window
-        self.icon = Image.open("twenty_reminder_icon.png")
+        self.icon = Image.open("Icon_202020reminder.png")
         self.tk_icon = ImageTk.PhotoImage(self.icon)
         self.root.iconphoto(False, self.tk_icon)
 
-        self.total_time = 20 * 60  # 20 minutes in seconds
+        self.total_time = 2 * 6  # 20 minutes in seconds
         self.remaining_time = self.total_time
         self.running = False
 
@@ -119,15 +119,15 @@ class TimerApp:
 
     def minimize_window(self):
         self.root.withdraw()
-        self.tray_icon.visible = True
+        self._20reminder_tray.visible = True
 
     def quit_app(self, icon=None, item=None):
-        if self.tray_icon:
-            self.tray_icon.stop()
+        if self._20reminder_tray:
+            self._20reminder_tray.stop()  # 停止托盘图标
         if self.reminder_window:
-            self.reminder_window.destroy()
-        self.root.quit()    #old version use root, but now use toplevel
-        self.root.destroy()
+            self.reminder_window.destroy()  # 销毁提醒窗口
+        #self.root.quit()  # 停止 Tkinter 主事件循环
+        self.root.destroy()  # 销毁主窗口
 
     def show_reminder(self):
         if self.reminder_window is not None and self.reminder_window.winfo_exists():
@@ -181,13 +181,13 @@ class TimerApp:
         self.reminder_window.geometry(f"{window_width}x{window_height}+{x}+{y}")
 
     def setup_tray(self):
-        self.tray_icon = pystray.Icon("20-20-20 Reminder")
-        self.tray_icon.icon = self.icon
-        self.tray_icon.menu = pystray.Menu(
+        self._20reminder_tray = pystray.Icon("20-20-20 Reminder")
+        self._20reminder_tray.icon = self.icon
+        self._20reminder_tray.menu = pystray.Menu(
             Item('Restore', self.restore_window),
             Item('Quit', self.quit_app)
         )
-        self.tray_icon.run_detached()
+        self._20reminder_tray.run_detached()
 
     def restore_window(self, icon=None, item=None):
         self.root.after(0, self._restore_window)
@@ -218,6 +218,8 @@ class TimerApp:
 
 
 if __name__ == "__main__":
-    root = ttk.Window(themename="litera")  # Choose a theme
+    # Choose a theme
+    root = ttk.Window(themename="litera")
+    #root = ttk.Toplevel()
     app = TimerApp(root)
     root.mainloop()
