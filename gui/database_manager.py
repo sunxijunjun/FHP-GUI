@@ -15,6 +15,9 @@ import os
 import re
 from tkinter import filedialog
 from typing import Union
+import markdown2
+from xhtml2pdf import pisa
+import tkinter as tk
 
 
 class UserDetails:
@@ -267,9 +270,6 @@ class ReportWriter:
         plt.savefig(pie_chart_path)
         plt.close()
 
-        # Convert the pie chart path to a URL path
-        pie_chart_path = self.convert_path_to_url(pie_chart_path)
-
         # 生成统计文本
         content = f"""## User Details:\n
         | Name | {self.session.user_details.get_full_name()} |
@@ -280,6 +280,10 @@ class ReportWriter:
         """
 
         # 将饼图加入内容
+        self.latest_stats = content + f"![Pie Chart]({pie_chart_path})\n"
+
+        # Convert the pie chart path to a URL path
+        pie_chart_path = self.convert_path_to_url(pie_chart_path)
         content += f"![Pie Chart]({pie_chart_path})\n"
 
         return content
@@ -296,12 +300,16 @@ class ReportWriter:
 
     def get_header(self) -> str:
         graph_path = self.session.get_graph_save_path()
-        graph_path = self.convert_path_to_url(graph_path)
         content = f"""# User Report\n
         The report represents the basic information over the usage of the app\n
-        ## Sensor Readings:\n
-        ![Sensor Values]({graph_path})\n
+        ## Sensor Readings:\n        
         """
+
+        self.latest_header = content + f"![Sensor Values]({graph_path})\n"
+
+        graph_path = self.convert_path_to_url(graph_path)
+        content += f"![Sensor Values]({graph_path})\n"
+
         return content
 
     def save_report(self, path=None):
@@ -309,16 +317,40 @@ class ReportWriter:
         and save in the format of .md or .txt
         If the param path is None, the user may have an opportunity to select the destination
         """
-        content = self.get_header() + self.get_stats()
-        content = re.sub(r'\n\s+', '\n', content)
-        with open(self.get_path(path), "w", encoding="utf-8") as file:
-            file.write(content)
+        content = self.latest_header + self.latest_stats
+        save_path = self.get_path(path)
+        save_result = False
+        
+        try:
+            if save_path.suffix.lower() == '.pdf':
+                report_content = "\n".join(line.strip() for line in content.splitlines())
+                html_content = markdown2.markdown(report_content, extras=["tables", "fenced-code-blocks"])
+                html_content = html_content.replace('<h1>', '<h1 style="font-size: 175%; text-align: center;">')
+                html_content = html_content.replace('<img ', '<img style="width: 350px; height: auto;" ')
+                html_content = html_content.replace('<th>', '<th style="padding: 8px; text-align: left;">')
+                html_content = html_content.replace('<td>', '<td style="padding: 8px; text-align: left">')
+                # Convert HTML to PDF
+                with open(save_path, "wb") as pdf_file:
+                    pisa_status = pisa.CreatePDF(html_content, dest=pdf_file)
+                
+                save_result = not pisa_status.err
+            else:
+                content = re.sub(r'\n\s+', '\n', content)
+                with open(save_path, "w", encoding="utf-8") as file:
+                    file.write(content)
+                save_result = True
+        finally:
+            if save_result:
+                tk.messagebox.showinfo("Report Saved", f"Report saved at: {save_path}")
+            else:
+                tk.messagebox.showerror("Report Save Error", f"Failing to save the report. Please try again.")
+        
 
     def get_path(self, path: Union[None, str]) -> Path:
         if path is not None:
             self.path = Path(path)
             return self.path
-        new_path = filedialog.asksaveasfilename(filetypes=[("Text Files", ["*.txt", "*.md"])])
+        new_path = filedialog.asksaveasfilename(filetypes=[("PDF Files", "*.pdf"), ("Text Files", ["*.txt", "*.md"])])
         self.path = Path(new_path)
         return self.path
 

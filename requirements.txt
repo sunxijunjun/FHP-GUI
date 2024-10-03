@@ -14,3 +14,5 @@ ttkbootstrap~=1.10.1
 pystray~=0.19.5
 markdown2~=2.5.0
 tkinterweb~=3.24.7
+xhtml2pdf~=0.2.16
+requests~=2.31.0
