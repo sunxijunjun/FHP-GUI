@@ -24,8 +24,27 @@ class TimerApp:
         self.remaining_time = self.total_time
         self.running = False
 
+        # Create a frame for the meter and scrollbar
+        frame = ttk.Frame(root)
+        frame.pack(fill=BOTH, expand=True)
+
+        # Create a scrollbar
+        scrollbar = ttk.Scrollbar(frame)
+        scrollbar.pack(side=RIGHT, fill=Y)
+
+        # Create a canvas to hold the meter
+        canvas = ttk.Canvas(frame, yscrollcommand=scrollbar.set)
+        canvas.pack(side=LEFT, fill=BOTH, expand=True)
+
+        # Configure the scrollbar
+        scrollbar.config(command=canvas.yview)
+
+        # Create a frame inside the canvas to hold the meter
+        meter_frame = ttk.Frame(canvas)
+        canvas.create_window((30, 0), window=meter_frame, anchor='nw')
+
         # Create a meter to display remaining time
-        self.meter = ttk.Meter(root,
+        self.meter = ttk.Meter(meter_frame,
                                metersize=250,
                                amounttotal=self.total_time,
                                amountused=self.remaining_time,
@@ -38,7 +57,7 @@ class TimerApp:
         self.meter.pack(pady=25)
 
         # Create a frame for buttons
-        button_frame = ttk.Frame(root)
+        button_frame = ttk.Frame(meter_frame)
         button_frame.pack(pady=10)
 
         # Start button
@@ -65,7 +84,11 @@ class TimerApp:
         self.root.protocol("WM_DELETE_WINDOW", self.on_closing)
 
         # Add explanatory text box
-        self.add_explanatory_text()
+        self.add_explanatory_text(meter_frame)
+
+        # Update the canvas scroll region
+        meter_frame.update_idletasks()
+        canvas.config(scrollregion=canvas.bbox("all"))
 
     def on_closing(self):
         self.minimize_window()
@@ -103,7 +126,7 @@ class TimerApp:
             self.tray_icon.stop()
         if self.reminder_window:
             self.reminder_window.destroy()
-        #self.root.quit()    old version use root, but now use toplevel
+        self.root.quit()    #old version use root, but now use toplevel
         self.root.destroy()
 
     def show_reminder(self):
@@ -172,9 +195,9 @@ class TimerApp:
     def _restore_window(self):
         self.root.deiconify()
 
-    def add_explanatory_text(self):
+    def add_explanatory_text(self, frame):
         # Create a Labelframe for the explanatory text
-        explanatory_frame = ttk.Labelframe(self.root, text="20-20-20 Rule Explanation", padding=(10, 10))
+        explanatory_frame = ttk.Labelframe(frame, text="20-20-20 Rule Explanation", padding=(10, 10))
         explanatory_frame.pack(pady=20, fill="both", expand=False)
 
         # Add the explanatory text inside the Labelframe
