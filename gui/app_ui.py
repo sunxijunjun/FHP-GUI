@@ -235,18 +235,23 @@ class App(ThemedTk):
     def show_user_guide_window(self):
         guide_window = tk.Toplevel(self)
         guide_window.title("User Guide")
-        guide_window.geometry("350x600")  # 调整窗口大小
+        guide_window.geometry("350x800")  # 调整窗口大小
 
         # 多语言文本字典
         guide_texts = {
             "English": (
-                "Welcome to the Beta Prototype. \n\n"
-                "This device will detect poor posture while you are using a computer.\n\n"
-                "To achieve optimal accuracy, please follow the calibration steps below:\n\n"
-                "1. Fix the device in the center of the top edge of your monitor.\n\n"
-                "2. Adjust the height of your chair and screen so that the top edge of the screen is at or slightly below your eye level.\n\n"
-                "3. You should now see your face in the center of the camera view with a small green frame around it.\n\n"
-                "4. Calibration is complete!"
+                "Welcome to the Beta Prototype.\n\n" 
+                "This device will detect poor posture while you are using the computer.\n\n" 
+                "For optimal accuracy, please follow the calibration steps below:\n\n"
+                "1. Secure the device at the center of the top edge of your monitor.\n\n" 
+                "2. Adjust the height of your chair and screen so that the top edge of the screen is level with or slightly below your eyes.\n\n" 
+                "3. At this point, you should see your face appear in the center of the camera view, surrounded by a small green box.\n\n" 
+                "4. Please register a personal account and accurately fill in your height, weight, and other information.\n\n" 
+                "5. Enable 'Notify Bad Posture After X Seconds' in the settings.\n\n"
+                "6. Enter a shorter time window in the text box, such as 5, so that you will be notified 5 seconds after bad posture is detected.\n\n"
+                "7. Please do this when you first start the device, as it will help the program quickly find the correct detection threshold.\n\n" 
+                "8. After the program is calibrated, you can change the notification window back to a frequency that suits you.\n\n" 
+                "9. The preparation is complete. Fantastic!\n\n"
             ),
             "中文": (
                 "欢迎使用Beta原型机。\n\n"
@@ -255,30 +260,48 @@ class App(ThemedTk):
                 "1.将设备固定在显示器上边缘的中央。\n\n"
                 "2.调整椅子和屏幕的高度，使屏幕上边缘的高度应该平齐于或略低于您的眼睛。\n\n"
                 "3.这时您应该看到您的脸出现在相机视图的中心，并且周围有一个小的绿色框。\n\n"
-                "4.准备工作已经完成，太棒了！"
+                "4.请注册个人账户，并且如实填写身高体重等信息。\n\n"
+                "5.请在设置中打开Notify Bad Posture After X Seconds。\n\n"
+                "6.并且在文本框中输入一个较短的时间窗口，比如5，以便在检测到不良姿势后的5秒钟后通知您。\n\n"
+                "7.请在刚启动设备时这样做，这会帮助程序迅速的找到正确的判定阈值。\n\n"
+                "8.在程序校准后，您可以把通知窗口改回您适合的频率。\n\n"
+                "9.准备工作已经完成，太棒了！\n\n"
             ),
+
             "粤语": (
                 "歡迎使用Beta原型機。\n\n"
-                "此設備將檢測您在使用電腦時的不良姿勢。\n\n"
+                "此裝置會在你使用電腦時偵測不良姿勢。\n\n"
                 "為了達到最佳準確性，請按照以下校準步驟操作：\n\n"
-                "1.將設備固定在顯示器上邊緣的中央。\n\n"
-                "2.調整椅子和屏幕的高度，令屏幕上邊緣應與您的眼睛平齊或略低於眼睛水平。\n\n"
-                "3.您應該看到自己的臉出現在相機畫面的中央，並且周圍有一個小的綠色框。\n\n"
-                "4.校準已完成！"
+                "1.將裝置固定喺顯示器上邊緣嘅中間位置。\n\n"
+                "2.調整椅子同顯示屏嘅高度，顯示屏嘅上邊緣應該同你眼睛平齊，或者稍微低過眼睛。\n\n"
+                "3.呢個時候你應該見到你嘅面出現喺相機視圖嘅中間，並且周圍有一個細細嘅綠色框。\n\n"
+                "4.請註冊個人帳戶，並且如實填寫你嘅身高體重等資料。\n\n"
+                "5.請喺設定中打開'X秒後通知不良姿勢'。\n\n"
+                "6.喺文本框輸入一個較短嘅時間窗口，例如5秒，咁樣當偵測到不良姿勢5秒後會通知你。\n\n"
+                "7.當你首次啟動裝置嘅時候請咁樣做，咁可以幫助程式迅速搵到正確嘅判定閾值。\n\n"
+                "8.喺程式校準後，你可以將通知時間窗口改為你覺得適合嘅頻率。\n\n"
+                "9.準備工作完成，太棒啦！\n\n"
             ),
+
             "Deutsch": (
-                "Willkommen zum Beta-Prototyp. \n\n"
-                "Dieses Gerät erkennt eine schlechte Haltung, während Sie den Computer benutzen.\n\n"
-                "Um eine optimale Genauigkeit zu erreichen, folgen Sie bitte den Kalibrierungsschritten unten:\n\n"
+                "Willkommen beim Beta-Prototyp.\n\n"
+                "Dieses Gerät wird schlechte Körperhaltungen erkennen, während Sie den Computer benutzen.\n\n"
+                "Für optimale Genauigkeit folgen Sie bitte den folgenden Kalibrierschritten:\n\n"
                 "1. Befestigen Sie das Gerät in der Mitte der oberen Kante Ihres Monitors.\n\n"
-                "2. Passen Sie die Höhe Ihres Stuhls und Bildschirms so an, dass die Oberkante des Bildschirms auf oder leicht unter Augenhöhe ist.\n\n"
-                "3. Sie sollten jetzt Ihr Gesicht in der Mitte des Kamerabildes sehen, umrahmt von einem kleinen grünen Rahmen.\n\n"
-                "4. Die Kalibrierung ist abgeschlossen!"
+                "2. Passen Sie die Höhe Ihres Stuhls und Monitors so an, dass die obere Kante des Bildschirms auf Augenhöhe oder leicht darunter ist.\n\n"
+                "3. Zu diesem Zeitpunkt sollten Sie Ihr Gesicht in der Mitte der Kameraansicht sehen, umgeben von einem kleinen grünen Rahmen.\n\n"
+                "4. Bitte registrieren Sie ein persönliches Konto und geben Sie Ihre Körpergröße, Ihr Gewicht und andere Informationen korrekt an.\n\n"
+                "5. Aktivieren Sie 'Benachrichtigung bei schlechter Haltung nach X Sekunden' in den Einstellungen.\n\n"
+                "6. Geben Sie in das Textfeld ein kürzeres Zeitfenster ein, zum Beispiel 5, damit Sie 5 Sekunden nach der Erkennung einer schlechten Haltung benachrichtigt werden.\n\n"
+                "7. Bitte tun Sie dies, wenn Sie das Gerät zum ersten Mal starten, da es dem Programm hilft, schnell den richtigen Schwellenwert zu finden.\n\n"
+                "8. Nachdem das Programm kalibriert wurde, können Sie das Benachrichtigungsfenster auf eine für Sie passende Frequenz zurückstellen.\n\n"
+                "9. Die Vorbereitungen sind abgeschlossen. Großartig!\n\n"
             )
+
         }
 
         # 默认显示的语言是英语
-        guide_label = tk.Label(guide_window, text=guide_texts["English"], font=("Arial", 12), justify="left",
+        guide_label = tk.Label(guide_window, text=guide_texts["English"], font=("Arial", 10), justify="left",
                                wraplength=300)
         guide_label.pack(pady=20)
 
@@ -734,7 +757,7 @@ class App(ThemedTk):
 
     def add_alarm_text(self) -> None:
         current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        alarm_text = f"Alarm {self.alarm_num} at {current_time}\n"
+        alarm_text = f"Prediction {self.alarm_num} made at {current_time}\n"
         self.alarm_text_label.config(text=alarm_text)
         self.alarm_num += 1
         self.alarm_texts.append(alarm_text)
