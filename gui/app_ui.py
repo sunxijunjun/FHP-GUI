@@ -331,7 +331,7 @@ class App(ThemedTk):
         self.pause()
         self.settings_popup = tk.Toplevel(self)
         self.settings_popup.title("Settings")
-        self.settings_popup.geometry("400x300")
+        self.settings_popup.geometry("400x400")
         self.settings_popup.attributes('-topmost', True)
 
         enable_sound = tk.BooleanVar(value=self.check_boxes_frame.check_boxes[uc.CheckBoxesKeys.enable_sound.value][1].get())
@@ -341,53 +341,43 @@ class App(ThemedTk):
         # 设置列和行的布局
         self.settings_popup.columnconfigure([0, 1, 2], weight=1, uniform="columns")  # Adjusting 3 columns
         self.settings_popup.rowconfigure([0, 1, 2, 3, 4, 5, 6, 7], weight=1)  # Adjusting row heights
+        # Create three LabelFrames to organize the GUI
+        sensor_labelframe = ttk.LabelFrame(self.settings_popup, text="Sensor")
+        sensor_labelframe.grid(row=0, column=0, columnspan=3, padx=10, pady=10, sticky="nsew")
+        
+        monitor_labelframe = ttk.LabelFrame(self.settings_popup, text="Monitor")
+        monitor_labelframe.grid(row=1, column=0, columnspan=3, padx=10, pady=10, sticky="nsew")
+        
+        user_labelframe = ttk.LabelFrame(self.settings_popup, text="User")
+        user_labelframe.grid(row=2, column=0, columnspan=3, padx=10, pady=10, sticky="nsew")
 
         # 声音控制
-        sound_label = ttk.Label(self.settings_popup, text="Enable Sound")
-        sound_label.grid(row=0, column=0, pady=(20, 5), padx=1, sticky="w")
-        # 直接使用原始的 enable_sound_var
-        sound_check = ttk.Checkbutton(self.settings_popup,
-                                      variable=enable_sound,
+        sound_check = ttk.Checkbutton(sensor_labelframe,
+                                      variable=enable_sound, # 直接使用原始的 enable_sound_var
                                       command=lambda: self.toggle_feature("sound"))
-        sound_check.grid(row=0, column=1, pady=5, padx=1, sticky="w")
-
+        sound_check.grid(row=0, column=0, pady=5, padx=5, sticky="w")
+        sound_label = ttk.Label(sensor_labelframe, text="Enable Sound")
+        sound_label.grid(row=0, column=1, pady=5, padx=5, sticky="w")
+        
         # 灯光控制
-        light_label = ttk.Label(self.settings_popup, text="Enable Light")
-        light_label.grid(row=2, column=0, pady=(20, 5), padx=1, sticky="w")
-        # 直接使用原始的 enable_light_var
-        light_check = ttk.Checkbutton(self.settings_popup,
-                                      variable=enable_light,
+        light_check = ttk.Checkbutton(sensor_labelframe,
+                                      variable=enable_light,  # 直接使用原始的 enable_light_var
                                       command=lambda: self.toggle_feature("light"))
-        light_check.grid(row=2, column=1, pady=5, padx=1, sticky="w")
-
-        # 错误通知控制
-        error_notify_label = ttk.Label(self.settings_popup, text="Notify Bad Posture After X Seconds")
-        error_notify_label.grid(row=3, column=0, pady=5, padx=2, columnspan=5, sticky="w")
-
+        light_check.grid(row=1, column=0, pady=5, padx=5, sticky="w")
+        light_label = ttk.Label(sensor_labelframe, text="Enable Light")
+        light_label.grid(row=1, column=1, pady=5, padx=5, sticky="w")
+        
         # Check button for 'Notify Bad Posture After' setting
-        error_notify_check = ttk.Checkbutton(self.settings_popup,
+        error_notify_check = ttk.Checkbutton(sensor_labelframe,
                                              variable=notification_bad_posture)
-        error_notify_check.grid(row=3, column=1, pady=5, padx=1, sticky="E")
-
+        error_notify_check.grid(row=2, column=0, pady=5, padx=5, sticky="w")
+        # 错误通知控制
+        error_notify_label = ttk.Label(sensor_labelframe, text="Notify Bad Posture After X Seconds")
+        error_notify_label.grid(row=2, column=1, pady=5, padx=5, sticky="w")
         # Input box (entry field) for 'Notify Bad Posture After' time window
-        notify_time_entry = ttk.Entry(self.settings_popup)
-        notify_time_entry.grid(row=3, column=2, padx=1)
-        notify_time_entry.config(width=5)
+        notify_time_entry = ttk.Entry(sensor_labelframe, width=5)
+        notify_time_entry.grid(row=2, column=2, pady=5, padx=5, sticky="w")
         notify_time_entry.insert(0, self.check_boxes_frame.check_boxes[uc.CheckBoxesKeys.notification_bad_posture.value][2].get())
-
-        # 编辑个人资料照片按钮
-        edit_profile_photo_button = ttk.Button(self.settings_popup, text="Edit Profile Photo", command=self.show_edit_photo_popup)
-        edit_profile_photo_button.grid(row=4, column=0, pady=5, padx=(10, 5), columnspan=2, sticky="w")
-
-        # 保存监控数据
-        save_all_data_button = ttk.Button(self.settings_popup, text="Save All Data", command=self.save_all_log)
-        save_all_data_button.grid(row=5, column=0, pady=5, padx=(10, 5), columnspan=2, sticky="w")
-
-        self.time_interval_frame = TimeIntervalSelectorFrame(self.settings_popup, row=6, col=0, txt="Pause For (MM:SS):", func=self.pause_for)
-
-        #颜色控制
-        choose_color_button = ttk.Button(self.settings_popup, text="Choose Theme Color", command=self.show_color_chooser)
-        choose_color_button.grid(row=7, column=0, pady=5, padx=(10, 5), columnspan=2, sticky="w")
 
         # 创建 Save 按钮
         def save_settings():
@@ -407,12 +397,31 @@ class App(ThemedTk):
        
         self.settings_popup.protocol("WM_DELETE_WINDOW", close_settings)
         
-        save_button = ttk.Button(self.settings_popup, text="Save", command=save_settings)
-        save_button.grid(row=10, column=0, pady=5, padx=(10, 5), sticky="n")
+        # Create a frame to hold the buttons
+        buttons_frame = ttk.Frame(sensor_labelframe)
+        buttons_frame.grid(row=3, column=0, columnspan=3, pady=5, padx=5)
 
-        # 创建 Close 按钮
-        close_button = ttk.Button(self.settings_popup, text="Close", command=close_settings)
-        close_button.grid(row=10, column=1, pady=5, padx=(5, 10), sticky="n")
+        # Create Save button
+        save_button = ttk.Button(buttons_frame, text="Save", command=save_settings)
+        save_button.pack(side=tk.LEFT, padx=5)
+
+        # Create Close button
+        close_button = ttk.Button(buttons_frame, text="Close", command=close_settings)
+        close_button.pack(side=tk.LEFT, padx=5)
+
+        # 保存监控数据
+        save_all_data_button = ttk.Button(monitor_labelframe, text="Save All Data", command=self.save_all_log)
+        save_all_data_button.grid(row=0, column=0, pady=5, padx=5, sticky="w")
+
+        self.time_interval_frame = TimeIntervalSelectorFrame(monitor_labelframe, row=1, col=0, txt="Pause For (MM:SS):", func=self.pause_for)
+
+        # 编辑个人资料照片按钮
+        edit_profile_photo_button = ttk.Button(user_labelframe, text="Edit Profile Photo", command=self.show_edit_photo_popup)
+        edit_profile_photo_button.grid(row=0, column=0, pady=5, padx=5, sticky="w")
+
+        #颜色控制
+        choose_color_button = ttk.Button(user_labelframe, text="Choose Theme Color", command=self.show_color_chooser)
+        choose_color_button.grid(row=0, column=1, pady=5, padx=5, sticky="w")
 
     def apply_custom_style(self):
         style = ttkbt.Style('flatly')
