@@ -153,6 +153,9 @@ class App(ThemedTk):
         self.rand_quest_notification = None
         self.control_buttons = dict()
 
+        self.alarm_timestamp = None
+        self.alarm_consist_time = 0
+
         # 初始化主UI
         self.create_major_frames()
         self.add_header_elements(title=uc.ElementNames.app_title.value)
@@ -670,7 +673,6 @@ class App(ThemedTk):
         # Show alarm notification
         interval /= 1000 # convert to seconds
         self.db_manager.session.update_total_alarm_time(interval)
-        interval = self.data_analyst.get_time_interval(self.db_manager.session.alarm_times)
         if not self.is_bad_posture_notification_required(interval):
             return None
         self.notification_frame = NotificationIncorrectPosture(self.footer_frame,
@@ -723,8 +725,22 @@ class App(ThemedTk):
     def is_bad_posture_notification_required(self, interval: float) -> bool:
         key = uc.CheckBoxesKeys.notification_bad_posture.value
         required_time: float = float(self.check_boxes_frame.get_input_value(key))
-        return ((self.check_boxes_frame.is_true(access_key=key) and interval >= required_time)
-                and not self.notification_frame)
+        current_timestamp = datetime.datetime.now().strftime(uc.Measurements.time_format.value)
+        current_datetime = self.data_analyst.timestamp_to_datetime(current_timestamp)
+        if not self.check_boxes_frame.is_true(access_key=key) or required_time == 0:
+            return False
+        if self.alarm_timestamp is None:            
+            self.alarm_timestamp = self.data_analyst.timestamp_to_datetime(current_timestamp)
+            return False
+        threshold = 0.8 # Generate notification if alarm consists more than 80% of the time
+        alarm_fulfilled = False
+        if (current_datetime - self.alarm_timestamp).total_seconds() < required_time:
+            self.alarm_consist_time += interval
+        else:
+            alarm_fulfilled = self.alarm_consist_time / required_time >= threshold
+            self.alarm_consist_time = 0
+            self.alarm_timestamp = None
+        return (alarm_fulfilled and not self.notification_frame)
 
     # def is_bad_posture_command_allowed(self, next_time_call: int) -> bool:
     #     key = uc.CheckBoxesKeys.rand_bad_posture_command.value
