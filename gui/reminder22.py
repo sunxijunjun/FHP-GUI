@@ -185,7 +185,7 @@ class TimerApp:
         self._20reminder_tray.icon = self.icon
         self._20reminder_tray.menu = pystray.Menu(
             Item('Restore', self.restore_window),
-            Item('Quit', self.quit_app)
+            #Item('Quit', self.quit_app)
         )
         self._20reminder_tray.run_detached()
 
