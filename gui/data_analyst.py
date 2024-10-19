@@ -2,8 +2,36 @@ from datetime import datetime
 from typing import Union
 import numpy as np
 import ui_config
+import torch
+import pandas as pd
+import os
+import torch.nn as nn
+import joblib  
 
+input_columns = ['Sensor 2', 'Sensor 4', 'bbox_x1', 'bbox_y1', 'bbox_x2', 'bbox_y2',
+                'left_eye_x', 'left_eye_y', 'right_eye_x', 'right_eye_y',
+                'nose_x', 'nose_y',
+                'mouth_left_x', 'mouth_left_y', 'mouth_right_x', 'mouth_right_y',
+                'sensor4_2_diff','facew', 'faceh', 'facea', 'facea2', 'facea4','height','weight','user_id']
 
+class BinaryClassificationModel(nn.Module):
+   def __init__(self):
+       super(BinaryClassificationModel, self).__init__()
+       self.fc1 = nn.Linear(len(input_columns), 256)
+       self.fc2 = nn.Linear(256, 128)
+       self.fc3 = nn.Linear(128, 64)
+       self.fc4 = nn.Linear(64, 32)
+       self.fc5 = nn.Linear(32, 1)
+ 
+   def forward(self, x):
+       x = torch.relu(self.fc1(x))
+       x = torch.relu(self.fc2(x))
+       x = torch.relu(self.fc3(x))
+       x = torch.relu(self.fc4(x))
+       x = self.fc5(x)
+       x = torch.sigmoid(x)  # Add Sigmoid activation for binary classification
+       return x
+   
 class DataAnalyst:
     """ Define the computation functions relevant for the project
     Provide convenience in testing and modification of algorithms
@@ -34,17 +62,65 @@ class DataAnalyst:
                 return 0
         return None
 
-    def detect_anomaly(self, data: dict, user_features: np.array, model) -> Union[None, int]:
+    def detect_anomaly(self, data: dict, user_features: np.array, model_path = None) -> Union[None, int]:
         """
         Detects anomalies in posture data.
 
         Args:
             data (dict): A dictionary containing sensor data.
             user_features (np.array): An array containing user features.
-            model: A model for detecting anomalies (not used in this simplified example).
+            model: Path to the model used for detecting anomalies. If None, the default model will be used.
 
         Returns:
             Union[None, int]: Returns 1 if an anomaly is detected, 0 otherwise, None if data is insufficient.
+        """
+
+        if user_features is None:
+            print("No user features available.")
+            return None
+        
+        #特征工程新建的列：
+        data['sensor4_2_diff'] = data['Sensor 4'] - data['Sensor 2']
+        data['facew'] = data['bbox_x2'] - data['bbox_x1']
+        data['faceh'] = data['bbox_y2'] - data['bbox_y1']
+        data['facea'] = data['facew'] * data['faceh']
+        data['facea2'] = data['facea'] / data['Sensor 2']
+        data['facea4'] = data['facea'] / data['Sensor 4']
+        data['height'] = user_features[3]
+        data['weight'] = user_features[2]
+        data['user_id'] = user_features[4]
+        
+        device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
+        if model_path is None:
+            model_path = ui_config.FilePaths.model_path.value
+
+        model = BinaryClassificationModel()
+        model.load_state_dict(torch.load(model_path, map_location=device))
+        model.to(device)
+        model.eval() # Set the model to evaluation mode
+
+        scaler_path = ui_config.FilePaths.scaler_path.value
+        scaler = joblib.load(scaler_path)
+
+        df = pd.DataFrame(data, index=[0])
+
+        features = df[input_columns].values
+
+        # Apply the same scaler used during training
+        features = scaler.transform(features)
+        
+        inputs = torch.tensor(features, dtype=torch.float32).to(device)
+        
+        # Make predictions
+        with torch.no_grad():
+            predictions = model(inputs).cpu().squeeze().numpy()  # Move the output back to CPU for further processing
+        
+        # Convert probabilities to binary labels using a threshold of 0.5
+        binary_predictions = (predictions > 0.5).astype(int)
+        print("Binary Prediction:", binary_predictions, "Original Prediction:", predictions, "for data:\n", df)
+        return binary_predictions
+
         """
         # 定义传感器名称
         sensor_2, sensor_4 = "Sensor 2", "Sensor 4"
@@ -73,6 +149,8 @@ class DataAnalyst:
 
         print("Insufficient data for anomaly detection.")
         return None
+
+        """
 
     def get_time_interval(self, alarm_times: list[str]) -> float:
         """ Return time interval in format total seconds

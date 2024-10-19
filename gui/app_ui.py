@@ -96,6 +96,7 @@ class App(ThemedTk):
         # 创建各个框架和UI元素
         self.sensor_values = dict()
         self.sensor_time = list()
+        self.latest_facial_values = None
         self.alarm_texts = list()
         self.elapsed_time = list()
         self.alarm_num = 0
@@ -156,6 +157,8 @@ class App(ThemedTk):
         self.alarm_timestamp = None
         self.alarm_consist_time = 0
 
+        self.lastest_prediction = None
+
         # 初始化主UI
         self.create_major_frames()
         self.add_header_elements(title=uc.ElementNames.app_title.value)
@@ -179,7 +182,7 @@ class App(ThemedTk):
         self.light_controller = LightControllerApp(light_control_var=enable_light_var,
                                                    serial_manager=self.serial_manager)
 
-        self.model = load_model(uc.FilePaths.model_path.value)
+        self.model_path = uc.FilePaths.model_path.value
         self.current_user_id = None
         self.current_user_features = None
         base_path = os.path.dirname(os.path.abspath(__file__))
@@ -534,15 +537,29 @@ class App(ThemedTk):
                 self.graph.ax.set_xlim(x[0], x[-1])
 
         if self.is_test_mode:
-            prediction = self.data_analyst.detect_anomaly_test(data=self.sensor_values)
+            self.lastest_prediction = self.data_analyst.detect_anomaly_test(data=self.sensor_values)
         else:
-            prediction = self.data_analyst.detect_anomaly(data=self.sensor_values,
-                                                          user_features=self.current_user_features,
-                                                          model=self.model)
+            update_delay = 500 # 500ms delay for sensor values to update
+            def make_prediction():
+                last_datetime = datetime.datetime.now() - datetime.timedelta(milliseconds = update_delay)
+                if self.latest_facial_values is None or \
+                    self.latest_facial_values["local_timestamp"] < last_datetime.timestamp() or \
+                    self.data_analyst.timestamp_to_datetime(self.sensor_time[-1][0]) < last_datetime:
+                    # print("No new data to make prediction.")
+                    return
+                sensor_data = {sensor: self.sensor_values[sensor][-1] for sensor in ["Sensor 2", "Sensor 4"]}
+                facial_data = self.latest_facial_values
+                data = sensor_data | facial_data
+                data.pop("local_timestamp")
+                self.lastest_prediction =  self.data_analyst.detect_anomaly(data=data,
+                                                        user_features=self.current_user_features,
+                                                        model_path=self.model_path)
+            self.after(update_delay, make_prediction)
+
         if self.logger.last_timestamp != "":
-            self.logger.update_prediction(timestamp=self.logger.last_timestamp, prediction=prediction)
-        print("Prediction: ", prediction)
-        if prediction == 0:
+            self.logger.update_prediction(timestamp=self.logger.last_timestamp, prediction=self.lastest_prediction)
+        print("Prediction: ", self.lastest_prediction)
+        if self.lastest_prediction == 0:
             anomaly_detected = True
             anomaly_graph_position = len(self.sensor_values['Sensor 2']) - 1
 
@@ -633,6 +650,19 @@ class App(ThemedTk):
         #     print("Next time call: ", rand_moment)
         #     print(f"Random Side Quest will be displayed after {rand_moment / 1000} seconds.\n"
         #           f"Number of side quests left: {self.bad_posture_comm_limit}")
+
+    def update_facial_values(self, facial_data: dict, timestamp: int, local_timestamp: str) -> None:
+        face_features = ['bbox_x1', 'bbox_y1', 'bbox_x2', 'bbox_y2',
+                'left_eye_x', 'left_eye_y', 'right_eye_x', 'right_eye_y',
+                'nose_x', 'nose_y',
+                'mouth_left_x', 'mouth_left_y', 'mouth_right_x', 'mouth_right_y']
+        
+        if facial_data is None or any([np.isnan(facial_data[feature]) for feature in face_features]):
+            return None
+        
+        facial_data['local_timestamp'] = local_timestamp
+        self.latest_facial_values = facial_data
+        # print("facial data added: ", facial_data, " at ", local_timestamp, "latest:", self.latest_facial_values)
 
     def show_notify_log_success(self, subject: str) -> None:
         if self.log_notification_frame:
@@ -1035,7 +1065,8 @@ class App(ThemedTk):
                 'Age': self.db_manager.session.user_details.age,
                 'Shoulder Size': self.db_manager.session.user_details.shoulder_size,
                 'Height': self.db_manager.session.user_details.height,
-                'Weight': self.db_manager.session.user_details.weight
+                'Weight': self.db_manager.session.user_details.weight,
+                "User ID": self.db_manager.session.user_id
             }
             self.current_user_features = self.process_user_info(user_info)
             size = self.current_user_features[1]
@@ -1173,9 +1204,11 @@ class App(ThemedTk):
             height = float(user_info['Height']) / 100
             weight = float(user_info['Weight'])
 
+            user_id = user_info['User ID']
+
             flexibility = flex_median_g
 
-            features = np.array([age, size, weight, height, flexibility], dtype=float)
+            features = np.array([age, size, weight, height, user_id, flexibility], dtype=float)
             # print(f"Processed user features: {features}")
             return features
         except Exception as e:

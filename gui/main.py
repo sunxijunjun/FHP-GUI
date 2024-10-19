@@ -143,6 +143,18 @@ class ThreadManager:
         entry_modified["sensor_2"] = sens_2
         entry_modified["sensor_4"] = sens_4
 
+        # Extract facial values
+        face_features = ['bbox_x1', 'bbox_y1', 'bbox_x2', 'bbox_y2',
+                'left_eye_x', 'left_eye_y', 'right_eye_x', 'right_eye_y',
+                'nose_x', 'nose_y',
+                'mouth_left_x', 'mouth_left_y', 'mouth_right_x', 'mouth_right_y']
+        
+        # Check if all keys in face_features exist in entry_modified
+        if all(face_feature in entry_modified for face_feature in face_features):
+            face_values = {face_feature: entry_modified[face_feature] for face_feature in face_features}
+        else:
+            face_values = None
+
         # 更新 recent_data
         self.app.data_analyst.recent_data["sensor_2"] = entry_modified["sensor_2"]
         self.app.data_analyst.recent_data["sensor_4"] = entry_modified["sensor_4"]
@@ -151,6 +163,9 @@ class ThreadManager:
                                       sens_4=entry_modified["sensor_4"],
                                       timestamp = int(self.app.logger.last_timestamp),
                                       local_time=entry['local_time'])
+        self.app.update_facial_values(facial_data=face_values,
+                                      timestamp = int(self.app.logger.last_timestamp),
+                                      local_timestamp=entry['local_timestamp'])
         return self.app.logger.last_timestamp, entry_modified
 
     @staticmethod
@@ -200,6 +215,7 @@ class ThreadManager:
         entry = {
             'timestamp': timestamp,
             'local_time': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            'local_timestamp': datetime.datetime.now().timestamp(),
             'sensor_2': np.nan,
             'sensor_4': np.nan,
             'bbox_x1': np.nan,

@@ -112,7 +112,8 @@ class FilePaths(Enum):
     user_photo_icon = project_root + '/data/img/user_photo.jpeg'
     user_login_db_path = project_root + "/data/users/logins.csv"
     flex_collect_csv_path = project_root + '/data/dynamic_data_collected/posture_data_20240713145850.csv'
-    model_path = project_root + '/model_all.h5'
+    model_path = project_root + '/models/best_model_1010.pth'
+    scaler_path = project_root + '/models/scaler.joblib'  
 
     """ Folder paths """
     values_folder_path = project_root + "/data/values"

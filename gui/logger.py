@@ -206,6 +206,7 @@ class Logger:
         if timestamp not in self.logs:
             local_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             data_entry['local_time'] = local_time
+            data_entry['local_timestamp'] = datetime.datetime.now().timestamp()
             self.logs[timestamp] = data_entry
         else:
             self.logs[timestamp].update(data_entry)
