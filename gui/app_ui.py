@@ -241,7 +241,30 @@ class App(ThemedTk):
     def show_user_guide_window(self):
         guide_window = tk.Toplevel(self)
         guide_window.title("User Guide")
-        guide_window.geometry("350x800")  # 调整窗口大小
+        guide_window.geometry("450x400")  # 调整窗口大小
+
+        # Create a canvas
+        canvas = tk.Canvas(guide_window)
+        canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+
+        # Reuse Previous Code:
+        # guide_window = NotesEntryFrame()
+
+        # Add a scrollbar to the canvas
+        scrollbar = ttk.Scrollbar(guide_window, orient=tk.VERTICAL, command=canvas.yview)
+        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+
+        # Configure the canvas
+        canvas.configure(yscrollcommand=scrollbar.set)
+        canvas.bind('<Configure>', lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
+
+        # Create another frame inside the canvas
+        inner_frame = tk.Frame(canvas, width = 330)
+
+        # Add that frame to a window in the canvas
+        canvas.create_window((0, 0), window=inner_frame, anchor="center")
+
+
 
         # 多语言文本字典
         guide_texts = {
@@ -307,23 +330,30 @@ class App(ThemedTk):
         }
 
         # 默认显示的语言是英语
-        guide_label = tk.Label(guide_window, text=guide_texts["English"], font=("Arial", 10), justify="left",
+        guide_label = tk.Label(inner_frame, text=guide_texts["English"], font=("Arial", 10), justify="left",
                                wraplength=300)
-        guide_label.pack(pady=20)
+        guide_label.pack(pady=(20,10), fill=tk.X)
 
         # 选择语言的下拉菜单
         def update_language(event):
             selected_language = language_combobox.get()
             guide_label.config(text=guide_texts[selected_language])
 
-        language_combobox = ttk.Combobox(guide_window, values=["English", "中文", "粤语","Deutsch"])
+        language_frame = tk.Frame(inner_frame)
+        language_frame.pack(fill=tk.X, pady=10)
+
+        language_combobox = ttk.Combobox(language_frame, values=["English", "中文", "粤语","Deutsch"])
         language_combobox.current(0)  # 默认选择英语
         language_combobox.bind("<<ComboboxSelected>>", update_language)
         language_combobox.pack(pady=10)
 
         # 关闭按钮
-        close_button = ttk.Button(guide_window, text="Close", command=guide_window.destroy)
+        close_button = ttk.Button(inner_frame, text="Close", command=guide_window.destroy)
         close_button.pack(pady=10)
+
+        # Update the scrollregion after adding all widgets
+        inner_frame.update_idletasks()
+        canvas.config(scrollregion=canvas.bbox("all"))
 
 
     # 在App类中添加设置按钮
