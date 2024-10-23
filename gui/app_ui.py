@@ -111,6 +111,7 @@ class App(ThemedTk):
         self.info_panel_wnum = 0
         self.prev_alarm_pos = 0
         self.val_replacing_num = 0
+        self.screen_distance_num = 0
         self.false_responses_limit = uc.Measurements.false_responses_limit.value
         self.x_range = uc.Measurements.graph_x_limit.value
         self.dist_max = uc.Measurements.distance_max.value
@@ -624,6 +625,7 @@ class App(ThemedTk):
     def validate_sens_values(self, sens_2: int, sens_4: int, values: dict) -> tuple[int, int]:
         notes = ""
         is_valid = True
+        too_close = False
         if np.isnan(sens_2) or np.isnan(sens_4):
             return sens_2, sens_4
         if sens_2 > self.dist_max:
@@ -644,8 +646,14 @@ class App(ThemedTk):
             else:
                 sens_4 = self.dist_max
                 notes += "Sensor 4 val replaced by max valid val "
+        if sens_2 < self.dist_min or sens_4 < self.dist_min:
+            too_close = True
+            self.screen_distance_num += 1
         if is_valid:
-            self.val_replacing_num = 0  # reset
+            self.val_replacing_num = 0  # reset            
+        if not too_close:
+            self.screen_distance_num = 0
+        if is_valid and not too_close:
             self.remove_error_notification()
         self.logger.update_notes(timestamp=self.logger.last_timestamp, notes=notes)
         if not self.error_notify_messagebox \
@@ -653,6 +661,11 @@ class App(ThemedTk):
                 and self.val_replacing_num >= uc.Measurements.val_replacing_limit.value:
             play_sound_in_thread()
             self.error_notify_messagebox = messagebox.showerror("Error", "Sensor cannot detect distance to participant!\nPlease adjust the posture or sensor!")
+        if not self.error_notify_messagebox \
+                and too_close \
+                and self.screen_distance_num >= uc.Measurements.val_replacing_limit.value:
+            play_sound_in_thread()
+            self.error_notify_messagebox = messagebox.showwarning("Warning", "You are too close to the screen!\nKeep an appropriate distance to protect your eyesight.")
         return sens_2, sens_4
 
     def update_sensor_values(self, sens_2: int, sens_4: int, timestamp: int, local_time: str) -> None:
