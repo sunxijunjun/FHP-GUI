@@ -3,11 +3,15 @@ import serial
 import tkinter as tk
 from tkinter import messagebox
 
-def PopupMessage(title, message):
+def PopupMessage(title, message, retry = False):
     """ Show a popup message. """
     root = tk.Tk()
     root.withdraw()
-    messagebox.showinfo(title, message)
+    if retry:
+        if not messagebox.askretrycancel(title, message):
+            quit()
+    else:
+        messagebox.showinfo(title, message)
     root.destroy()
 
 def WritePortName(serial_port_name):
@@ -58,7 +62,7 @@ def GetPortName():
                     WritePortName(serial_port)
                     return serial_port
         else:
-            PopupMessage("Error", "Device not found. Please ensure the device is connected.")
+            PopupMessage("Error", "Device not found. Please ensure the device is connected.", retry = True)
             attempts += 1
         
         if attempts >= 3:
@@ -85,6 +89,8 @@ def GetPortNameManually():
         if CheckPortAvailability(serial_port):
             isPortAvailable = True
             WritePortName(serial_port)
+        else:
+            PopupMessage("Error", "Device not found. Would you like to retry?", retry = True)
     
     return serial_port
 
