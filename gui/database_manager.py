@@ -350,8 +350,10 @@ class ReportWriter:
         if path is not None:
             self.path = Path(path)
             return self.path
-        new_path = filedialog.asksaveasfilename(filetypes=[("PDF Files", "*.pdf"), ("Text Files", ["*.txt", "*.md"])])
+        new_path = filedialog.asksaveasfilename(filetypes=[("PDF Files", ".pdf")])        
         self.path = Path(new_path)
+        if not self.path.suffix:
+            self.path = self.path.with_suffix(".pdf")
         return self.path
 
 
