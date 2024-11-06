@@ -999,6 +999,15 @@ class App(ThemedTk):
     def show_sign_in_popup(self):
         self.pause()
         pop_up = UserDetailsWindow(self, title=uc.ElementNames.sign_in_popup_title.value)
+
+        # Prompt the new user to register
+        new_user_frame = ttk.Frame(pop_up)
+        new_user_frame.grid(row=4, column=0, columnspan=2, pady=10)
+        new_user_label = ttk.Label(new_user_frame, text="New User?")
+        new_user_label.grid(row=0, column=0, padx=5)
+        register_button = ttk.Button(new_user_frame, text="Register", command=self.show_register_popup)
+        register_button.grid(row=0, column=1, padx=5)
+
         pop_up.add_button(txt="Log in", func=self.sign_in)
         pop_up.add_button(txt="Cancel", func=pop_up.close)
         self.sign_in_popup = pop_up
