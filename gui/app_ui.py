@@ -1244,7 +1244,7 @@ class App(ThemedTk):
             shoulder_size_map = {'XS': 0, 'S': 1, 'M': 2, 'L': 3, 'XL': 4}
             size = shoulder_size_map.get(user_info['Shoulder Size'], -1)
 
-            height = float(user_info['Height']) / 100
+            height = float(user_info['Height'])
             weight = float(user_info['Weight'])
 
             user_id = user_info['User ID']
