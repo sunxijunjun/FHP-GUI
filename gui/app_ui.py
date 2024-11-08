@@ -182,8 +182,6 @@ class App(ThemedTk):
         # 初始化 LightControllerApp
         self.light_controller = LightControllerApp(light_control_var=enable_light_var,
                                                    serial_manager=self.serial_manager)
-
-        self.model_path = uc.FilePaths.model_path.value
         self.current_user_id = None
         self.current_user_features = None
         base_path = os.path.dirname(os.path.abspath(__file__))
@@ -583,8 +581,7 @@ class App(ThemedTk):
                 data = sensor_data | facial_data
                 data.pop("local_timestamp")
                 self.lastest_prediction =  self.data_analyst.detect_anomaly(data=data,
-                                                        user_features=self.current_user_features,
-                                                        model_path=self.model_path)
+                                                        user_features=self.current_user_features)
             self.after(update_delay, make_prediction)
 
         if self.logger.last_timestamp != "":
@@ -786,7 +783,7 @@ class App(ThemedTk):
         increment: float = uc.Measurements.threshold_increment.value
         self.data_analyst.update_threshold(shoulder_size=size,
                                            increment=increment)
-        self.logger.update_model_threshold(value=self.data_analyst.get_threshold(size),
+        self.logger.update_model_threshold(value=self.data_analyst.get_threshold(),
                                            timestamp=self.logger.last_timestamp)
         self.reset_false_response_limit()
         print(f"New threshold for shoulder size {size} has been set")
@@ -1123,9 +1120,8 @@ class App(ThemedTk):
             self.current_user_features = self.process_user_info(user_info)
             size = self.current_user_features[1]
             increment: float = uc.Measurements.threshold_increment.value
-            self.data_analyst.update_threshold(shoulder_size=size,
-                                               increment=increment)
-            self.logger.update_model_threshold(value=self.data_analyst.get_threshold(size),
+            self.data_analyst.update_threshold(increment)
+            self.logger.update_model_threshold(value=self.data_analyst.get_threshold(),
                                                timestamp=self.logger.last_timestamp)
         else:
             print(f"File not found at path: {self.csv_path}")
