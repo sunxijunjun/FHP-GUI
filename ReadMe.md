@@ -65,8 +65,10 @@ This reminder helps users maintain eye health while working for extended periods
 The core framework of the application has been established and is functional.
 
 ## 🛠️ TODO:
-Optimize posture prediction logic based on second-phase data analysis results.
+1. Use thresholds and ML models to make predictions, a voting method is under development.
+2. Rule out situations when prediction cannot be made, such as sensors miss focus or no facial key points detected.
+3. Finalize GUI: Complete calinration function.  
 ## 👥 Contributors
-The following people have contributed to the development of this GUI:
+The following people have contributed to the development and testing of this GUI:
 
-Xijun SUN, Altair ISSAMETOV, Huanyu ZHANG, and Qigang ZHANG
+Xijun SUN, Altair ISSAMETOV, Huanyu ZHANG, Qigang ZHANG, and Wenhan ZHENG.
