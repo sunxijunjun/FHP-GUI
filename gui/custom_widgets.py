@@ -137,10 +137,10 @@ class AbstractWindow(tk.Toplevel):
         button: ttk.Button = self.submission_button
         button.config(command=self.do_nothing)
 
-    def add_button(self, txt: str, func: Callable):
+    def add_button(self, txt: str, func: Callable, row: int = 3):
         # Submit button
         submit_button = ttk.Button(self, text=txt, command=func)
-        submit_button.grid(row=3, column=self.button_nums, padx=10, pady=10)
+        submit_button.grid(row=row, column=self.button_nums, padx=10, pady=10)
         self.submission_button = submit_button
         self.button_nums += 1
 
@@ -150,21 +150,24 @@ class AbstractWindow(tk.Toplevel):
 
 
 class UserDetailsWindow(AbstractWindow):
-    def __init__(self, parent, title: str):
+    def __init__(self, parent, title: str, read_data: bool = True):
         super().__init__(parent, title)
         self.full_name_entry = None
         self.password_entry = None
+        self.remember_name = str()
+        self.remember_password = str()
 
-        #try to get data from user_account.txt
-        try:
-            with open('user_account.txt', 'r') as file:
-                # read the first line as user name
-                self.remember_name = file.readline().strip()
-                # read the first line as password
-                self.remember_password  = file.readline().strip()
-        except FileNotFoundError:
-            #defalt
-            pass
+        if read_data:
+            #try to get data from user_account.txt
+            try:
+                with open('user_account.txt', 'r') as file:
+                    # read the first line as user name
+                    self.remember_name = file.readline().strip()
+                    # read the first line as password
+                    self.remember_password  = file.readline().strip()
+            except FileNotFoundError:
+                #defalt
+                pass
 
         # Create the widgets
         self.create_widgets()
@@ -208,10 +211,57 @@ class UserDetailsWindow(AbstractWindow):
 
         return details
 
+class DateOfBirthEntry(ttk.Entry):
+    def __init__(self, parent, row, column, *args, **kwargs):
+        super().__init__(parent, *args, **kwargs)
+        self.day_var = tk.StringVar(self)
+        self.month_var = tk.StringVar(self)
+        self.year_var = tk.StringVar(self)
+        self.date_var = tk.StringVar(self)
+
+        days = [str(i) for i in range(1, 32)]
+        months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+        years = [str(i) for i in range(1900, datetime.now().year + 1)]
+
+        # Place the parent Entry on the grid first
+        self.grid(row=row, column=column, padx=2, pady=10, sticky="w")
+
+        # Hide the parent Entry
+        self.grid_remove()
+
+        # Create a frame to hold the dropdowns
+        self.dropdown_frame = ttk.Frame(parent)
+        self.dropdown_frame.grid(row=row, column=column, padx=2, pady=10, sticky="w")
+
+        # Place the dropdowns inside the frame
+        self.day_dropdown = ttk.OptionMenu(self.dropdown_frame, self.day_var, days[0], *days, command=self.update_date)
+        self.day_dropdown.grid(row=0, column=0, padx=2, pady=10, sticky="w")
+
+        self.month_dropdown = ttk.OptionMenu(self.dropdown_frame, self.month_var, months[0], *months, command=self.update_date)
+        self.month_dropdown.grid(row=0, column=1, padx=2, pady=10, sticky="w")
+
+        self.year_dropdown = ttk.OptionMenu(self.dropdown_frame, self.year_var, 1990, *years, command=self.update_date)
+        self.year_dropdown.grid(row=0, column=2, padx=2, pady=10, sticky="w")
+
+        self.update_date()
+
+    def update_date(self, *args):
+        day = self.day_var.get()
+        month = self.month_var.get()
+        year = self.year_var.get()
+        date_str = f"{day}-{month}-{year}"
+        self.date_var.set(date_str)
+
+    def get(self):
+        day = self.day_var.get()
+        month = self.month_var.get()
+        year = self.year_var.get()
+        date = datetime.strptime(f"{day}-{month}-{year}", "%d-%b-%Y")
+        return date.strftime("%d-%m-%Y")
 
 class UserRegistrationWindow(UserDetailsWindow):
     def __init__(self, parent, title):
-        super().__init__(parent, title)
+        super().__init__(parent, title, read_data = False)
         # Basic memory cells
         self.data_entries_num = 4  # minimum is 4, because other 4 [0-3] are taken for name, password, remember, and buttons
         self.message_location = (7, 3)
@@ -248,14 +298,11 @@ class UserRegistrationWindow(UserDetailsWindow):
         self.data_entries_num += 1
         return selection_address
 
-    def add_date_selection(self, label_name: str) -> ttk.Entry:
+    def add_date_selection(self, label_name: str) -> DateEntry:
         date_label = ttk.Label(self, text=label_name)
         date_label.grid(row=self.data_entries_num, column=0, padx=10, pady=10, sticky="e")
-        date_field = ttk.Entry(self, width=12)
+        date_field = DateOfBirthEntry(self, row=self.data_entries_num, column=1)
         date_field.grid(row=self.data_entries_num, column=1, padx=10, pady=10)
-        date_field.insert(0, "dd-mm-yyyy")
-        date_field.bind("<FocusIn>", self.clear_date_placeholder)
-        date_field.bind("<FocusOut>", self.validate_date)
         self.data_entries_num += 1
         return date_field
 

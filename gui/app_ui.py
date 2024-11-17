@@ -1005,15 +1005,24 @@ class App(ThemedTk):
         register_button = ttk.Button(new_user_frame, text="Register", command=self.show_register_popup)
         register_button.grid(row=0, column=1, padx=5)
 
+        def close_popup():
+            self.resume()
+            pop_up.close()
+            self.sign_in_popup = None
+
         pop_up.add_button(txt="Log in", func=self.sign_in)
-        pop_up.add_button(txt="Cancel", func=pop_up.close)
+        pop_up.add_button(txt="Cancel", func=close_popup)       
+
         self.sign_in_popup = pop_up
 
     def show_register_popup(self):
         self.pause()
+        if self.sign_in_popup is not None:
+            self.sign_in_popup.close()
+            self.sign_in_popup = None
         pop_up = UserRegistrationWindow(self, title=uc.ElementNames.registration_popup_title.value)
-        pop_up.add_button(txt="Submit", func=self.register_user)
-        pop_up.add_button(txt="Cancel", func=pop_up.close)
+        pop_up.add_button(txt="Submit", func=self.register_user, row=9)
+        pop_up.add_button(txt="Cancel", func=pop_up.close, row=9)
         self.registration_popup = pop_up
 
     def show_edit_photo_popup(self):
@@ -1101,6 +1110,7 @@ class App(ThemedTk):
         pop_up.show_message_frame(subject="Success",
                                   details=f"Welcome back, {self.db_manager.session.user_details.get_full_name()}")
         self.set_user_photo()
+        self.sign_in_popup = None
 
         print(f"Checking if file exists at path: {self.csv_path}")
         if os.path.exists(self.csv_path):
