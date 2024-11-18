@@ -64,8 +64,9 @@ This reminder helps users maintain eye health while working for extended periods
 ## 🚀 Current Status
 The core framework of the application has been established and is functional.
 
+
 ## 🛠️ TODO:
-1. Use thresholds and ML models to make predictions, a voting method is under development. (model and thresholds not finalized yet!!)
+1. Use thresholds and ML models to make predictions, a voting method is under development. (model and thresholds not finalized yet!!, Model 1 still debugging)
 2. Rule out situations when prediction cannot be made, such as sensors miss focus or no facial key points detected.
 3. Finalize GUI: Complete calinration function.  
 ## 👥 Contributors
