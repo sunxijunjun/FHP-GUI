@@ -178,15 +178,17 @@ class DataAnalyst:
             
             x_axis = features_df['right_eye_x']-features_df['left_eye_x']
             y_axis = features_df['right_eye_y']-features_df['left_eye_x']
-            px_size= math.sqrt(x_axis**2 + y_axis**2)
+            image_px_size= math.sqrt(x_axis**2 + y_axis**2)
+
+            sensor_px_size = 2.2
 
             sensor_diagonal = 4.8
             fov_rad = math.radians(68)
             focal_length_mm = sensor_diagonal / (2 * math.tan(fov_rad/2))
             scale = 1200/240
-            original_px_size = px_size * scale
+            original_px_size = image_px_size * scale
             real_size = 65
-            distance_mm = (focal_length_mm * real_size) / (original_px_size * px_size/1000)
+            distance_mm = (focal_length_mm * real_size) / (original_px_size * sensor_px_size/1000)
 
             df[prediction_column_name] = distance_mm
             return df
