@@ -8,6 +8,7 @@ import os
 import torch.nn as nn
 import joblib  
 import onnxruntime as ort
+import math
 
 # Define input columns for each model
 model1_input_columns = ['Sensor 2', 'Sensor 4', 'bbox_x1', 'bbox_y1', 'bbox_x2', 'bbox_y2',
@@ -20,6 +21,8 @@ model1_input_columns = ['Sensor 2', 'Sensor 4', 'bbox_x1', 'bbox_y1', 'bbox_x2',
 model2_input_columns = [
     'weight', 'height', 'sensor4_2_diff', 'Sensor 2', 'Sensor 4'
 ]
+
+rangefinder_input_columns = ['left_eye_x', 'left_eye_y', 'right_eye_x', 'right_eye_y']
 
 # Input columns for threshold method
 threshold_input_columns = [
@@ -160,6 +163,34 @@ class DataAnalyst:
             )
 
             return df
+        
+        def single_camera_rangefinder(df: pd.DataFrame, input_columns: list, prediction_column_name):
+            missing_columns = set(input_columns) - set(df.columns)
+            if missing_columns:
+                print(f"Warning: Missing columns for {prediction_column_name}: {missing_columns}")
+                df[prediction_column_name] = np.nan
+                return df
+            features_df = df[input_columns]
+            if features_df.isnull().values.any():
+                print(f"Warning: Invalid number in columns!")
+                df[prediction_column_name] = np.nan
+                return df
+            
+            x_axis = features_df['right_eye_x']-features_df['left_eye_x']
+            y_axis = features_df['right_eye_y']-features_df['left_eye_x']
+            px_size= math.sqrt(x_axis^2 + y_axis^2)
+
+            sensor_diagonal = 4.8
+            fov_rad = math.radians(68)
+            focal_length_mm = sensor_diagonal / (2 * math.tan(fov_rad/2))
+            scale = 1200/240
+            original_px_size = px_size * scale
+            real_size = 65
+            distance_mm = (focal_length_mm * real_size) / (original_px_size * px_size/1000)
+
+            df[prediction_column_name] = distance_mm
+            return df
+            
 
         if user_features is None:
             print("No user features available.")
@@ -221,6 +252,9 @@ class DataAnalyst:
         df_predictions = predict_with_threshold(
             df_predictions, threshold_input_columns, self.thresholds, 'prediction_threshold'
         )
+
+        # Estimation of distance from camera
+        df_predictions = single_camera_rangefinder(df_predictions, rangefinder_input_columns, "estimated_range")
 
         df_predictions['voting_result'] = df_predictions.apply(
             lambda row: 0 if row['prediction_threshold'] == 0
