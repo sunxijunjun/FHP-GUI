@@ -10,12 +10,12 @@ import joblib
 import onnxruntime as ort
 
 # Define input columns for each model
-model1_input_columns = ['Sensor 2', 'Sensor 4', 'bbox_x1', 'bbox_y1', 'bbox_x2', 'bbox_y2',
+
+model1_input_columns = [ 'bbox_x1', 'bbox_y1', 'bbox_x2', 'bbox_y2',
                 'left_eye_x', 'left_eye_y', 'right_eye_x', 'right_eye_y',
                 'nose_x', 'nose_y',
                 'mouth_left_x', 'mouth_left_y', 'mouth_right_x', 'mouth_right_y',
-                'sensor4_2_diff','facew', 'faceh', 'facea', 'facea2', 'facea4','height','weight',
-                'diff2', 'diff4']
+                'facew', 'faceh', 'facea','height','weight']
 
 model2_input_columns = [
     'weight', 'height', 'sensor4_2_diff', 'Sensor 2', 'Sensor 4'
@@ -31,20 +31,29 @@ class SimplifiedBinaryClassificationModel(nn.Module):
         super(SimplifiedBinaryClassificationModel, self).__init__()
         self.fc1 = nn.Linear(input_size, 128)
         self.bn1 = nn.BatchNorm1d(128)
-        self.dropout1 = nn.Dropout(0.1)
+        self.dropout1 = nn.Dropout(0.5)
 
         self.fc2 = nn.Linear(128, 64)
         self.bn2 = nn.BatchNorm1d(64)
-        self.dropout2 = nn.Dropout(0.1)
+        self.dropout2 = nn.Dropout(0.5)
 
-        self.fc3 = nn.Linear(64, 1)
+        # New hidden layer
+        self.fc3 = nn.Linear(64, 32)
+        self.bn3 = nn.BatchNorm1d(32)
+        self.dropout3 = nn.Dropout(0.5)
+
+        self.fc4 = nn.Linear(32, 1)  # Updated final layer
 
     def forward(self, x):
         x = torch.relu(self.bn1(self.fc1(x)))
         x = self.dropout1(x)
         x = torch.relu(self.bn2(self.fc2(x)))
         x = self.dropout2(x)
-        x = self.fc3(x)
+        # Forward pass through the new hidden layer
+        x = torch.relu(self.bn3(self.fc3(x)))
+        x = self.dropout3(x)
+
+        x = self.fc4(x)  # No activation for final layer (logits)
         return x
 
 class DataAnalyst:
@@ -193,8 +202,8 @@ class DataAnalyst:
         models_dir = ui_config.FilePaths.model_path.value
 
         # Model 1 (PyTorch)
-        model1_path = os.path.join(models_dir, 'voting_model1.pth')
-        model1_scaler_path = os.path.join(models_dir, 'voting_model1_scaler.joblib')
+        model1_path = os.path.join(models_dir, 'voting_model3.pth')
+        model1_scaler_path = os.path.join(models_dir, 'voting_model3_scaler.joblib')
         model1_scaler = joblib.load(model1_scaler_path)
         model1, device1 = load_pytorch_model(model1_path, model1_input_columns)
         #model 1 in tuning. now still out puts a lot 0. since phase 2 data were smaller.
