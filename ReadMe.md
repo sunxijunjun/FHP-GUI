@@ -1,5 +1,14 @@
 # 🖥️ Posture Monitoring GUI
 This project is developed by researchers and students from The Hong Kong Polytechnic University. It focuses on the development of a posture analysis patent device designed to monitor user postures while using a computer. This Graphical User Interface (GUI) allows users to interact with the prototype device, providing an intuitive interface to manage settings, monitor posture, and generate reports.
+## Cloning This Repository
+
+To clone this repository and switch to the `tested` branch, follow these steps:
+
+1. **Open a terminal** on your local machine.
+2. **Clone the repository** using the following command:
+   ```bash
+   git clone -b tested --single-branch https://github.com/sunxijunjun/FHP-GUI.git
+
 
 ## 🌟 Features
 ![9749fd169c8e906edd63c405f3971f6](https://github.com/user-attachments/assets/03069b5f-38cd-4e10-8e0d-93502111b161)
