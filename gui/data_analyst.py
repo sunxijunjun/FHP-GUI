@@ -238,12 +238,13 @@ class DataAnalyst:
             axis=1
         )
         """
-        如果 prediction_threshold 为 0，那么直接将 voting_result 设为 0；
-        否则，检查 prediction_model1 和 prediction_model2 是否都为 0，如果是则设为 0，否则设为 1。
-
-        设计这个步骤的目的是，通常情况下，不良姿态可以从阈值判断中得出。
-        但是也有一些情况会得到过小的阈值。这时，阈值本身无法判断，所以会使用两个模型进行预测，如果同时为0，则输出0，以减小错误警报的次数。
-        选择首先相信阈值也是因为阈值可以根据用户反馈的警报准确性快速调整。
+        If prediction_threshold is 0, set voting_result to 0 directly; otherwise, check if both prediction_model1 and prediction_model2 are 0. If they are, 
+        set voting_result to 0; otherwise, set it to 1.
+        The purpose of this design is that, under normal circumstances, incorrect posture can be determined based on the threshold. 
+        However, there are some situations where the threshold value may be too small. In such cases, the threshold alone cannot make a reliable judgment, 
+        so the predictions from the two models are used. If both models predict 0, the output is set to 0 to reduce the number of false alarms.
+        
+        The threshold is prioritized because it can be quickly adjusted based on the accuracy of alerts provided by user feedback.
         """
         print(
             f"{df_predictions[['prediction_model1','prediction_model2','prediction_threshold','voting_result']]}\nfor data:\n{df}"
