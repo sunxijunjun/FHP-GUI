@@ -219,12 +219,16 @@ class DateOfBirthEntry(ttk.Entry):
         self.year_var = tk.StringVar(self)
         self.date_var = tk.StringVar(self)
 
-        days = [str(i) for i in range(1, 32)]
-        months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
-        years = [str(i) for i in range(1900, datetime.now().year + 1)]
+        self.days = [str(i) for i in range(1, 32)]
+        self.months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+        current_year = datetime.now().year
+        default_year = 1990
+        self.years = [str(i) for i in range(1900, current_year + 1)]
 
-        # Place the parent Entry on the grid first
-        self.grid(row=row, column=column, padx=2, pady=10, sticky="w")
+        # Set default values
+        self.day_var.set(self.days[0])
+        self.month_var.set(self.months[0])
+        self.year_var.set(default_year)
 
         # Hide the parent Entry
         self.grid_remove()
@@ -234,13 +238,13 @@ class DateOfBirthEntry(ttk.Entry):
         self.dropdown_frame.grid(row=row, column=column, padx=2, pady=10, sticky="w")
 
         # Place the dropdowns inside the frame
-        self.day_dropdown = ttk.OptionMenu(self.dropdown_frame, self.day_var, days[0], *days, command=self.update_date)
+        self.day_dropdown = ttk.OptionMenu(self.dropdown_frame, self.day_var, self.days[0], *self.days, command=self.update_date)
         self.day_dropdown.grid(row=0, column=0, padx=2, pady=10, sticky="w")
 
-        self.month_dropdown = ttk.OptionMenu(self.dropdown_frame, self.month_var, months[0], *months, command=self.update_date)
+        self.month_dropdown = ttk.OptionMenu(self.dropdown_frame, self.month_var, self.months[0], *self.months, command=self.update_date)
         self.month_dropdown.grid(row=0, column=1, padx=2, pady=10, sticky="w")
 
-        self.year_dropdown = ttk.OptionMenu(self.dropdown_frame, self.year_var, 1990, *years, command=self.update_date)
+        self.year_dropdown = ttk.OptionMenu(self.dropdown_frame, self.year_var, default_year, *self.years, command=self.update_date)
         self.year_dropdown.grid(row=0, column=2, padx=2, pady=10, sticky="w")
 
         self.update_date()
@@ -249,14 +253,44 @@ class DateOfBirthEntry(ttk.Entry):
         day = self.day_var.get()
         month = self.month_var.get()
         year = self.year_var.get()
+
+        # Update the day dropdown based on the selected month and year
+        days_in_month = self.get_days_in_month(month, year)
+        self.update_day_dropdown(days_in_month)
+
         date_str = f"{day}-{month}-{year}"
         self.date_var.set(date_str)
 
+    def get_days_in_month(self, month, year):
+        month_days = {
+            "Jan": 31, "Feb": 28, "Mar": 31, "Apr": 30, "May": 31, "Jun": 30,
+            "Jul": 31, "Aug": 31, "Sep": 30, "Oct": 31, "Nov": 30, "Dec": 31
+        }
+        if month == "Feb" and self.is_leap_year(int(year)):
+            return 29
+        return month_days[month]
+
+    def is_leap_year(self, year):
+        return year % 4 == 0 and (year % 100 != 0 or year % 400 == 0)
+
+    def update_day_dropdown(self, days_in_month):
+        current_day = int(self.day_var.get())
+        self.days = [str(i) for i in range(1, days_in_month + 1)]
+        menu = self.day_dropdown["menu"]
+        menu.delete(0, "end")
+        for day in self.days:
+            menu.add_command(label=day, command=lambda value=day: self.day_var.set(value))
+        if current_day > days_in_month:
+            self.day_var.set(str(days_in_month))
+        else:
+            self.day_var.set(str(current_day))
+
     def get(self):
         day = self.day_var.get()
-        month = self.month_var.get()
+        month_str = self.month_var.get()
         year = self.year_var.get()
-        date = datetime.strptime(f"{day}-{month}-{year}", "%d-%b-%Y")
+        month = self.months.index(month_str) + 1
+        date = datetime(int(year), month, int(day))
         return date.strftime("%d-%m-%Y")
 
 class UserRegistrationWindow(UserDetailsWindow):
@@ -298,7 +332,7 @@ class UserRegistrationWindow(UserDetailsWindow):
         self.data_entries_num += 1
         return selection_address
 
-    def add_date_selection(self, label_name: str) -> DateEntry:
+    def add_date_selection(self, label_name: str):
         date_label = ttk.Label(self, text=label_name)
         date_label.grid(row=self.data_entries_num, column=0, padx=10, pady=10, sticky="e")
         date_field = DateOfBirthEntry(self, row=self.data_entries_num, column=1)
