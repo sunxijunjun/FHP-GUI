@@ -178,7 +178,7 @@ class DataAnalyst:
             
             x_axis = features_df['right_eye_x']-features_df['left_eye_x']
             y_axis = features_df['right_eye_y']-features_df['left_eye_x']
-            px_size= math.sqrt(x_axis^2 + y_axis^2)
+            px_size= math.sqrt(x_axis**2 + y_axis**2)
 
             sensor_diagonal = 4.8
             fov_rad = math.radians(68)
