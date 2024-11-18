@@ -287,9 +287,10 @@ class DateOfBirthEntry(ttk.Entry):
 
     def get(self):
         day = self.day_var.get()
-        month = self.month_var.get()
+        month_str = self.month_var.get()
         year = self.year_var.get()
-        date = datetime.strptime(f"{day}-{month}-{year}", "%d-%b-%Y")
+        month = self.months.index(month_str) + 1
+        date = datetime(int(year), month, int(day))
         return date.strftime("%d-%m-%Y")
 
 class UserRegistrationWindow(UserDetailsWindow):
