@@ -56,11 +56,11 @@ class DataAnalyst:
         self.recent_data = {"sensor_2": np.nan, "sensor_4": np.nan}
         self.data = dict()
         self.thresholds = {
-            "XS": 64.638889,
-            "S": 64.769231,
-            "M": 71.333333,
-            "L": 82.857143,
-            "XL": 86.187500
+            "XS": 66.638889,
+            "S": 67.769231,
+            "M": 80.333333,
+            "L": 88.857143,
+            "XL": 95.187500
         }
 
     @staticmethod
@@ -197,6 +197,7 @@ class DataAnalyst:
         model1_scaler_path = os.path.join(models_dir, 'voting_model1_scaler.joblib')
         model1_scaler = joblib.load(model1_scaler_path)
         model1, device1 = load_pytorch_model(model1_path, model1_input_columns)
+        #model 1 in tuning. now still out puts a lot 0. since phase 2 data were smaller.
 
         # Model 2 (ONNX)
         model2_onnx_path = os.path.join(models_dir, 'voting_model2.onnx')
