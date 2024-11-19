@@ -30,24 +30,34 @@ threshold_input_columns = [
 ]
 
 class SimplifiedBinaryClassificationModel(nn.Module):
-    def __init__(self, input_size):
+    def __init__(self):
         super(SimplifiedBinaryClassificationModel, self).__init__()
-        self.fc1 = nn.Linear(input_size, 128)
+        self.fc1 = nn.Linear(len(model1_input_columns), 128)
         self.bn1 = nn.BatchNorm1d(128)
-        self.dropout1 = nn.Dropout(0.1)
+        self.dropout1 = nn.Dropout(0.5)
 
         self.fc2 = nn.Linear(128, 64)
         self.bn2 = nn.BatchNorm1d(64)
-        self.dropout2 = nn.Dropout(0.1)
+        self.dropout2 = nn.Dropout(0.5)
 
-        self.fc3 = nn.Linear(64, 1)
+        # New hidden layer
+        self.fc3 = nn.Linear(64, 32)
+        self.bn3 = nn.BatchNorm1d(32)
+        self.dropout3 = nn.Dropout(0.5)
+
+        self.fc4 = nn.Linear(32, 1)  # Updated final layer
 
     def forward(self, x):
         x = torch.relu(self.bn1(self.fc1(x)))
         x = self.dropout1(x)
         x = torch.relu(self.bn2(self.fc2(x)))
         x = self.dropout2(x)
-        x = self.fc3(x)
+
+        # Forward pass through the new hidden layer
+        x = torch.relu(self.bn3(self.fc3(x)))
+        x = self.dropout3(x)
+
+        x = self.fc4(x)  # No activation for final layer (logits)
         return x
 
 class DataAnalyst:
@@ -93,22 +103,28 @@ class DataAnalyst:
             
         def load_pytorch_model(model_path, input_columns):
             device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-            model = SimplifiedBinaryClassificationModel(input_size=len(input_columns)).to(device)
+            model = SimplifiedBinaryClassificationModel().to(device)
             model.load_state_dict(torch.load(model_path, map_location=device))
             model.eval()
             return model, device
-
-        def predict_with_pytorch_model(df, model, device, input_columns, scaler, prediction_column_name):
+        
+        def input_check(df, input_columns, prediction_column_name):
             missing_columns = set(input_columns) - set(df.columns)
             if missing_columns:
                 print(f"Warning: Missing columns for {prediction_column_name}: {missing_columns}")
                 df[prediction_column_name] = np.nan
                 return df
-
+            
             features_df = df[input_columns]
             nan_mask = features_df.isnull().any(axis=1)
             predictions = np.full(len(df), np.nan)
             valid_indices = (~nan_mask).to_numpy().nonzero()[0]
+
+            return features_df, predictions, valid_indices
+
+        def predict_with_pytorch_model(df, model, device, input_columns, scaler, prediction_column_name):
+            features_df, predictions, valid_indices = input_check(df, input_columns, prediction_column_name)
+            
             if len(valid_indices) > 0:
                 valid_features = features_df.iloc[valid_indices].values
                 valid_features_scaled = scaler.transform(valid_features)
@@ -120,19 +136,12 @@ class DataAnalyst:
                     predictions[valid_indices] = binary_predictions
 
             df[prediction_column_name] = predictions
+            df[f"{prediction_column_name}_raw"] = probabilities # Record model output probabilities
             return df
 
         def predict_with_onnx_model(df, session, input_columns, scaler, prediction_column_name):
-            missing_columns = set(input_columns) - set(df.columns)
-            if missing_columns:
-                print(f"Warning: Missing columns for {prediction_column_name}: {missing_columns}")
-                df[prediction_column_name] = np.nan
-                return df
+            features_df, predictions, valid_indices = input_check(df, input_columns, prediction_column_name)
 
-            features_df = df[input_columns]
-            nan_mask = features_df.isnull().any(axis=1)
-            predictions = np.full(len(df), np.nan)
-            valid_indices = (~nan_mask).to_numpy().nonzero()[0]
             if len(valid_indices) > 0:
                 valid_features = features_df.iloc[valid_indices].values
                 valid_features_scaled = scaler.transform(valid_features)
@@ -145,15 +154,12 @@ class DataAnalyst:
                 predictions[valid_indices] = binary_predictions
 
             df[prediction_column_name] = predictions
+            df[f"{prediction_column_name}_raw"] = probabilities # Record model output probabilities
             return df
 
         # Threshold method prediction
         def predict_with_threshold(df: pd.DataFrame, input_columns: list, threshold_mapping: dict, prediction_column_name):
-            missing_columns = set(input_columns) - set(df.columns)
-            if missing_columns:
-                print(f"Warning: Missing columns for {prediction_column_name}: {missing_columns}")
-                df[prediction_column_name] = np.nan
-                return df
+            input_check(df, input_columns, prediction_column_name)
 
             df[prediction_column_name] = df.apply(
                 lambda row: (
@@ -272,7 +278,7 @@ class DataAnalyst:
         选择首先相信阈值也是因为阈值可以根据用户反馈的警报准确性快速调整。
         """
         print(
-            f"{df_predictions[['prediction_model1','prediction_model2','prediction_threshold','voting_result']]}\nfor data:\n{df}"
+            f"{df_predictions.iloc[:,27:]}\nfor data:\n{df}"
         )
         return df_predictions['voting_result'].iloc[-1]
 
