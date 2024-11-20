@@ -98,7 +98,7 @@ class DataAnalyst:
             model: Path to the model used for detecting anomalies. If None, the default model will be used.
 
         Returns:
-            Union[None, int]: Returns 1 if an anomaly is detected, 0 otherwise, None if data is insufficient.
+            Union[None, int]: Returns 0 if an anomaly is detected, 1 otherwise, None if data is insufficient.
         """
             
         def load_pytorch_model(model_path, input_columns):
@@ -183,7 +183,7 @@ class DataAnalyst:
                 return df
             
             x_axis = features_df['right_eye_x']-features_df['left_eye_x']
-            y_axis = features_df['right_eye_y']-features_df['left_eye_x']
+            y_axis = features_df['right_eye_y']-features_df['left_eye_Y']
             image_px_size= math.sqrt(x_axis**2 + y_axis**2)
 
             sensor_px_size = 2.2
