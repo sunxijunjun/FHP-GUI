@@ -124,15 +124,22 @@ class DataAnalyst:
 
         def predict_with_pytorch_model(df, model, device, input_columns, scaler, prediction_column_name):
             features_df, predictions, valid_indices = input_check(df, input_columns, prediction_column_name)
-            
+            for col in input_columns:
+                print(f"Column: {col}")
+                print(f"Values: {features_df[col].values}")
             if len(valid_indices) > 0:
                 valid_features = features_df.iloc[valid_indices].values
                 valid_features_scaled = scaler.transform(valid_features)
+                print(f"Valid features (after scaling): {valid_features_scaled}")
                 inputs = torch.tensor(valid_features_scaled, dtype=torch.float32).to(device)
+                print(f"Inputs tensor (sent to device): {inputs}")
                 with torch.no_grad():
                     outputs = model(inputs).cpu().squeeze().numpy()
+                    print(f"Outputs: {outputs}")
                     probabilities = torch.sigmoid(torch.tensor(outputs)).numpy()
+                    print(f"Probabilities: {probabilities}")
                     binary_predictions = (probabilities > 0.5).astype(int) #tune!
+                    print(f"Binary predictions: {binary_predictions}")
                     predictions[valid_indices] = binary_predictions
 
             df[prediction_column_name] = predictions
@@ -183,7 +190,7 @@ class DataAnalyst:
                 return df
             
             x_axis = features_df['right_eye_x']-features_df['left_eye_x']
-            y_axis = features_df['right_eye_y']-features_df['left_eye_Y']
+            y_axis = features_df['right_eye_y']-features_df['left_eye_y']
             image_px_size= math.sqrt(x_axis**2 + y_axis**2)
 
             sensor_px_size = 2.2
