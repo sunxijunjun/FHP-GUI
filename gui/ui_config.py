@@ -89,7 +89,7 @@ class Measurements(Enum):
 
     num_bad_posture_commands = 10  # max total posture commands
     val_replacing_limit = 10  # threshold when the notification should popup
-    false_responses_limit = 3  # specify after how many responses the model threshold should be changed
+    false_responses_limit = 1  # specify after how many responses the model threshold should be changed
     threshold_increment = 10.0  # specify how the threshold should be incremented
 
     widgets_padding = 100
