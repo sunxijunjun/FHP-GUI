@@ -58,8 +58,8 @@ class PostureDataCollection(tk.Tk):
 
         for posture in postures:
             print(f"Collecting data for posture: {posture}")
-            messagebox.showinfo("Instruction", f"Please maintain posture: {posture} for 30 seconds.")
-            time.sleep(1)
+            messagebox.showinfo("Instruction", f"Please maintain posture: {posture} for 10 seconds.")
+            time.sleep(5)
             readings = self.read_sensor_data()
             for reading in readings:
                 data.append(reading + [posture])
@@ -71,7 +71,7 @@ class PostureDataCollection(tk.Tk):
 
     def read_sensor_data(self):
         readings = []
-        end_time = time.time() + 30
+        end_time = time.time() + 10
         data_dict = {}
 
         while time.time() < end_time:
