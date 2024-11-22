@@ -571,13 +571,12 @@ class App(ThemedTk):
         else:
             update_delay = 500 # 500ms delay for sensor values to update
             def make_prediction():
-                print("self.device_exception_count: ", self.device_exception_count)
                 last_update_time = datetime.datetime.now() - datetime.timedelta(milliseconds = update_delay)
                 sensor_data = {sensor: self.sensor_values[sensor][-1] for sensor in ["Sensor 2", "Sensor 4"]}
                 facial_data = self.latest_facial_values
                 sensor_conditions = self.check_sensor_conditions(
-                    self.sensor_raw_values["Sensor 2"][-1],
-                    self.sensor_raw_values["Sensor 4"][-1]
+                    self.sensor_raw_values["Sensor 2"],
+                    self.sensor_raw_values["Sensor 4"]
                 )
                 facial_conditions = self.check_facial_conditions(last_update_time)
                 if self.latest_facial_values is None or \
