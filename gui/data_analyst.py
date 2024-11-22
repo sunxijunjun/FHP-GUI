@@ -75,7 +75,24 @@ class DataAnalyst:
             "L": 82.857143,
             "XL": 86.187500
         }
+        self.user_features = dict()
 
+    def set_user_features(self, user_features: np.array):
+        self.user_features['height'] = user_features[3]
+        self.user_features['weight'] = user_features[2]
+        def map_size(height):
+            if height < 157:
+                return 'XS'
+            elif 157 <= height < 162:
+                return 'S'
+            elif 162 <= height < 167:
+                return 'M'
+            elif 167 <= height < 172:
+                return 'L'
+            else:
+                return 'XL'
+        self.user_features['size'] = map_size(self.user_features['height'])
+    
     @staticmethod
     def detect_anomaly_test(data: dict[str, list[int]]) -> Union[None, int]:
         """ Return the index of data which represent the incorrect posture """
@@ -88,7 +105,7 @@ class DataAnalyst:
                 return 0
         return None
 
-    def detect_anomaly(self, data: dict, user_features: np.array) -> Union[None, int]:
+    def detect_anomaly(self, data: dict) -> Union[None, int]:
         """
         Detects anomalies in posture data.
 
@@ -207,7 +224,7 @@ class DataAnalyst:
             return df
             
 
-        if user_features is None:
+        if self.user_features is None:
             print("No user features available.")
             return None
         
@@ -220,20 +237,9 @@ class DataAnalyst:
         data['facea'] = data['facew'] * data['faceh']
         data['facea2'] = data['facea'] / data['Sensor 2']
         data['facea4'] = data['facea'] / data['Sensor 4']
-        data['height'] = user_features[3]
-        data['weight'] = user_features[2]
-        def map_size(height):
-            if height < 157:
-                return 'XS'
-            elif 157 <= height < 162:
-                return 'S'
-            elif 162 <= height < 167:
-                return 'M'
-            elif 167 <= height < 172:
-                return 'L'
-            else:
-                return 'XL'
-        data['size'] = map_size(data['height'])
+        data['height'] = self.user_features['height']
+        data['weight'] = self.user_features['weight']
+        data['size'] = self.user_features['size']
         self.data = data
 
         models_dir = ui_config.FilePaths.model_path.value
@@ -371,14 +377,14 @@ class DataAnalyst:
 
     def update_threshold(self, increment: float):
         try:
-            self.thresholds[self.data['size']] += increment
+            self.thresholds[self.user_features['size']] += increment
         except KeyError:
             print("The user's size is not defined.")
             return
 
     def get_threshold(self) -> float:
         try:
-            return self.thresholds[self.data['size']]
+            return self.thresholds[self.user_features['size']]
         except KeyError:
             print("The user's size is not defined.")
 

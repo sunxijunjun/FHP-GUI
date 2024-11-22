@@ -588,8 +588,7 @@ class App(ThemedTk):
                     self.remove_error_notification()
                 data = sensor_data | facial_data
                 data.pop("local_timestamp")
-                self.lastest_prediction =  self.data_analyst.detect_anomaly(data=data,
-                                                        user_features=self.current_user_features)
+                self.lastest_prediction =  self.data_analyst.detect_anomaly(data=data)
             self.after(update_delay, make_prediction)
 
         if self.logger.last_timestamp != "":
@@ -819,8 +818,7 @@ class App(ThemedTk):
             return None
         size: int = self.current_user_features[1]
         increment: float = uc.Measurements.threshold_increment.value
-        self.data_analyst.update_threshold(shoulder_size=size,
-                                           increment=increment)
+        self.data_analyst.update_threshold(increment=increment)
         self.logger.update_model_threshold(value=self.data_analyst.get_threshold(),
                                            timestamp=self.logger.last_timestamp)
         self.reset_false_response_limit()
@@ -1166,9 +1164,10 @@ class App(ThemedTk):
                 "User ID": self.db_manager.session.user_id
             }
             self.current_user_features = self.process_user_info(user_info)
-            size = self.current_user_features[1]
-            increment: float = uc.Measurements.threshold_increment.value
-            self.data_analyst.update_threshold(increment)
+            self.data_analyst.set_user_features(self.current_user_features)
+            # size = self.current_user_features[1]
+            # increment: float = uc.Measurements.threshold_increment.value
+            # self.data_analyst.update_threshold(increment)
             self.logger.update_model_threshold(value=self.data_analyst.get_threshold(),
                                                timestamp=self.logger.last_timestamp)
         else:
