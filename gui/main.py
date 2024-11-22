@@ -140,6 +140,8 @@ class ThreadManager:
         sens_2, sens_4 = self.app.validate_sens_values(sens_2=entry_modified["sensor_2"],
                                                        sens_4=entry_modified["sensor_4"],
                                                        values=self.app.sensor_values)
+        self.app.sensor_raw_values["Sensor 2"].append(entry_modified["sensor_2"]) if not np.isnan(entry_modified["sensor_2"]) else None
+        self.app.sensor_raw_values["Sensor 4"].append(entry_modified["sensor_4"]) if not np.isnan(entry_modified["sensor_4"]) else None
         entry_modified["sensor_2"] = sens_2
         entry_modified["sensor_4"] = sens_4
 

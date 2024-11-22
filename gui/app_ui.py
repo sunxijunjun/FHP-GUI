@@ -95,6 +95,7 @@ class App(ThemedTk):
 
         # 创建各个框架和UI元素
         self.sensor_values = dict()
+        self.sensor_raw_values = dict()
         self.sensor_time = list()
         self.latest_facial_values = None
         self.alarm_texts = list()
@@ -110,8 +111,7 @@ class App(ThemedTk):
         self.user_data = None
         self.info_panel_wnum = 0
         self.prev_alarm_pos = 0
-        self.val_replacing_num = 0
-        self.screen_distance_num = 0
+        self.device_exception_count = {"Sensor": list(), "Camera": list()}
         self.false_responses_limit = uc.Measurements.false_responses_limit.value
         self.x_range = uc.Measurements.graph_x_limit.value
         self.dist_max = uc.Measurements.distance_max.value
@@ -187,6 +187,7 @@ class App(ThemedTk):
         base_path = os.path.dirname(os.path.abspath(__file__))
         self.csv_path = os.path.join(base_path, 'data', 'users', 'logins.csv')
         self.sensor_values = {"Sensor 2": [], "Sensor 4": []}
+        self.sensor_raw_values = {"Sensor 2": [], "Sensor 4": []}
         self.alarm_text_file_path = self.get_alarm_logger_path()
         self.feedback_collector = None
 
@@ -570,14 +571,22 @@ class App(ThemedTk):
         else:
             update_delay = 500 # 500ms delay for sensor values to update
             def make_prediction():
-                last_datetime = datetime.datetime.now() - datetime.timedelta(milliseconds = update_delay)
-                if self.latest_facial_values is None or \
-                    self.latest_facial_values["local_timestamp"] < last_datetime.timestamp() or \
-                    self.data_analyst.timestamp_to_datetime(self.sensor_time[-1][0]) < last_datetime:
-                    # print("No new data to make prediction.")
-                    return
+                print("self.device_exception_count: ", self.device_exception_count)
+                last_update_time = datetime.datetime.now() - datetime.timedelta(milliseconds = update_delay)
                 sensor_data = {sensor: self.sensor_values[sensor][-1] for sensor in ["Sensor 2", "Sensor 4"]}
                 facial_data = self.latest_facial_values
+                sensor_conditions = self.check_sensor_conditions(
+                    self.sensor_raw_values["Sensor 2"][-1],
+                    self.sensor_raw_values["Sensor 4"][-1]
+                )
+                facial_conditions = self.check_facial_conditions(last_update_time)
+                if self.latest_facial_values is None or \
+                    self.latest_facial_values["local_timestamp"] < last_update_time.timestamp() or \
+                    self.data_analyst.timestamp_to_datetime(self.sensor_time[-1][0]) < last_update_time:
+                    # print("No new data to make prediction.")
+                    return                
+                if sensor_conditions and facial_conditions:
+                    self.remove_error_notification()
                 data = sensor_data | facial_data
                 data.pop("local_timestamp")
                 self.lastest_prediction =  self.data_analyst.detect_anomaly(data=data,
@@ -601,6 +610,82 @@ class App(ThemedTk):
             self.last_alarm_time = None
             self.db_manager.session.alarm_times.append("|")
 
+    def validate_sens_values(self, sens_2: int, sens_4: int, values: dict) -> tuple[int, int]:
+        notes = str()
+        
+        if np.isnan(sens_2) or np.isnan(sens_4):
+            return sens_2, sens_4
+        
+        def validate_sensor(sensor_value, sensor_name):
+            nonlocal notes
+            if sensor_value > self.dist_max:
+                if len(values[sensor_name]) > 1:
+                    sensor_value = values[sensor_name][-1]
+                    notes += f"{sensor_name} val replaced by previous valid val "
+                else:
+                    sensor_value = self.dist_max
+                    notes += f"{sensor_name} val replaced by max valid val "
+            return sensor_value
+
+        sens_2 = validate_sensor(sens_2, "Sensor 2")
+        sens_4 = validate_sensor(sens_4, "Sensor 4")
+        self.logger.update_notes(timestamp=self.logger.last_timestamp, notes=notes)
+          
+        return sens_2, sens_4
+
+    def check_conditions(self, conditions: dict, condition_type: str) -> bool:
+        if len(self.device_exception_count[condition_type]) < len(conditions):
+            self.device_exception_count[condition_type] = [0] * len(conditions)
+        
+        conditions_passed = True
+
+        for condition in conditions.values():
+            conditions_passed = conditions_passed and condition["pass_condition"]
+            if condition["pass_condition"]:
+                self.device_exception_count[condition_type][condition["condition_id"]] = 0
+            else:
+                self.device_exception_count[condition_type][condition["condition_id"]] += 1
+                if self.device_exception_count[condition_type][condition["condition_id"]] >= uc.Measurements.val_replacing_limit.value:
+                    play_sound_in_thread()
+                    self.error_notify_messagebox = messagebox.showwarning("Warning", condition["error_msg"])
+                    self.device_exception_count[condition_type][condition["condition_id"]] = 0
+                break
+        
+        return conditions_passed
+    
+    def check_sensor_conditions(self, sens_2: int, sens_4: int) -> bool:
+        conditions = {
+            "Sensor value valid": {
+                "condition_id": 0,
+                "pass_condition": sens_2 <= self.dist_max and sens_4 <= self.dist_max,
+                "error_msg": "Sensor cannot detect distance to participant!\nPlease adjust the posture or sensor!"
+            },
+            "Sensor difference valid": {
+                "condition_id": 1,
+                "pass_condition": sens_2 - sens_4 < 50,
+                "error_msg": "Sensor values differ unexpectedly!\nPlease adjust the posture or sensor!"
+            },
+            "Appropriate distance": {
+                "condition_id": 2,
+                "pass_condition": sens_2 >= self.dist_min and sens_4 >= self.dist_min,
+                "error_msg": "You are too close to the screen!\nKeep an appropriate distance to protect your eyesight."
+            }
+        }
+        
+        return self.check_conditions(conditions, condition_type="Sensor")
+    
+    def check_facial_conditions(self, last_datetime: datetime.datetime) -> bool:
+        conditions = {
+            "Facial data exists": {
+                "condition_id": 0,
+                "pass_condition": self.latest_facial_values is not None and \
+                    self.latest_facial_values["local_timestamp"] >= last_datetime.timestamp(),
+                "error_msg": "Facial data not detected!\nPlease adjust the camera."
+            }
+        }
+
+        return self.check_conditions(conditions, condition_type="Camera")
+
     def update_graph(self, event=None, lower_range=None, upper_range=None):
         # Prepare the graph
         self.graph.ax.clear()
@@ -618,52 +703,6 @@ class App(ThemedTk):
         # Add annotations
         self.graph.ax.legend()
         self.graph.canvas.draw()
-
-    def validate_sens_values(self, sens_2: int, sens_4: int, values: dict) -> tuple[int, int]:
-        notes = ""
-        is_valid = True
-        too_close = False
-        if np.isnan(sens_2) or np.isnan(sens_4):
-            return sens_2, sens_4
-        if sens_2 > self.dist_max:
-            is_valid = False
-            self.val_replacing_num += 1
-            if len(values["Sensor 2"]) > 1:
-                sens_2 = values["Sensor 2"][-1]  # get the last
-                notes += "Sensor 2 val replaced by previous valid val "
-            else:
-                sens_2 = self.dist_max
-                notes += "Sensor 2 val replaced by max valid val "
-        if sens_4 > self.dist_max:
-            is_valid = False
-            self.val_replacing_num += 1
-            if len(values["Sensor 4"]) > 1:
-                sens_4 = values["Sensor 4"][-1]
-                notes += "Sensor 4 val replaced by previous valid val "
-            else:
-                sens_4 = self.dist_max
-                notes += "Sensor 4 val replaced by max valid val "
-        if sens_2 < self.dist_min or sens_4 < self.dist_min:
-            too_close = True
-            self.screen_distance_num += 1
-        if is_valid:
-            self.val_replacing_num = 0  # reset            
-        if not too_close:
-            self.screen_distance_num = 0
-        if is_valid and not too_close:
-            self.remove_error_notification()
-        self.logger.update_notes(timestamp=self.logger.last_timestamp, notes=notes)
-        if not self.error_notify_messagebox \
-                and not is_valid \
-                and self.val_replacing_num >= uc.Measurements.val_replacing_limit.value:
-            play_sound_in_thread()
-            self.error_notify_messagebox = messagebox.showerror("Error", "Sensor cannot detect distance to participant!\nPlease adjust the posture or sensor!")
-        if not self.error_notify_messagebox \
-                and too_close \
-                and self.screen_distance_num >= uc.Measurements.val_replacing_limit.value:
-            play_sound_in_thread()
-            self.error_notify_messagebox = messagebox.showwarning("Warning", "You are too close to the screen!\nKeep an appropriate distance to protect your eyesight.")
-        return sens_2, sens_4
 
     def update_sensor_values(self, sens_2: int, sens_4: int, timestamp: int, local_time: str) -> None:
         if pd.isna(sens_2) or pd.isna(sens_4):
