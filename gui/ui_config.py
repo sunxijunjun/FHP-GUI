@@ -51,7 +51,8 @@ class ElementNames(Enum):
                              "Age",
                              "Shoulder Size",
                              "Height",
-                             "Weight"]
+                             "Weight",
+                             "Threshold"]
 
     shoulder_options = ["XL", "L", "M", "S", "XS"]
     shoulder_category_txt = "Shoulder Size"
@@ -90,6 +91,14 @@ class Measurements(Enum):
     num_bad_posture_commands = 10  # max total posture commands
     val_replacing_limit = 10  # threshold when the notification should popup
     false_responses_limit = 1  # specify after how many responses the model threshold should be changed
+    
+    threshold = {
+        "XS": 64.638889,
+        "S": 64.769231,
+        "M": 71.333333,
+        "L": 82.857143,
+        "XL": 86.187500
+    }
     threshold_increment = 10.0  # specify how the threshold should be incremented
 
     widgets_padding = 100

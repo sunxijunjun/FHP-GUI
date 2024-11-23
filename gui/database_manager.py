@@ -32,6 +32,7 @@ class UserDetails:
     gender: Union[str, None]
     age: Union[int, None]
     shoulder_size: Union[str, None]
+    threshold: Union[float, None]
     photo_path: str
 
     def __init__(self, full_name: str, new_password: str):
@@ -52,7 +53,8 @@ class UserDetails:
                          f"Height:\t\t{self.height} (cm)\n" \
                          f"Shoulder Size:\t\t{self.shoulder_size}\n" \
                          f"Gender:\t\t{self.gender}\n" \
-                         f"Age:\t\t{self.age}\n"
+                         f"Age:\t\t{self.age}\n"\
+                         f"Threshold:\t\t{self.threshold} (mm)\n"
         return representation
 
     def parse_full_name(self, name: str) -> None:
@@ -414,6 +416,7 @@ class DatabaseManager:
         details.shoulder_size = df_user["Shoulder Size"].iloc[0]
         details.height = df_user["Height"].iloc[0]
         details.weight = df_user["Weight"].iloc[0]
+        details.threshold = df_user["Threshold"].iloc[0]
         print("==== User below has signed in ====")
         print(details)
         self.session.update(df_user.index[0],
@@ -461,11 +464,11 @@ class DatabaseManager:
                 return ""
             return details.photo_path
 
-    def save_new_photo_path(self, new_path: str):
+    def modify_user_info(self, field: str, new_value: str):
         user_id: int = self.session.user_id
         df: pd.DataFrame = self.get_user_db()
-        df['Photo Path'] = df['Photo Path'].astype(str)
-        df.loc[user_id, 'Photo Path'] = new_path
+        # df[field] = df[field].astype(str)
+        df.loc[user_id, field] = new_value
         df.to_csv(self.users_login_path, index=False)
 
     @staticmethod

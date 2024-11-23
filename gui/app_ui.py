@@ -816,14 +816,13 @@ class App(ThemedTk):
         if self.current_user_features is None:
             print("No user features are available", file=sys.stderr)
             return None
-        size: int = self.current_user_features[1]
+        # size: int = self.current_user_features[1]
         increment: float = uc.Measurements.threshold_increment.value
-        self.data_analyst.update_threshold(increment=increment)
+        self.data_analyst.update_threshold(increment=increment, db_manager=self.db_manager)
         self.logger.update_model_threshold(value=self.data_analyst.get_threshold(),
                                            timestamp=self.logger.last_timestamp)
         self.reset_false_response_limit()
-        print(f"New threshold for shoulder size {size} has been set")
-        print(self.data_analyst.thresholds)
+        print(f"New threshold {self.data_analyst.get_threshold()} for shoulder size {self.data_analyst.user_features['size']} has been set")
 
     def reset_false_response_limit(self):
         self.false_responses_limit = uc.Measurements.false_responses_limit.value
@@ -1099,7 +1098,7 @@ class App(ThemedTk):
         file_path = popup.get_file_path()
         if file_path:
             self.set_user_photo(path=file_path)
-            self.db_manager.save_new_photo_path(new_path=file_path)
+            self.db_manager.modify_user_info(field="Photo Path", new_value=file_path)
             popup.show_message_frame("File Uploaded", f"The file '{file_path}' has been uploaded.")
             popup.disable_submission_button()
         else:
@@ -1161,7 +1160,8 @@ class App(ThemedTk):
                 'Shoulder Size': self.db_manager.session.user_details.shoulder_size,
                 'Height': self.db_manager.session.user_details.height,
                 'Weight': self.db_manager.session.user_details.weight,
-                "User ID": self.db_manager.session.user_id
+                "User ID": self.db_manager.session.user_id,
+                "Threshold": self.db_manager.session.user_details.threshold
             }
             self.current_user_features = self.process_user_info(user_info)
             self.data_analyst.set_user_features(self.current_user_features)
@@ -1295,6 +1295,7 @@ class App(ThemedTk):
 
             shoulder_size_map = {'XS': 0, 'S': 1, 'M': 2, 'L': 3, 'XL': 4}
             size = shoulder_size_map.get(user_info['Shoulder Size'], -1)
+            threshold = user_info['Threshold'] if user_info['Threshold'] else np.nan
 
             height = float(user_info['Height'])
             weight = float(user_info['Weight'])
@@ -1303,7 +1304,7 @@ class App(ThemedTk):
 
             flexibility = flex_median_g
 
-            features = np.array([age, size, weight, height, user_id, flexibility], dtype=float)
+            features = np.array([age, size, weight, height, user_id, flexibility, threshold], dtype=float)
             # print(f"Processed user features: {features}")
             return features
         except Exception as e:

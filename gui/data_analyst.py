@@ -68,13 +68,7 @@ class DataAnalyst:
     def __init__(self):
         self.recent_data = {"sensor_2": np.nan, "sensor_4": np.nan}
         self.data = dict()
-        self.thresholds = {
-            "XS": 64.638889,
-            "S": 64.769231,
-            "M": 71.333333,
-            "L": 82.857143,
-            "XL": 86.187500
-        }
+        self.thresholds = ui_config.Measurements.threshold.value
         self.user_features = dict()
 
     def set_user_features(self, user_features: np.array):
@@ -92,6 +86,7 @@ class DataAnalyst:
             else:
                 return 'XL'
         self.user_features['size'] = map_size(self.user_features['height'])
+        self.user_features['threshold'] = self.thresholds[self.user_features['size']] if np.isnan(user_features[6]) else user_features[6]
     
     @staticmethod
     def detect_anomaly_test(data: dict[str, list[int]]) -> Union[None, int]:
@@ -375,18 +370,22 @@ class DataAnalyst:
         y = y[lower_limit:upper_limit]
         return x, y
 
-    def update_threshold(self, increment: float):
+    def update_threshold(self, increment: float, db_manager):
         try:
-            self.thresholds[self.user_features['size']] += increment
+            self.user_features["threshold"] += increment
+            try:
+                db_manager.modify_user_info("Threshold", self.user_features["threshold"])
+            except:
+                print("Database error: Threshold update failed.")
         except KeyError:
             print("The user's size is not defined.")
             return
 
     def get_threshold(self) -> float:
         try:
-            return self.thresholds[self.user_features['size']]
+            return self.user_features["threshold"]
         except KeyError:
-            print("The user's size is not defined.")
+            print("The user's threshold is not defined.")
 
     @staticmethod
     def custom_dict_update(original_data: dict, new_data: dict) -> dict:
