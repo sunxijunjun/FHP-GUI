@@ -1135,8 +1135,8 @@ class App(ThemedTk):
     def save_all_log(self):
         self.logger.log_all_data()
 
-    def sign_in(self):
-        pop_up: UserDetailsWindow = self.sign_in_popup
+    def sign_in(self, pop_up=None):
+        pop_up: UserDetailsWindow = self.sign_in_popup if pop_up is None else pop_up
         user_details: UserDetails = pop_up.get_entered_details()
         if not self.db_manager.is_valid_sign_in(details=user_details):
             pop_up.show_message_frame(subject="Error",
@@ -1210,7 +1210,7 @@ class App(ThemedTk):
                                              "Please try to sign in to your account.",
                                      row=popup.message_location[0],
                                      col=popup.message_location[1])
-            self.resume()
+            self.sign_in(popup)
         else:
             popup.show_message_frame(subject="Error",
                                      details="User with similar personal details already exists!\n"
