@@ -9,6 +9,7 @@ import platform
 import numpy as np
 from serial_manager import SerialManager
 import ui_config as uc
+from port_detection import GetPortName
 
 # flexibility collection
 class PostureDataCollection(tk.Tk):
@@ -18,15 +19,7 @@ class PostureDataCollection(tk.Tk):
         #self.attributes("-fullscreen", True)
         self.geometry("580x300")
 
-        # 判断操作系统并选择对应的串行端口
-        if platform.system() == "Linux":
-            port = uc.Ports.linux_sensor_1.value
-        elif platform.system() == "Windows":
-            port = uc.Ports.windows_serial.value
-        else:
-            raise Exception("Unsupported Operating System")
-
-        self.serial_manager = SerialManager(port=port)
+        self.serial_manager = SerialManager(port=GetPortName())
         self.init_ui()
         self.last_timestamp = None
 
