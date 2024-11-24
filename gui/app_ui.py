@@ -111,6 +111,7 @@ class App(ThemedTk):
         self.user_data = None
         self.info_panel_wnum = 0
         self.prev_alarm_pos = 0
+        self.error_message = False
         self.device_exception_count = {"Sensor": list(), "Camera": list()}
         self.false_responses_limit = uc.Measurements.false_responses_limit.value
         self.x_range = uc.Measurements.graph_x_limit.value
@@ -136,7 +137,6 @@ class App(ThemedTk):
         self.alarm_num_label = None
         self.alarm_text_label = None
         self.notification_frame = None
-        self.error_notify_messagebox = None
         self.log_notification_frame = None
 
         self.graph_scroll_bar = None
@@ -574,22 +574,23 @@ class App(ThemedTk):
                 last_update_time = datetime.datetime.now() - datetime.timedelta(milliseconds = update_delay)
                 sensor_data = {sensor: self.sensor_values[sensor][-1] for sensor in ["Sensor 2", "Sensor 4"]}
                 facial_data = self.latest_facial_values
-                sensor_conditions = self.check_sensor_conditions(
+                if not self.check_sensor_conditions(
                     self.sensor_raw_values["Sensor 2"],
                     self.sensor_raw_values["Sensor 4"]
-                )
-                facial_conditions = self.check_facial_conditions(last_update_time)
+                ):
+                    return
+                if not self.check_facial_conditions(last_update_time):
+                    return
                 if self.latest_facial_values is None or \
                     self.latest_facial_values["local_timestamp"] < last_update_time.timestamp() or \
                     self.data_analyst.timestamp_to_datetime(self.sensor_time[-1][0]) < last_update_time:
                     # print("No new data to make prediction.")
                     return                
-                if sensor_conditions and facial_conditions:
-                    self.remove_error_notification()
                 data = sensor_data | facial_data
                 data.pop("local_timestamp")
                 self.lastest_prediction =  self.data_analyst.detect_anomaly(data=data)
-            self.after(update_delay, make_prediction)
+            if not self.error_message:
+                self.after(update_delay, make_prediction)
 
         if self.logger.last_timestamp != "":
             self.logger.update_prediction(timestamp=self.logger.last_timestamp, prediction=self.lastest_prediction)
@@ -645,8 +646,10 @@ class App(ThemedTk):
                 self.device_exception_count[condition_type][condition["condition_id"]] += 1
                 if self.device_exception_count[condition_type][condition["condition_id"]] >= uc.Measurements.val_replacing_limit.value:
                     play_sound_in_thread()
-                    self.error_notify_messagebox = messagebox.showwarning("Warning", condition["error_msg"])
+                    self.error_message = True
                     self.device_exception_count[condition_type][condition["condition_id"]] = 0
+                    messagebox.showwarning("Warning", condition["error_msg"])
+                    self.error_message = False
                 break
         
         return conditions_passed
@@ -879,11 +882,6 @@ class App(ThemedTk):
             return None
         self.log_notification_frame.destroy()
         self.notification_frame = None
-
-    def remove_error_notification(self) -> None:
-        if not self.error_notify_messagebox:
-            return None
-        self.error_notify_messagebox = None
 
     def add_alarm_text(self) -> None:
         current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
