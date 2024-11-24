@@ -9,7 +9,6 @@ import platform
 import numpy as np
 from serial_manager import SerialManager
 import ui_config as uc
-from port_detection import GetPortName
 
 # flexibility collection
 class PostureDataCollection(tk.Tk):
@@ -19,7 +18,15 @@ class PostureDataCollection(tk.Tk):
         #self.attributes("-fullscreen", True)
         self.geometry("580x300")
 
-        self.serial_manager = SerialManager(port=GetPortName())
+        # 判断操作系统并选择对应的串行端口
+        if platform.system() == "Linux":
+            port = uc.Ports.linux_sensor_1.value
+        elif platform.system() == "Windows":
+            port = uc.Ports.windows_serial.value
+        else:
+            raise Exception("Unsupported Operating System")
+
+        self.serial_manager = SerialManager(port=port)
         self.init_ui()
         self.last_timestamp = None
 
@@ -49,62 +56,91 @@ class PostureDataCollection(tk.Tk):
         ]
         data = []
 
-        for posture in postures:
-            print(f"Collecting data for posture: {posture}")
-            messagebox.showinfo("Instruction", f"Please maintain posture: {posture} for 10 seconds.")
-            time.sleep(5)
-            readings = self.read_sensor_data()
-            for reading in readings:
-                data.append(reading + [posture])
+        def collect_posture_data(posture_index):
+            if posture_index < len(postures):
+                posture = postures[posture_index]
+                print(f"Collecting data for posture: {posture}")
+                messagebox.showinfo("Instruction", f"Please maintain posture: {posture} for 10 seconds.\nWill start in 2 seconds after click.")
+                time.sleep(2)
+                readings = self.read_sensor_data()
+                for reading in readings:
+                    data.append(reading + [posture])
+                self.after(10000, collect_posture_data, posture_index + 1)  # Wait for 15 seconds before next posture
+            else:
+                self.save_data(data)
+                messagebox.showinfo("Info", "Data collection done")
+                self.destroy()
 
-        self.save_data(data)
-
-        messagebox.showinfo("Info", "Data collection done")
-        self.destroy()
+        collect_posture_data(0)
 
     def read_sensor_data(self):
         readings = []
         end_time = time.time() + 10
         data_dict = {}
 
-        while time.time() < end_time:
-            line = self.serial_manager.read_line()
-            if line:
-                timestamp_match = re.search(r'I \((\d+)\)', line)
-                if timestamp_match:
-                    self.last_timestamp = timestamp_match.group(1)
-                    print(f"Timestamp: {self.last_timestamp}, Raw sensor data: {line}")  # Print timestamp and data line
-                    if self.last_timestamp not in data_dict:
-                        data_dict[self.last_timestamp] = {
-                            'timestamp': self.last_timestamp,
-                            'sensor_2': np.nan,
-                            'sensor_4': np.nan,
-                            'bbox_x1': np.nan,
-                            'bbox_y1': np.nan,
-                            'bbox_x2': np.nan,
-                            'bbox_y2': np.nan,
-                            'mv_1': np.nan,
-                            'mv_2': np.nan,
-                            'mv_3': np.nan,
-                            'mv_4': np.nan,
-                            'left_eye_x': np.nan,
-                            'left_eye_y': np.nan,
-                            'right_eye_x': np.nan,
-                            'right_eye_y': np.nan,
-                            'nose_x': np.nan,
-                            'nose_y': np.nan,
-                            'mouth_left_x': np.nan,
-                            'mouth_left_y': np.nan,
-                            'mouth_right_x': np.nan,
-                            'mouth_right_y': np.nan,
-                            'fhp': np.nan
-                        }
-                if self.last_timestamp and self.last_timestamp in data_dict:
-                    self.parse_data(line, data_dict[self.last_timestamp])
-            time.sleep(0.01)  # Adjust sleep to match the sensor frequency
+        countdown_window = tk.Toplevel(self)
+        countdown_window.geometry("400x200")
 
-        for key, value in data_dict.items():
-            readings.append([key] + list(value.values())[1:])
+        label_message = tk.Label(countdown_window, text="Remain position, Collecting data...")
+        label_message.pack(pady=10)
+
+        label_countdown = tk.Label(countdown_window, text="")
+        label_countdown.pack(pady=10)
+
+        def update_countdown():
+            remaining_time = int(end_time - time.time())
+            if remaining_time > 0:
+                label_countdown.config(text=f"{remaining_time} seconds remaining...")
+                countdown_window.after(1000, update_countdown)
+            else:
+                countdown_window.destroy()
+
+        update_countdown()
+
+        def read_data():
+            if time.time() < end_time:
+                line = self.serial_manager.read_line()
+                if line:
+                    timestamp_match = re.search(r'I \((\d+)\)', line)
+                    if timestamp_match:
+                        self.last_timestamp = timestamp_match.group(1)
+                        print(
+                            f"Timestamp: {self.last_timestamp}, Raw sensor data: {line}")  # Print timestamp and data line
+                        if self.last_timestamp not in data_dict:
+                            data_dict[self.last_timestamp] = {
+                                'timestamp': self.last_timestamp,
+                                'sensor_2': np.nan,
+                                'sensor_4': np.nan,
+                                'bbox_x1': np.nan,
+                                'bbox_y1': np.nan,
+                                'bbox_x2': np.nan,
+                                'bbox_y2': np.nan,
+                                'mv_1': np.nan,
+                                'mv_2': np.nan,
+                                'mv_3': np.nan,
+                                'mv_4': np.nan,
+                                'left_eye_x': np.nan,
+                                'left_eye_y': np.nan,
+                                'right_eye_x': np.nan,
+                                'right_eye_y': np.nan,
+                                'nose_x': np.nan,
+                                'nose_y': np.nan,
+                                'mouth_left_x': np.nan,
+                                'mouth_left_y': np.nan,
+                                'mouth_right_x': np.nan,
+                                'mouth_right_y': np.nan,
+                                'fhp': np.nan
+                            }
+                    if self.last_timestamp and self.last_timestamp in data_dict:
+                        self.parse_data(line, data_dict[self.last_timestamp])
+                    print(f"Collecting data: {int(end_time - time.time())} seconds remaining...")
+                self.after(10, read_data)  # Schedule the next read
+            else:
+                for key, value in data_dict.items():
+                    readings.append([key] + list(value.values())[1:])
+                countdown_window.destroy()
+
+        read_data()
 
         return readings
 
