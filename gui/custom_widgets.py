@@ -14,7 +14,7 @@ from matplotlib.patches import Rectangle
 from matplotlib.axes import Axes
 import random
 from logger import Logger
-from tkinter import ttk
+from tkinter import ttk, messagebox
 from sound_player import play_sound_in_thread
 
 
@@ -198,7 +198,11 @@ class UserDetailsWindow(AbstractWindow):
         """
         # Get the values from the entry fields
         full_name: str = self.full_name_entry.get()
+        if(len(full_name.split())<2):
+            messagebox.showwarning("Input Error", "Please enter your full name. Example: Jone Doe, Chan Tai Man")
         password: str = self.password_entry.get()
+        if(not password):
+            messagebox.showwarning("Input Error", "Please enter your password.")
         details = UserDetails(full_name, password)
 
         #save user_account

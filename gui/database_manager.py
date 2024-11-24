@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 from pathlib import Path
 import os
 import re
-from tkinter import filedialog
+from tkinter import filedialog, messagebox
 from typing import Union
 import markdown2
 from xhtml2pdf import pisa
@@ -38,7 +38,7 @@ class UserDetails:
     def __init__(self, full_name: str, new_password: str):
         self.parse_full_name(full_name)
         self.photo_path = ui_config.FilePaths.user_photo_icon.value
-        self.password = new_password
+        self.password = self.check_password(new_password)
         self.weight = None
         self.height = None
         self.gender = None
@@ -56,6 +56,12 @@ class UserDetails:
                          f"Age:\t\t{self.age}\n"\
                          f"Threshold:\t\t{self.threshold} (mm)\n"
         return representation
+    
+    def check_password(self,password: str)-> None:
+        if not password:
+            raise ValueError("Empty password value detected!")
+        else:
+            return password
 
     def parse_full_name(self, name: str) -> None:
         if name == "Unknown":
@@ -191,7 +197,7 @@ class SessionInstance:
 
     @staticmethod
     def get_default_details() -> UserDetails:
-        return UserDetails(full_name="Unknown", new_password='')
+        return UserDetails(full_name="Unknown", new_password='Default')
 
     @staticmethod
     def convert_time_format(time_list: list[str]) -> list[str]:
