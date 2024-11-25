@@ -75,6 +75,7 @@ class PostureDataCollection(tk.Tk):
 
     def read_sensor_data(self):
         readings = []
+        self.data_collection_done = False  # Initialize the flag
         end_time = time.time() + 10
         data_dict = {}
 
@@ -104,8 +105,7 @@ class PostureDataCollection(tk.Tk):
                     timestamp_match = re.search(r'I \((\d+)\)', line)
                     if timestamp_match:
                         self.last_timestamp = timestamp_match.group(1)
-                        print(
-                            f"Timestamp: {self.last_timestamp}, Raw sensor data: {line}")  # Print timestamp and data line
+                        print(f"Timestamp: {self.last_timestamp}, Raw sensor data: {line}")
                         if self.last_timestamp not in data_dict:
                             data_dict[self.last_timestamp] = {
                                 'timestamp': self.last_timestamp,
@@ -138,9 +138,15 @@ class PostureDataCollection(tk.Tk):
             else:
                 for key, value in data_dict.items():
                     readings.append([key] + list(value.values())[1:])
+                self.data_collection_done = True  # Data collection is done
                 countdown_window.destroy()
 
         read_data()
+
+        # Wait until data collection is done
+        while not self.data_collection_done:
+            self.update()
+            time.sleep(0.01)  # Prevents freezing the GUI
 
         return readings
 

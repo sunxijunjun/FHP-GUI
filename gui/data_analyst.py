@@ -276,14 +276,6 @@ class DataAnalyst:
             else (0 if row['prediction_model1'] == 0 and row['prediction_model2'] == 0 else 1),
             axis=1
         )
-        """
-        如果 prediction_threshold 为 0，那么直接将 voting_result 设为 0；
-        否则，检查 prediction_model1 和 prediction_model2 是否都为 0，如果是则设为 0，否则设为 1。
-
-        设计这个步骤的目的是，通常情况下，不良姿态可以从阈值判断中得出。
-        但是也有一些情况会得到过小的阈值。这时，阈值本身无法判断，所以会使用两个模型进行预测，如果同时为0，则输出0，以减小错误警报的次数。
-        选择首先相信阈值也是因为阈值可以根据用户反馈的警报准确性快速调整。
-        """
         print(
             f"{df_predictions.iloc[:,27:]}\nfor data:\n{df}"
         )

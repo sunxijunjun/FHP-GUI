@@ -16,7 +16,6 @@ import os
 import datetime
 from performance_tester import PerformanceTester
 
-
 class ThreadManager:
     """ The prototype consists of 2 TOF sensors and 1 image sensor,
     based on their data, we create the graph in one subplot to show
