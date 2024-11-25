@@ -106,8 +106,8 @@ class ThreadManager:
                 self.app.logger.add_sensor_entry(data_entry=data_entry,
                                                  timestamp=timestamp,
                                                  user_id=self.app.db_manager.session.user_id)
-                self.app.logger.add_to_buffer(data_entry=data_entry,
-                                              success_callback=self.app.show_notify_log_success)
+                # self.app.logger.add_to_buffer(data_entry=data_entry,
+                #                               success_callback=self.app.show_notify_log_success)
                 # print("Data Parsed and Logged:")
                 # print(data_entry)
             time.sleep(self.time_delay)
@@ -277,7 +277,7 @@ def start_main_app():
 
     app_ui.add_control_button(text=pause_graph_txt, func=app_ui.pause)
     app_ui.add_control_button(text=close_app_txt, func=test_proc.close_app)
-    app_ui.add_control_button(text=save_txt, func=app_ui.save_all_log)
+    # app_ui.add_control_button(text=save_txt, func=app_ui.save_last_data)
     #app_ui.add_control_button(text=add_notes_txt, func=app_ui.show_notes_entry)
     app_ui.add_menu_button(text=sign_in_txt, func=app_ui.show_sign_in_popup)
     app_ui.add_menu_button(text=register_txt, func=app_ui.show_register_popup)

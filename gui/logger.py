@@ -71,9 +71,9 @@ class Logger:
     def __init__(self, session_id: str, test=False):
         self.session_id = session_id
         self.folder_path = self.create_folder_logs(session_id, test)
-        self.log_path = self.create_log_file(session_id=session_id,
-                                             columns=self.columns,
-                                             folder_path=self.folder_path)
+        # self.log_path = self.create_log_file(session_id=session_id,
+        #                                      columns=self.columns,
+        #                                      folder_path=self.folder_path)
         self.prediction_results = {}
         self.notes = {}
         self.logs = {}

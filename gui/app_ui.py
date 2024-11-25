@@ -367,7 +367,7 @@ class App(ThemedTk):
         self.pause()
         self.settings_popup = tk.Toplevel(self)
         self.settings_popup.title("Settings")
-        self.settings_popup.geometry("400x400")
+        self.settings_popup.geometry("400x350")
         self.settings_popup.attributes('-topmost', True)
 
         enable_sound = tk.BooleanVar(value=self.check_boxes_frame.check_boxes[uc.CheckBoxesKeys.enable_sound.value][1].get())
@@ -445,9 +445,9 @@ class App(ThemedTk):
         close_button = ttk.Button(buttons_frame, text="Close", command=close_settings)
         close_button.pack(side=tk.LEFT, padx=5)
 
-        # 保存监控数据
-        save_all_data_button = ttk.Button(monitor_labelframe, text="Save All Data", command=self.save_all_log)
-        save_all_data_button.grid(row=0, column=0, pady=5, padx=5, sticky="w")
+        # # 保存监控数据
+        # save_all_data_button = ttk.Button(monitor_labelframe, text="Save All Data", command=self.save_last_data)
+        # save_all_data_button.grid(row=0, column=0, pady=5, padx=5, sticky="w")
 
         self.time_interval_frame = TimeIntervalSelectorFrame(monitor_labelframe, row=1, col=0, txt="Pause For (MM:SS):", func=self.pause_for)
 
