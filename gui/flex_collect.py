@@ -32,7 +32,8 @@ class PostureDataCollection(tk.Tk):
 
     def init_ui(self):
         instruction = (
-            "TODO: Will be added when 2nd phase data analysis results is ready"
+            "校准功能会要求您保持2个特定的静态姿势，采集数据，并且对数据进行处理。\n"
+            "请点击开始，并按照以下步骤进行：\n"
             # "65 Remain in a \tround shoulder\t with \tpoking chin posture\t for 30 seconds\n"
             # "65 Remain in a \tstraight shoulder\t with \tneck extension\t\t for 30 seconds\n"
             # "70 Remain in a \tround shoulder\t with \tpoking chin posture\t for 30 seconds\n"
@@ -47,12 +48,8 @@ class PostureDataCollection(tk.Tk):
 
     def on_start(self):
         postures = [
-            "pc65  ( 65 CM for laptop)",
-            "ne65  ( 65 CM for laptop)",
-            "pc70  ( 60 CM for laptop)",
-            "ne70  ( 60 CM for laptop)",
-            "pc80  ( 55 CM for laptop)",
-            "ne80  ( 55 CM for laptop)"
+            "a round shoulder with poking chin posture",
+            "an upright neutral posture"
         ]
         data = []
 
@@ -180,7 +177,7 @@ class PostureDataCollection(tk.Tk):
 
     @staticmethod
     def save_data(data):
-        directory = os.path.join(os.path.dirname(__file__), 'data', 'dynamic_data_collected')
+        directory = os.path.join(os.path.dirname(__file__), 'calibration_data', 'posture_data_collected')
         os.makedirs(directory, exist_ok=True)  # Ensure the directory exists
         timestamp = datetime.now().strftime("%Y%m%d%H%M%S")  # Get current date and time
         filename = os.path.join(directory, f'posture_data_{timestamp}.csv')  # Add timestamp to filename
