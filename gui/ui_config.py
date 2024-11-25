@@ -89,15 +89,15 @@ class Measurements(Enum):
     rand_quest_duration = [30, 60]  # clock duration range
 
     num_bad_posture_commands = 10  # max total posture commands
-    val_replacing_limit = 10  # threshold when the notification should popup
+    val_replacing_limit = 20  # threshold when the notification should popup
     false_responses_limit = 1  # specify after how many responses the model threshold should be changed
     
     threshold = {
-        "XS": 64.638889,
-        "S": 64.769231,
-        "M": 71.333333,
-        "L": 82.857143,
-        "XL": 86.187500
+        "XS": 66,
+        "S": 67,
+        "M": 80,
+        "L": 88,
+        "XL": 95
     }
     threshold_increment = 10.0  # specify how the threshold should be incremented
 

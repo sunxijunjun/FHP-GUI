@@ -663,7 +663,7 @@ class App(ThemedTk):
             },
             "Sensor difference valid": {
                 "condition_id": 1,
-                "pass_condition": sens_2 - sens_4 < 50,
+                "pass_condition": sens_2 - sens_4 < 60,
                 "error_msg": "Sensor values differ unexpectedly!\nPlease adjust the posture or sensor!"
             },
             "Appropriate distance": {
