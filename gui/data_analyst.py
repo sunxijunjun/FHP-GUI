@@ -11,16 +11,15 @@ import onnxruntime as ort
 import math
 
 # Define input columns for each model
-model1_input_columns = ['Sensor 2', 'Sensor 4', 'bbox_x1', 'bbox_y1', 'bbox_x2', 'bbox_y2',
-                'left_eye_x', 'left_eye_y', 'right_eye_x', 'right_eye_y',
-                'nose_x', 'nose_y',
-                'mouth_left_x', 'mouth_left_y', 'mouth_right_x', 'mouth_right_y',
-                'sensor4_2_diff','facew', 'faceh', 'facea', 'facea2', 'facea4','height','weight',
-                'diff2', 'diff4']
+model1_input_columns = ['bbox_y1', 'bbox_y1',
+                        'left_eye_y',
+'right_eye_y', 'nose_y', 'mouth_left_y', 'mouth_right_y',
+                        'facew', 'faceh', 'facea', 'left_eye_x', 'right_eye_x', 'mouth_left_x', 'mouth_right_x',
+                        'nose_x', 'bbox_x1','bbox_x2'] # checked and tuning, scaler bug fixed
 
 model2_input_columns = [
     'weight', 'height', 'sensor4_2_diff', 'Sensor 2', 'Sensor 4'
-]
+] # checked and ok
 
 rangefinder_input_columns = ['left_eye_x', 'left_eye_y', 'right_eye_x', 'right_eye_y']
 
