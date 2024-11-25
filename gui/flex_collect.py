@@ -9,15 +9,16 @@ import platform
 import numpy as np
 from serial_manager import SerialManager
 import ui_config as uc
+from port_detection import GetPortName
 
 # flexibility collection
 class PostureDataCollection(tk.Tk):
-    def __init__(self):
+    def __init__(self,serial_manager:SerialManager):
         super().__init__()
         self.title("Dynamic Data Collection")
         #self.attributes("-fullscreen", True)
         self.geometry("580x300")
-
+        '''
         # 判断操作系统并选择对应的串行端口
         if platform.system() == "Linux":
             port = uc.Ports.linux_sensor_1.value
@@ -27,6 +28,8 @@ class PostureDataCollection(tk.Tk):
             raise Exception("Unsupported Operating System")
 
         self.serial_manager = SerialManager(port=port)
+        '''
+        self.serial_manager = serial_manager
         self.init_ui()
         self.last_timestamp = None
 
@@ -198,5 +201,5 @@ class PostureDataCollection(tk.Tk):
 
 
 if __name__ == '__main__':
-    app = PostureDataCollection()
+    app = PostureDataCollection(SerialManager(port=GetPortName()))
     app.mainloop()
