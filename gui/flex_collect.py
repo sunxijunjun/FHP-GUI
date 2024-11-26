@@ -78,12 +78,12 @@ class PostureDataCollection(tk.Tk):
                 print(median_values)
 
                 if (median_values <= -80).any():
-                    messagebox.showerror("Error", "Please recheck the data: Some median values are less than or equal to 0.")
+                    messagebox.showerror("Error", "Please adjust device and sitting position: upper sensor is miss-focusing.")
                     self.destroy()
                     return
 
                 if (median_values > 180).any():
-                    messagebox.showerror("Error", "Please recheck the data: Some median values are greater than 150.")
+                    messagebox.showerror("Error", "Please recalibrate: sensor difference out of range.")
                     self.destroy()
                     return
 
@@ -99,7 +99,7 @@ class PostureDataCollection(tk.Tk):
                     return
 
                 else:
-                    messagebox.showerror("Error", "Please recheck the data: Average median is not within the acceptable range.")
+                    messagebox.showerror("Error", "Please recalibrate: sensor difference out of range.")
                     self.destroy()
                     return
 
