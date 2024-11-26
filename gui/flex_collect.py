@@ -18,7 +18,7 @@ from database_manager import DatabaseManager, UserDetails
 
 # flexibility collection
 class PostureDataCollection(tk.Tk):
-    def __init__(self, serial_manager: SerialManager,db_manager = DatabaseManager):
+    def __init__(self, serial_manager: SerialManager,db_manager = DatabaseManager()):
         super().__init__()
         self.title("Dynamic Data Collection")
         # self.attributes("-fullscreen", True)

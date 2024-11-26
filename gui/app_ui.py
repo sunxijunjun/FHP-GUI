@@ -1221,7 +1221,7 @@ class App(ThemedTk):
         timer_root.mainloop()
 
     def calibration(self):
-        PostureDataCollection(serial_manager=self.serial_manager)
+        PostureDataCollection(serial_manager=self.serial_manager, db_manager=self.db_manager)
         # 确保 dynamic_labelling.py 中的代码已经运行
         dynamic_labelling.use_flex_median()
 
