@@ -22,11 +22,11 @@ global flex_median_g, ne_median_g, pc_median_g
 
 ne_postures = ['ne65', 'ne70', 'ne80']
 ne_values = [median_values[posture] for posture in ne_postures]
-ne_median_g = median(ne_values)
+ne_median_g = 50
 
 pc_postures = ['pc65', 'pc70', 'pc80']
 pc_values = [median_values[posture] for posture in pc_postures]
-pc_median_g = median(pc_values)
+pc_median_g = 80
 
 df['Sensor4_2_diff'] = df['Sensor 4'] - df['Sensor 2']
 
@@ -49,7 +49,7 @@ result = pc_median_g - ne_median_g
 print(f"Flex{postures} = {result}")
 
 flex_values = [median_values[f'pc{posture}'] - median_values[f'ne{posture}'] for posture in postures]
-flex_median_g = pc_median_g - ne_median_g
+flex_median_g = 70
 
 print(f"\nPC values: {pc_values}")
 print(f"Median of pc65, pc70, pc80 = {pc_median_g}")

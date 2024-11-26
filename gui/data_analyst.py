@@ -111,7 +111,12 @@ class DataAnalyst:
         Returns:
             Union[None, int]: Returns 0 if an anomaly is detected, 1 otherwise, None if data is insufficient.
         """
-            
+        required_features = ['height', 'weight']
+        if not all(feature in self.user_features and self.user_features[feature] is not None for feature in
+                   required_features):
+            print(f"Missing user features. Required: {required_features}")
+            return None
+
         def load_pytorch_model(model_path, input_columns):
             device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
             model = SimplifiedBinaryClassificationModel().to(device)
@@ -187,7 +192,7 @@ class DataAnalyst:
             )
 
             return df
-        
+
         def single_camera_rangefinder(df: pd.DataFrame, input_columns: list, prediction_column_name):
             missing_columns = set(input_columns) - set(df.columns)
             if missing_columns:

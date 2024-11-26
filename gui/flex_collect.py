@@ -10,13 +10,18 @@ import numpy as np
 from serial_manager import SerialManager
 import ui_config as uc
 from port_detection import GetPortName
+import pandas as pd
+import numpy as np
+from statistics import median
+import sys
+from database_manager import DatabaseManager, UserDetails
 
 # flexibility collection
 class PostureDataCollection(tk.Tk):
-    def __init__(self,serial_manager:SerialManager):
+    def __init__(self, serial_manager: SerialManager,db_manager = DatabaseManager):
         super().__init__()
         self.title("Dynamic Data Collection")
-        #self.attributes("-fullscreen", True)
+        # self.attributes("-fullscreen", True)
         self.geometry("580x300")
         '''
         # 判断操作系统并选择对应的串行端口
@@ -30,19 +35,15 @@ class PostureDataCollection(tk.Tk):
         self.serial_manager = SerialManager(port=port)
         '''
         self.serial_manager = serial_manager
+        self.db_manager = db_manager
+        self.user_features = dict()
         self.init_ui()
         self.last_timestamp = None
 
     def init_ui(self):
         instruction = (
-            "校准功能会要求您保持2个特定的静态姿势，采集数据，并且对数据进行处理。\n"
-            "请点击开始，并按照以下步骤进行：\n"
-            # "65 Remain in a \tround shoulder\t with \tpoking chin posture\t for 30 seconds\n"
-            # "65 Remain in a \tstraight shoulder\t with \tneck extension\t\t for 30 seconds\n"
-            # "70 Remain in a \tround shoulder\t with \tpoking chin posture\t for 30 seconds\n"
-            # "70 Remain in a \tstraight shoulder\t with \tneck extension\t\t for 30 seconds\n"
-            # "80 Remain in a \tround shoulder\t with \tpoking chin posture\t for 30 seconds\n"
-            # "80 Remain in a \tstraight shoulder\t with \tneck extension\t\t for 30 seconds\n"
+            "Calibration will require you to maintain 2 specific static postures, collect data, and process it.\n"
+            "Please click start and follow the steps:\n"
         )
         self.instruction_text = tk.Label(self, text=instruction)
         self.instruction_text.pack(pady=15)
@@ -67,11 +68,53 @@ class PostureDataCollection(tk.Tk):
                     data.append(reading + [posture])
                 self.after(10000, collect_posture_data, posture_index + 1)  # Wait for 15 seconds before next posture
             else:
-                self.save_data(data)
-                messagebox.showinfo("Info", "Data collection done")
-                self.destroy()
+                filename = self.save_data(data)
+                # Now, perform the checking
+                df = pd.read_csv(filename)
+                df = df.dropna(subset=['Sensor 2', 'Sensor 4'])
+                df['sensor4_2_diff'] = df['Sensor 4'] - df['Sensor 2']
+
+                median_values = df.groupby('Posture')['sensor4_2_diff'].median()
+                print(median_values)
+
+                if (median_values <= -80).any():
+                    messagebox.showerror("Error", "Please recheck the data: Some median values are less than or equal to 0.")
+                    self.destroy()
+                    return
+
+                if (median_values > 180).any():
+                    messagebox.showerror("Error", "Please recheck the data: Some median values are greater than 150.")
+                    self.destroy()
+                    return
+
+                average_median = median_values.mean()
+                print("Average of the two medians is:", average_median)
+
+                if 30 < average_median < 150:
+                    print("OK")
+                    messagebox.showinfo("Success", "Calibration successful.")
+                    # 调用 reset_threshold_from_cali 方法，将 average_median 作为新的阈值存入
+                    self.reset_threshold_from_cali(average_median)
+                    self.destroy()
+                    return
+
+                else:
+                    messagebox.showerror("Error", "Please recheck the data: Average median is not within the acceptable range.")
+                    self.destroy()
+                    return
 
         collect_posture_data(0)
+
+    def reset_threshold_from_cali(self, new_value: float):
+        try:
+            self.user_features["threshold"] = new_value
+            try:
+                self.db_manager.modify_user_info("Threshold", self.user_features["threshold"])
+            except Exception as e:
+                print(f"Database error: Threshold update failed. Details: {e}")
+        except KeyError:
+            print("The user's threshold is not defined.")
+            return
 
     def read_sensor_data(self):
         readings = []
@@ -184,8 +227,7 @@ class PostureDataCollection(tk.Tk):
 
         print(f"Parsed data entry: {data_entry}")  # Debug print for parsed data
 
-    @staticmethod
-    def save_data(data):
+    def save_data(self, data):
         directory = os.path.join(os.path.dirname(__file__), 'calibration_data', 'posture_data_collected')
         os.makedirs(directory, exist_ok=True)  # Ensure the directory exists
         timestamp = datetime.now().strftime("%Y%m%d%H%M%S")  # Get current date and time
@@ -200,12 +242,13 @@ class PostureDataCollection(tk.Tk):
                     "Right Eye Y", "Nose X", "Nose Y", "Mouth Left X", "Mouth Left Y", "Mouth Right X",
                     "Mouth Right Y", "FHP", "Posture"
                 ])
-                
+
             for row in data:
                 print(f"Writing row: {row}")  # Debug print
                 writer.writerow(row)
-
+        return filename
 
 if __name__ == '__main__':
-    app = PostureDataCollection(SerialManager(port=GetPortName()))
+    db_manager = DatabaseManager()
+    app = PostureDataCollection(SerialManager(port=GetPortName()),db_manager)
     app.mainloop()

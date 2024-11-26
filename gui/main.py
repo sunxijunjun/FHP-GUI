@@ -9,7 +9,7 @@ from serial_manager import SerialManager
 import re
 from dynamic_labelling import ne_median_g
 import psutil
-from dymaic_data_collection import PostureDataCollection
+from flex_collect import PostureDataCollection
 import numpy as np
 import csv
 import os
