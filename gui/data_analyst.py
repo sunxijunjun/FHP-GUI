@@ -86,6 +86,7 @@ class DataAnalyst:
                 return 'XL'
         self.user_features['size'] = map_size(self.user_features['height'])
         self.user_features['threshold'] = self.thresholds[self.user_features['size']] if np.isnan(user_features[6]) else user_features[6]
+        print(f"using threshold {self.user_features['threshold']}" ) #cheked and ok, can read and use user feature threshold 86.0
     
     @staticmethod
     def detect_anomaly_test(data: dict[str, list[int]]) -> Union[None, int]:
@@ -184,9 +185,17 @@ class DataAnalyst:
         def predict_with_threshold(df: pd.DataFrame, input_columns: list, threshold_mapping: dict, prediction_column_name):
             input_check(df, input_columns, prediction_column_name)
 
+            def get_threshold(row):
+                if 'threshold' in self.user_features and not pd.isnull(self.user_features['threshold']):
+                    print(f"Get User Threshold: {self.user_features['threshold']}")
+                    return self.user_features['threshold']
+                else:
+                    print(f"Get Default Threshold: {threshold_mapping.get(row['size'], np.nan)}")
+                    return threshold_mapping.get(row['size'], np.nan)
+
             df[prediction_column_name] = df.apply(
                 lambda row: (
-                    0 if row['sensor4_2_diff'] > threshold_mapping.get(row['size'], np.nan) else 1
+                    0 if row['sensor4_2_diff'] > get_threshold(row) else 1
                 ) if not pd.isnull(row['sensor4_2_diff']) else np.nan,
                 axis=1
             )
