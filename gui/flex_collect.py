@@ -33,7 +33,11 @@ class PostureDataCollection(tk.Toplevel):
 
     def init_ui(self):
         instruction = (
+            "Warning:This operation will change the default settings of the device!\n "
+            "Please proceed with caution!!!\n"
+            "Please make sure the device is properly placed and the user is in a comfortable sitting position.\n"
             "Calibration will require you to maintain 2 specific static postures, collect data, and process it.\n"
+            "This operation will take approximately 30 seconds.\n"
             "Please click start and follow the steps:\n"
         )
         self.instruction_text = tk.Label(self, text=instruction)
@@ -68,7 +72,7 @@ class PostureDataCollection(tk.Toplevel):
                 median_values = df.groupby('Posture')['sensor4_2_diff'].median()
                 print(median_values)
 
-                if (median_values <= -80).any():
+                if (median_values <= -50).any():
                     messagebox.showerror("Error", "Please adjust device and sitting position: upper sensor is miss-focusing.")
                     self.destroy()
                     return
@@ -81,7 +85,7 @@ class PostureDataCollection(tk.Toplevel):
                 average_median = median_values.mean()
                 print("Average of the two medians is:", average_median)
 
-                if 30 < average_median < 150:
+                if 50 < average_median < 110:
                     print("OK")
                     messagebox.showinfo("Success", "Calibration successful.")
                     # 调用 reset_threshold_from_cali 方法，将 average_median 作为新的阈值存入

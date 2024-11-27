@@ -195,7 +195,8 @@ class DataAnalyst:
 
             df[prediction_column_name] = df.apply(
                 lambda row: (
-                    0 if row['sensor4_2_diff'] > get_threshold(row) else 1
+                        print(f"sensor4_2_diff: {row['sensor4_2_diff']}, threshold: {get_threshold(row)}") or
+                        (0 if row['sensor4_2_diff'] > get_threshold(row) else 1)
                 ) if not pd.isnull(row['sensor4_2_diff']) else np.nan,
                 axis=1
             )
