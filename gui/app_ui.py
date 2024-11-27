@@ -1230,12 +1230,15 @@ class App(ThemedTk):
         timer_root.mainloop()
 
     def calibration(self):
+        self.withdraw()
+        self.pause()
         if self.calibration_window is not None and self.calibration_window.winfo_exists():
             self.calibration_window.lift()
             return
         self.calibration_window = PostureDataCollection(
             serial_manager=self.serial_manager,
-            db_manager=self.db_manager
+            db_manager=self.db_manager,
+            main_app=self,
         )
         self.calibration_window.protocol("WM_DELETE_WINDOW", self.on_calibration_close)
         dynamic_labelling.use_flex_median()
@@ -1245,6 +1248,8 @@ class App(ThemedTk):
     def on_calibration_close(self):
         self.calibration_window.destroy()
         self.calibration_window = None
+        self.resume()
+        self.deiconify()
 
     def pause(self):
         self.pause_comm()

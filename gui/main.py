@@ -9,7 +9,6 @@ from serial_manager import SerialManager
 import re
 from dynamic_labelling import ne_median_g
 import psutil
-from flex_collect import PostureDataCollection
 import numpy as np
 import csv
 import os
@@ -249,12 +248,6 @@ class ThreadManager:
             'feedback': np.nan
         }
         return entry
-
-
-def start_data_collection():
-    app = PostureDataCollection()
-    app.mainloop()
-
 
 def start_main_app():
     test_proc = ThreadManager(app_title="Testing Data Validation")

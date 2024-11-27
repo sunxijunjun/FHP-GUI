@@ -18,7 +18,8 @@ from database_manager import DatabaseManager, UserDetails
 
 # flexibility collection
 class PostureDataCollection(tk.Toplevel):
-    def __init__(self, serial_manager: SerialManager,db_manager = DatabaseManager()):
+    def __init__(self, serial_manager: SerialManager,db_manager = DatabaseManager(), main_app = None):
+        self.main_app = main_app
         if not tk._default_root:
             root = tk.Tk()
             root.withdraw()
@@ -46,6 +47,7 @@ class PostureDataCollection(tk.Toplevel):
         self.start_button.pack(pady=15)
 
     def on_start(self):
+        self.withdraw()
         postures = [
             "a round shoulder with poking chin posture",
             "an upright neutral posture"
@@ -74,12 +76,12 @@ class PostureDataCollection(tk.Toplevel):
 
                 if (median_values <= -50).any():
                     messagebox.showerror("Error", "Please adjust device and sitting position: upper sensor is miss-focusing.")
-                    self.destroy()
+                    self.exit()
                     return
 
                 if (median_values > 180).any():
                     messagebox.showerror("Error", "Please recalibrate: sensor difference out of range.")
-                    self.destroy()
+                    self.exit()
                     return
 
                 average_median = median_values.mean()
@@ -90,16 +92,22 @@ class PostureDataCollection(tk.Toplevel):
                     messagebox.showinfo("Success", "Calibration successful.")
                     # 调用 reset_threshold_from_cali 方法，将 average_median 作为新的阈值存入
                     self.reset_threshold_from_cali(average_median)
-                    self.destroy()
+                    self.exit()
                     return
 
                 else:
                     messagebox.showerror("Error", "Please recalibrate: sensor difference out of range.")
-                    self.destroy()
+                    self.exit()
                     return
 
-        collect_posture_data(0)
+        collect_posture_data(0)        
 
+    def exit(self):
+        if self.main_app:
+            self.main_app.resume()
+            self.main_app.deiconify()
+        self.destroy()
+    
     def reset_threshold_from_cali(self, new_value: float):
         try:
             self.user_features["threshold"] = new_value
