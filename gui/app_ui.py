@@ -634,6 +634,13 @@ class App(ThemedTk):
         return sens_2, sens_4
 
     def check_conditions(self, conditions: dict, condition_type: str) -> bool:
+        if condition_type == "Sensor":
+            val_replacing_limit = uc.Measurements.sensor_val_replacing_limit.value
+        elif condition_type == "Camera":
+            val_replacing_limit = uc.Measurements.camera_val_replacing_limit.value
+        else:
+            val_replacing_limit = uc.Measurements.default_val_replacing_limit.value
+
         if len(self.device_exception_count[condition_type]) < len(conditions):
             self.device_exception_count[condition_type] = [0] * len(conditions)
         
@@ -645,7 +652,7 @@ class App(ThemedTk):
                 self.device_exception_count[condition_type][condition["condition_id"]] = 0
             else:
                 self.device_exception_count[condition_type][condition["condition_id"]] += 1
-                if self.device_exception_count[condition_type][condition["condition_id"]] >= uc.Measurements.val_replacing_limit.value:
+                if self.device_exception_count[condition_type][condition["condition_id"]] >= val_replacing_limit:
                     play_sound_in_thread()
                     self.error_message = True
                     self.device_exception_count[condition_type][condition["condition_id"]] = 0
