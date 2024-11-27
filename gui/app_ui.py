@@ -196,6 +196,8 @@ class App(ThemedTk):
         self.add_guide_button()
         self.add_generate_report_button()
 
+        self.calibration_window = None
+
         # 需要用户登录后才能进行数据采集
         if not test:
             self.after(500, func=self.show_sign_in_popup)
@@ -1221,15 +1223,21 @@ class App(ThemedTk):
         timer_root.mainloop()
 
     def calibration(self):
-        PostureDataCollection(serial_manager=self.serial_manager, db_manager=self.db_manager)
-        # 确保 dynamic_labelling.py 中的代码已经运行
+        if self.calibration_window is not None and self.calibration_window.winfo_exists():
+            self.calibration_window.lift()
+            return
+        self.calibration_window = PostureDataCollection(
+            serial_manager=self.serial_manager,
+            db_manager=self.db_manager
+        )
+        self.calibration_window.protocol("WM_DELETE_WINDOW", self.on_calibration_close)
         dynamic_labelling.use_flex_median()
-
-        # 访问 flex_median_g 变量
         flex_median_g = dynamic_labelling.flex_median_g
         print(f"flex_median_g = {flex_median_g}")
-        pass
 
+    def on_calibration_close(self):
+        self.calibration_window.destroy()
+        self.calibration_window = None
 
     def pause(self):
         self.pause_comm()

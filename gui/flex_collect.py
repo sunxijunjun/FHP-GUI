@@ -17,23 +17,14 @@ import sys
 from database_manager import DatabaseManager, UserDetails
 
 # flexibility collection
-class PostureDataCollection(tk.Tk):
+class PostureDataCollection(tk.Toplevel):
     def __init__(self, serial_manager: SerialManager,db_manager = DatabaseManager()):
+        if not tk._default_root:
+            root = tk.Tk()
+            root.withdraw()
         super().__init__()
         self.title("Dynamic Data Collection")
-        # self.attributes("-fullscreen", True)
         self.geometry("580x300")
-        '''
-        # 判断操作系统并选择对应的串行端口
-        if platform.system() == "Linux":
-            port = uc.Ports.linux_sensor_1.value
-        elif platform.system() == "Windows":
-            port = uc.Ports.windows_serial.value
-        else:
-            raise Exception("Unsupported Operating System")
-
-        self.serial_manager = SerialManager(port=port)
-        '''
         self.serial_manager = serial_manager
         self.db_manager = db_manager
         self.user_features = dict()
@@ -66,7 +57,7 @@ class PostureDataCollection(tk.Tk):
                 readings = self.read_sensor_data()
                 for reading in readings:
                     data.append(reading + [posture])
-                self.after(10000, collect_posture_data, posture_index + 1)  # Wait for 15 seconds before next posture
+                self.after(1000, collect_posture_data, posture_index + 1)  # Wait for 15 seconds before next posture
             else:
                 filename = self.save_data(data)
                 # Now, perform the checking
