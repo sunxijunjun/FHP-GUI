@@ -284,10 +284,11 @@ class App(ThemedTk):
                 "9. The preparation is complete. Fantastic!\n\n"
 
                 "User Notes:\n\n"
-                "1. Due to the time required for signal communication and data processing, there may be a 5-10 second delay between the real-time image and the actual situation.\n\n"
+                "1. Due to the time required for signal communication and data processing, there may be a slight delay between the sensor signal image and the actual situation.\n\n"
                 "2. When the face cannot be detected, the model will repeat the last historical prediction and notify you after some time that the face cannot be detected.\n\n"
-                "3. Maintaining a consistent sitting height is critical. If your body is only partially in the detection range of the device, accuracy cannot be guaranteed.\n\n"
-                "4. Lowering your head or leaving the detection range may also trigger alerts.\n\n"
+                "3. Maintaining a proper sitting height and appropriate distance from the screen is critical. If your body is only partially within the device's detection range, accuracy cannot be guaranteed.\n\n"
+                "4. Lowering your head, rapid posture changes, or leaving the detection range may trigger alerts. In such cases, please do not provide feedback as a 'false alarm.'\n\n"
+                "5. Only provide feedback as a 'false alarm' when natural posture is incorrectly predicted as poor posture.\n\n"
             ),
             "中文": (
                 "欢迎使用Beta原型机。\n\n"
@@ -304,10 +305,11 @@ class App(ThemedTk):
                 "9.准备工作已经完成，太棒了！\n\n"
 
                 "用户须知:\n\n"
-                "1.由于信号通信和数据处理所需的时间，实时图像会和实际情况有5-10秒左右的延迟。\n\n"
+                "1.由于信号通信和数据处理所需的时间，传感器信号图像会和实际情况有短暂延迟。\n\n"
                 "2.当面部无法被检测到的时候，模型会重复输出上一次的历史预测，并且在一段时间后提醒您无法检测到面部的情况。\n\n"
-                "3.保持坐姿高度至关重要，如果您的身体只有部分在设备的检测范围内，无法保证预测的准确率！\n\n"
-                "4.低头、人物离开检测范围等状况也可能会触发警报。\n\n"
+                "3.保持坐姿高度以及和屏幕的适当距离至关重要，如果您的身体只有部分在设备的检测范围内，无法保证预测的准确率。\n\n"
+                "4.低头、快速的姿态变化、人物离开检测范围等状况也可能会触发警报，这种情况下，请不要反馈“假警报”。\n\n"
+                "5.请仅在自然姿态被预测为不良姿态的时候，反馈“假警报”。\n\n"
             ),
             "粤语": (
                 "歡迎使用Beta原型機。\n\n"
@@ -324,10 +326,11 @@ class App(ThemedTk):
                 "9.準備工作完成，太棒啦！\n\n"
 
                 "使用須知：\n\n"
-                "1.由於信號傳輸同數據處理所需時間，實時圖像同實際情況可能有5~10秒嘅延遲。\n\n"
-                "2.當面部無法被偵測到嘅時候，模型會重複輸出上一次嘅歷史結果，並喺一段時間後提醒你面部無法被偵測到。\n\n"
-                "3.保持坐姿高度至關重要，如果你嘅身體只有部分喺設備嘅偵測範圍內，無法保證結果準確。\n\n"
-                "4.低頭或者離開偵測範圍嘅情況亦可能會觸發警報。\n\n"
+                "1. 由於信號傳輸同數據處理所需時間，感應器信號畫面同實際情況可能會有短暫延遲。\n\n"
+                "2. 當面部無法被偵測到時，模型會重複輸出上一次嘅歷史結果，並喺一段時間後提醒您面部無法被偵測到。\n\n"
+                "3. 維持適當嘅坐姿高度同顯示屏嘅距離至關重要，如果身體只有部分喺設備偵測範圍內，無法保證預測嘅準確性。\n\n"
+                "4. 低頭、快速姿勢變化或者離開偵測範圍可能會觸發警報，呢種情況下請唔好反饋“假警報”。\n\n"
+                "5. 請只喺自然姿態被錯誤預測為不良姿態時，反饋“假警報”。\n\n"
             ),
 
             "Deutsch": (
@@ -341,10 +344,11 @@ class App(ThemedTk):
                 "5. Registrieren Sie ein Konto und geben Sie Ihre Daten wie Größe und Gewicht korrekt an.\n"
                 "6. Aktivieren Sie die Option 'Benachrichtigung bei schlechter Haltung nach X Sekunden' in den Einstellungen.\n\n"
                 "Benutzerhinweise:\n\n"
-                "1. Es kann eine Verzögerung von 5-10 Sekunden zwischen Echtzeitbild und tatsächlicher Situation geben.\n"
-                "2. Wird das Gesicht nicht erkannt, gibt das Modell die letzte Vorhersage aus und informiert Sie.\n"
-                "3. Eine konstante Sitzhöhe ist entscheidend, um die Erkennungsgenauigkeit sicherzustellen.\n"
-                "4. Kopfneigen oder Verlassen des Erfassungsbereichs kann Warnungen auslösen.\n"
+                "1. Aufgrund der Zeit, die für die Signalübertragung und Datenverarbeitung erforderlich ist, kann es zu einer kurzen Verzögerung zwischen dem Sensorsignalbild und der tatsächlichen Situation kommen.\n\n"
+                "2. Wenn das Gesicht nicht erkannt werden kann, wiederholt das Modell die letzte historische Vorhersage und benachrichtigt Sie nach einiger Zeit, dass das Gesicht nicht erkannt wurde.\n\n"
+                "3. Es ist entscheidend, eine angemessene Sitzhöhe und einen geeigneten Abstand zum Bildschirm einzuhalten. Wenn sich Ihr Körper nur teilweise im Erfassungsbereich des Geräts befindet, kann die Genauigkeit nicht garantiert werden.\n\n"
+                "4. Das Senken des Kopfes, schnelle Haltungsänderungen oder das Verlassen des Erfassungsbereichs können Warnungen auslösen. In solchen Fällen geben Sie bitte kein Feedback als 'Fehlalarm.'\n\n"
+                "5. Geben Sie nur dann Feedback als 'Fehlalarm,' wenn eine natürliche Haltung fälschlicherweise als schlechte Haltung erkannt wurde.\n\n"
             )
 
         }
