@@ -178,7 +178,9 @@ class DataAnalyst:
                 predictions[valid_indices] = binary_predictions
 
             df[prediction_column_name] = predictions
+            print(f"ONNX Model Output: {predictions}")
             df[f"{prediction_column_name}_raw"] = probabilities # Record model output probabilities
+            print(f"ONNX Model Probabilities: {probabilities}")
             return df
 
         # Threshold method prediction
@@ -231,7 +233,6 @@ class DataAnalyst:
 
             df[prediction_column_name] = distance_mm
             return df
-            
 
         if self.user_features is None:
             print("No user features available.")

@@ -243,32 +243,31 @@ class App(ThemedTk):
     def show_user_guide_window(self):
         guide_window = tk.Toplevel(self)
         guide_window.title("User Guide")
-        guide_window.geometry("450x400")  # 调整窗口大小
+        guide_window.geometry("450x600")  # 调整窗口大小
 
         # Create a canvas
         canvas = tk.Canvas(guide_window)
         canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
-        # Reuse Previous Code:
-        # guide_window = NotesEntryFrame()
-
         # Add a scrollbar to the canvas
         scrollbar = ttk.Scrollbar(guide_window, orient=tk.VERTICAL, command=canvas.yview)
         scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+
+        def _on_mouse_wheel(event):
+            canvas.yview_scroll(-1 * int((event.delta / 120)), "units")
+
+        canvas.bind_all("<MouseWheel>", _on_mouse_wheel)  # For Windows and macOS
+        canvas.bind_all("<Button-4>", _on_mouse_wheel)  # For Linux (scroll up)
+        canvas.bind_all("<Button-5>", _on_mouse_wheel)  # For Linux (scroll down)
 
         # Configure the canvas
         canvas.configure(yscrollcommand=scrollbar.set)
         canvas.bind('<Configure>', lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
 
         # Create another frame inside the canvas
-        inner_frame = tk.Frame(canvas, width = 330)
+        inner_frame = tk.Frame(canvas)
+        canvas.create_window((0, 0), window=inner_frame, anchor="nw")  # 使用 "nw" 确保顶部对齐
 
-        # Add that frame to a window in the canvas
-        canvas.create_window((0, 0), window=inner_frame, anchor="center")
-
-
-
-        # 多语言文本字典
         guide_texts = {
             "English": (
                 "Welcome to the Beta Prototype.\n\n"
@@ -276,13 +275,19 @@ class App(ThemedTk):
                 "For optimal accuracy, please follow the calibration steps below:\n\n"
                 "1. Adjust the height of your chair and screen so that the top edge of the screen is level with or slightly below your eyes.\n\n"
                 "2. Secure the device at the center of the top edge of your monitor.\n\n"
-                "3. At this point, you should see your face appear in the center of the camera view, surrounded by a small green box.\n\n"
-                "4. Please register a personal account and accurately fill in your height, weight, and other information.\n\n"
-                "5. Enable 'Notify Bad Posture After X Seconds' in the settings and input the desired time interval in seconds in the text box.\n\n"
-                "6. When notified of bad posture, please click 'True/False' as this will help the program make more accurate and personalized alerts.\n\n"
-                "7. If the device fails to correctly detect bad posture, click the calibration button and follow the prompts to complete the calibration procedure. The system will check sensor status and analyze possible causes of errors.\n\n"
-                "8. The preparation is complete. Fantastic!\n\n"
+                "3. Lean your back against the chair’s backrest to ensure proper support for your back and lumbar region.\n\n"
+                "4. At this point, you should see your face appear in the center of the camera view, surrounded by a small green box.\n\n"
+                "5. Please register a personal account and accurately fill in your height, weight, and other information.\n\n"
+                "6. Enable 'Notify Bad Posture After X Seconds' in the settings and input the desired time interval in seconds in the text box.\n\n"
+                "7. When notified of bad posture, please click 'True/False' as this will help the program make more accurate and personalized alerts.\n\n"
+                "8. If the device fails to correctly detect bad posture, click the calibration button and follow the prompts to complete the calibration procedure. The system will check sensor status and analyze possible causes of errors.\n\n"
+                "9. The preparation is complete. Fantastic!\n\n"
 
+                "User Notes:\n\n"
+                "1. Due to the time required for signal communication and data processing, there may be a 5-10 second delay between the real-time image and the actual situation.\n\n"
+                "2. When the face cannot be detected, the model will repeat the last historical prediction and notify you after some time that the face cannot be detected.\n\n"
+                "3. Maintaining a consistent sitting height is critical. If your body is only partially in the detection range of the device, accuracy cannot be guaranteed.\n\n"
+                "4. Lowering your head or leaving the detection range may also trigger alerts.\n\n"
             ),
             "中文": (
                 "欢迎使用Beta原型机。\n\n"
@@ -290,50 +295,69 @@ class App(ThemedTk):
                 "为了达到最佳准确性，请按照以下校准步骤操作：\n\n"
                 "1.调整椅子和屏幕的高度，使屏幕上边缘的高度应该平齐于或略低于您的眼睛。\n\n"
                 "2.将设备固定在显示器上边缘的中央。\n\n"
-                "3.这时您应该看到您的脸出现在相机视图的中心，并且周围有一个小的绿色框。\n\n"
-                "4.请注册个人账户，并且如实填写身高体重等信息。\n\n"
-                "5.请在设置中打开Notify Bad Posture After X Seconds，并在方框中填入您希望被通知的时间间隔，单位是秒。\n\n"
-                "6.当收到警报时，请点击True/False，这会帮助程序更加准确且个性化的发出警报。\n\n"
-                "7.当设备无法正确检出不良姿态时，请点击校准按钮，并按照提示完成校准程序。系统会检测传感器状态，并且分析可能的错误原因。\n\n"
-                "8.准备工作已经完成，太棒了！\n\n"
-            ),
+                "3.后背靠在椅子靠背上，确保椅子对您的腰部和背部有很好的支撑。\n\n"
+                "4.这时您应该看到您的脸出现在相机视图的中心，并且周围有一个小的绿色框。\n\n"
+                "5.请注册个人账户，并且如实填写身高体重等信息。\n\n"
+                "6.请在设置中打开'X秒后通知不良姿势'，并在方框中填入您希望被通知的时间间隔，单位是秒。\n\n"
+                "7.当收到警报时，请点击'True/False'，这会帮助程序更加准确且个性化的发出警报。\n\n"
+                "8.当设备无法正确检出不良姿态时，请点击校准按钮，并按照提示完成校准程序。系统会检测传感器状态，并且分析可能的错误原因。\n\n"
+                "9.准备工作已经完成，太棒了！\n\n"
 
+                "用户须知:\n\n"
+                "1.由于信号通信和数据处理所需的时间，实时图像会和实际情况有5-10秒左右的延迟。\n\n"
+                "2.当面部无法被检测到的时候，模型会重复输出上一次的历史预测，并且在一段时间后提醒您无法检测到面部的情况。\n\n"
+                "3.保持坐姿高度至关重要，如果您的身体只有部分在设备的检测范围内，无法保证预测的准确率！\n\n"
+                "4.低头、人物离开检测范围等状况也可能会触发警报。\n\n"
+            ),
             "粤语": (
                 "歡迎使用Beta原型機。\n\n"
                 "此裝置會偵測你使用電腦時嘅不良姿勢，主要係圓肩、駝背同埋頸前伸嘅姿態。\n\n"
                 "為咗達到最佳準確性，請按照以下校準步驟操作：\n\n"
-                "1. 調整椅子同顯示屏嘅高度，顯示屏嘅上邊緣應該同你眼睛平齊，或者稍低過眼睛。\n\n"
-                "2. 將裝置固定喺顯示器上邊緣嘅中間位置。\n\n"
-                "3. 呢個時候你應該見到你嘅面出現喺相機視圖嘅中間，並且周圍有一個細細嘅綠色框。\n\n"
-                "4. 請註冊個人帳戶，並且如實填寫你嘅身高、體重等資料。\n\n"
-                "5. 請喺設定中打開'X秒後通知不良姿勢'，並喺文本框中輸入你希望嘅通知時間間隔（秒）。\n\n"
-                "6. 當收到警報時，請點擊'True/False'，咁樣可以幫助程序更加準確同個性化發出警報。\n\n"
-                "7. 當裝置無法準確偵測不良姿勢時，請點擊校準按鈕，並按照提示完成校準程序。系統會檢測傳感器狀態，分析可能嘅錯誤原因。\n\n"
-                "8. 準備工作完成，太棒啦！\n\n"
+                "1.調整椅子同顯示屏嘅高度，顯示屏嘅上邊緣應該同你眼睛平齊，或者稍低過眼睛。\n\n"
+                "2.將裝置固定喺顯示器上邊緣嘅中間位置。\n\n"
+                "3.背部靠喺椅背上，確保椅背對你腰部同背部有良好支持。\n\n"
+                "4.呢個時候你應該見到你嘅面出現喺相機視圖嘅中間，並且周圍有一個細細嘅綠色框。\n\n"
+                "5.請註冊個人帳戶，並且如實填寫你嘅身高、體重等資料。\n\n"
+                "6.請喺設定中打開'X秒後通知不良姿勢'，並喺文本框中輸入你希望嘅通知時間間隔（秒）。\n\n"
+                "7.當收到警報時，請點擊'True/False'，咁樣可以幫助程序更加準確同個性化發出警報。\n\n"
+                "8.當裝置無法準確偵測不良姿勢時，請點擊校準按鈕，並按照提示完成校準程序。系統會檢測傳感器狀態，分析可能嘅錯誤原因。\n\n"
+                "9.準備工作完成，太棒啦！\n\n"
 
+                "使用須知：\n\n"
+                "1.由於信號傳輸同數據處理所需時間，實時圖像同實際情況可能有5~10秒嘅延遲。\n\n"
+                "2.當面部無法被偵測到嘅時候，模型會重複輸出上一次嘅歷史結果，並喺一段時間後提醒你面部無法被偵測到。\n\n"
+                "3.保持坐姿高度至關重要，如果你嘅身體只有部分喺設備嘅偵測範圍內，無法保證結果準確。\n\n"
+                "4.低頭或者離開偵測範圍嘅情況亦可能會觸發警報。\n\n"
             ),
 
             "Deutsch": (
                 "Willkommen beim Beta-Prototyp.\n\n"
-                "Dieses Gerät wird schlechte Körperhaltungen erkennen, insbesondere Rundrücken und vorgestreckten Kopf.\n\n"
-                "Für optimale Genauigkeit folgen Sie bitte den folgenden Kalibrierschritten:\n\n"
-                "1. Passen Sie die Höhe Ihres Stuhls und Monitors so an, dass die obere Kante des Bildschirms auf Augenhöhe oder leicht darunter ist.\n\n"
-                "2. Befestigen Sie das Gerät in der Mitte der oberen Kante Ihres Monitors.\n\n"
-                "3. Zu diesem Zeitpunkt sollten Sie Ihr Gesicht in der Mitte der Kameraansicht sehen, umgeben von einem kleinen grünen Rahmen.\n\n"
-                "4. Bitte registrieren Sie ein persönliches Konto und geben Sie Ihre Körpergröße, Ihr Gewicht und andere Informationen korrekt an.\n\n"
-                "5. Aktivieren Sie 'Benachrichtigung bei schlechter Haltung nach X Sekunden' in den Einstellungen und geben Sie das gewünschte Zeitintervall (in Sekunden) in das Textfeld ein.\n\n"
-                "6. Wenn Sie benachrichtigt werden, klicken Sie bitte auf 'Wahr/Falsch', um dem Programm zu helfen, genauere und personalisierte Warnungen auszugeben.\n\n"
-                "7. Falls das Gerät schlechte Haltung nicht korrekt erkennt, klicken Sie auf die Kalibrierungsschaltfläche und folgen Sie den Anweisungen zur Durchführung des Kalibrierungsverfahrens. Das System überprüft den Sensorstatus und analysiert mögliche Fehlerursachen.\n\n"
-                "8. Die Vorbereitungen sind abgeschlossen. Großartig!\n\n"
-
+                "Dieses Gerät erkennt schlechte Körperhaltungen wie Rundrücken und vorgestreckten Kopf.\n\n"
+                "Kalibrierungsschritte:\n\n"
+                "1. Stellen Sie die Bildschirmhöhe so ein, dass die obere Kante auf Augenhöhe oder leicht darunter liegt.\n"
+                "2. Befestigen Sie das Gerät oben mittig am Monitor.\n"
+                "3. Lehnen Sie sich an die Rückenlehne des Stuhls und sorgen Sie für eine stabile Haltung.\n"
+                "4. Ihr Gesicht sollte in der Kameraansicht sichtbar sein, umgeben von einem grünen Rahmen.\n"
+                "5. Registrieren Sie ein Konto und geben Sie Ihre Daten wie Größe und Gewicht korrekt an.\n"
+                "6. Aktivieren Sie die Option 'Benachrichtigung bei schlechter Haltung nach X Sekunden' in den Einstellungen.\n\n"
+                "Benutzerhinweise:\n\n"
+                "1. Es kann eine Verzögerung von 5-10 Sekunden zwischen Echtzeitbild und tatsächlicher Situation geben.\n"
+                "2. Wird das Gesicht nicht erkannt, gibt das Modell die letzte Vorhersage aus und informiert Sie.\n"
+                "3. Eine konstante Sitzhöhe ist entscheidend, um die Erkennungsgenauigkeit sicherzustellen.\n"
+                "4. Kopfneigen oder Verlassen des Erfassungsbereichs kann Warnungen auslösen.\n"
             )
 
         }
 
         # 默认显示的语言是英语
-        guide_label = tk.Label(inner_frame, text=guide_texts["English"], font=("Arial", 10), justify="left",
-                               wraplength=300)
-        guide_label.pack(pady=(20,10), fill=tk.X)
+        guide_label = tk.Label(
+            inner_frame,
+            text=guide_texts["English"],
+            font=("Arial", 10),
+            justify="left",
+            wraplength=400  # 调整为更大值，避免换行问题
+        )
+        guide_label.pack(pady=(20, 10), fill=tk.X)
 
         # 选择语言的下拉菜单
         def update_language(event):
@@ -343,7 +367,7 @@ class App(ThemedTk):
         language_frame = tk.Frame(inner_frame)
         language_frame.pack(fill=tk.X, pady=10)
 
-        language_combobox = ttk.Combobox(language_frame, values=["English", "中文", "粤语","Deutsch"])
+        language_combobox = ttk.Combobox(language_frame, values=["English", "中文", "粤语", "Deutsch"])
         language_combobox.current(0)  # 默认选择英语
         language_combobox.bind("<<ComboboxSelected>>", update_language)
         language_combobox.pack(pady=10)

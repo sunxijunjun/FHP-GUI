@@ -71,7 +71,10 @@ class PostureDataCollection(tk.Toplevel):
                 df = df.dropna(subset=['Sensor 2', 'Sensor 4'])
                 df['sensor4_2_diff'] = df['Sensor 4'] - df['Sensor 2']
 
-                median_values = df.groupby('Posture')['sensor4_2_diff'].median()
+                median_values = (
+                    df.groupby('Posture', group_keys=False)
+                    .apply(lambda group: group.iloc[len(group) // 2:]['sensor4_2_diff'].median())
+                )
                 print(median_values)
 
                 if (median_values <= -50).any():
