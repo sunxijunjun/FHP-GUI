@@ -283,12 +283,13 @@ class App(ThemedTk):
                 "8. If the device fails to correctly detect bad posture, click the calibration button and follow the prompts to complete the calibration procedure. The system will check sensor status and analyze possible causes of errors.\n\n"
                 "9. The preparation is complete. Fantastic!\n\n"
 
-                "User Notes:\n\n"
-                "1. Due to the time required for signal communication and data processing, there may be a slight delay between the sensor signal image and the actual situation.\n\n"
-                "2. When the face cannot be detected, the model will repeat the last historical prediction and notify you after some time that the face cannot be detected.\n\n"
-                "3. Maintaining a proper sitting height and appropriate distance from the screen is critical. If your body is only partially within the device's detection range, accuracy cannot be guaranteed.\n\n"
-                "4. Lowering your head, rapid posture changes, or leaving the detection range may trigger alerts. In such cases, please do not provide feedback as a 'false alarm.'\n\n"
-                "5. Only provide feedback as a 'false alarm' when natural posture is incorrectly predicted as poor posture.\n\n"
+                "User Guidelines:\n\n"
+                "1. Due to the time required for signal communication and data processing, there will be a slight delay between the sensor signal display and the actual situation.\n\n"
+                "2. If you notice that the prediction results remain unchanged for an extended period, it may be caused by missing data. When the face cannot be detected, the model will repeatedly output the last historical prediction and will remind you after some time that the face could not be detected.\n\n"
+                "3. Maintaining a proper sitting height and an appropriate distance from the screen is crucial. If only part of your body is within the detection range, or if your arms/other objects block the front of your torso, the prediction accuracy cannot be guaranteed.\n\n"
+                "4. Lowering your head, rapid posture changes, or leaving the detection range may also trigger alerts. In such cases, please do not report them as \"false alarms.\"\n\n"
+                "5. Please only provide feedback on \"false alarms\" when a natural posture is incorrectly predicted as a bad posture.\n\n"
+
             ),
             "中文": (
                 "欢迎使用Beta原型机。\n\n"
@@ -306,10 +307,10 @@ class App(ThemedTk):
 
                 "用户须知:\n\n"
                 "1.由于信号通信和数据处理所需的时间，传感器信号图像会和实际情况有短暂延迟。\n\n"
-                "2.当面部无法被检测到的时候，模型会重复输出上一次的历史预测，并且在一段时间后提醒您无法检测到面部的情况。\n\n"
-                "3.保持坐姿高度以及和屏幕的适当距离至关重要，如果您的身体只有部分在设备的检测范围内，无法保证预测的准确率。\n\n"
+                "2.如果您发现预测结果在一段时间内未发生变化，有可能是数据缺失引起的。当面部无法被检测到的时候，模型会重复输出上一次的历史预测，并且在一段时间后弹窗提醒您无法检测到面部的情况。\n\n"
+                "3.保持坐姿高度以及和屏幕的适当距离至关重要，如果您的身体只有部分在设备的检测范围内，或者您的手臂/其它物品遮挡在您的躯干前方，无法保证预测的准确率。\n\n"
                 "4.低头、快速的姿态变化、人物离开检测范围等状况也可能会触发警报，这种情况下，请不要反馈“假警报”。\n\n"
-                "5.请仅在自然姿态被预测为不良姿态的时候，反馈“假警报”。\n\n"
+                "5.请仅在合适的自然姿态被预测为不良姿态的时候，反馈“假警报”。\n\n"
             ),
             "粤语": (
                 "歡迎使用Beta原型機。\n\n"
@@ -325,12 +326,13 @@ class App(ThemedTk):
                 "8.當裝置無法準確偵測不良姿勢時，請點擊校準按鈕，並按照提示完成校準程序。系統會檢測傳感器狀態，分析可能嘅錯誤原因。\n\n"
                 "9.準備工作完成，太棒啦！\n\n"
 
-                "使用須知：\n\n"
-                "1. 由於信號傳輸同數據處理所需時間，感應器信號畫面同實際情況可能會有短暫延遲。\n\n"
-                "2. 當面部無法被偵測到時，模型會重複輸出上一次嘅歷史結果，並喺一段時間後提醒您面部無法被偵測到。\n\n"
-                "3. 維持適當嘅坐姿高度同顯示屏嘅距離至關重要，如果身體只有部分喺設備偵測範圍內，無法保證預測嘅準確性。\n\n"
-                "4. 低頭、快速姿勢變化或者離開偵測範圍可能會觸發警報，呢種情況下請唔好反饋“假警報”。\n\n"
-                "5. 請只喺自然姿態被錯誤預測為不良姿態時，反饋“假警報”。\n\n"
+                "用戶須知:\n\n"
+                "1. 由於信號傳輸和數據處理所需嘅時間，傳感器信號圖像會同實際情況有短暫延遲。\n\n"
+                "2. 如果你發現預測結果喺一段時間內無變化，有可能係數據缺失引起嘅。當面部無法被檢測到嘅時候，模型會重複輸出上一次嘅歷史預測，並且喺一段時間後彈窗提醒你無法檢測到面部嘅情況。\n\n"
+                "3. 保持坐姿高度以及同屏幕嘅適當距離至關重要，如果你嘅身體只有部分喺設備嘅檢測範圍內，或者你嘅手臂/其他物品遮擋喺你嘅軀幹前方，無法保證預測嘅準確率。\n\n"
+                "4. 低頭、快速嘅姿態變化、人物離開檢測範圍等情況都可能會觸發警報，喺呢啲情況下，請唔好反饋「假警報」。\n\n"
+                "5. 請僅喺合適嘅自然姿態被預測為不良姿態嘅時候，反饋「假警報」。\n\n"
+
             ),
 
             "Deutsch": (
@@ -343,12 +345,13 @@ class App(ThemedTk):
                 "4. Ihr Gesicht sollte in der Kameraansicht sichtbar sein, umgeben von einem grünen Rahmen.\n"
                 "5. Registrieren Sie ein Konto und geben Sie Ihre Daten wie Größe und Gewicht korrekt an.\n"
                 "6. Aktivieren Sie die Option 'Benachrichtigung bei schlechter Haltung nach X Sekunden' in den Einstellungen.\n\n"
+                
                 "Benutzerhinweise:\n\n"
-                "1. Aufgrund der Zeit, die für die Signalübertragung und Datenverarbeitung erforderlich ist, kann es zu einer kurzen Verzögerung zwischen dem Sensorsignalbild und der tatsächlichen Situation kommen.\n\n"
-                "2. Wenn das Gesicht nicht erkannt werden kann, wiederholt das Modell die letzte historische Vorhersage und benachrichtigt Sie nach einiger Zeit, dass das Gesicht nicht erkannt wurde.\n\n"
-                "3. Es ist entscheidend, eine angemessene Sitzhöhe und einen geeigneten Abstand zum Bildschirm einzuhalten. Wenn sich Ihr Körper nur teilweise im Erfassungsbereich des Geräts befindet, kann die Genauigkeit nicht garantiert werden.\n\n"
-                "4. Das Senken des Kopfes, schnelle Haltungsänderungen oder das Verlassen des Erfassungsbereichs können Warnungen auslösen. In solchen Fällen geben Sie bitte kein Feedback als 'Fehlalarm.'\n\n"
-                "5. Geben Sie nur dann Feedback als 'Fehlalarm,' wenn eine natürliche Haltung fälschlicherweise als schlechte Haltung erkannt wurde.\n\n"
+                "1. Aufgrund der Zeit, die für die Signalübertragung und Datenverarbeitung benötigt wird, gibt es eine leichte Verzögerung zwischen der Anzeige des Sensorsignals und der tatsächlichen Situation.\n\n"
+                "2. Wenn Sie feststellen, dass sich die Vorhersageergebnisse über einen längeren Zeitraum nicht ändern, könnte dies durch fehlende Daten verursacht werden. Wenn das Gesicht nicht erkannt werden kann, gibt das Modell wiederholt die letzte historische Vorhersage aus und erinnert Sie nach einiger Zeit daran, dass das Gesicht nicht erkannt werden konnte.\n\n"
+                "3. Die Aufrechterhaltung einer angemessenen Sitzhöhe und eines geeigneten Abstands zum Bildschirm ist entscheidend. Wenn nur ein Teil Ihres Körpers im Erfassungsbereich liegt oder wenn Ihre Arme/andere Gegenstände vor Ihrem Oberkörper blockieren, kann die Vorhersagegenauigkeit nicht garantiert werden.\n\n"
+                "4. Das Senken des Kopfes, schnelle Haltungsänderungen oder das Verlassen des Erfassungsbereichs können ebenfalls Warnungen auslösen. In solchen Fällen melden Sie bitte keine \"Fehlalarme\".\n\n"
+                "5. Bitte geben Sie nur dann Feedback zu \"Fehlalarmen\", wenn eine natürliche Haltung fälschlicherweise als schlechte Haltung vorhergesagt wird.\n\n"
             )
 
         }

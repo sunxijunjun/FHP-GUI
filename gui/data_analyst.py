@@ -25,7 +25,7 @@ rangefinder_input_columns = ['left_eye_x', 'left_eye_y', 'right_eye_x', 'right_e
 
 # Input columns for threshold method
 threshold_input_columns = [
-    'sensor4_2_diff','size'
+    'sensor4_2_diff','size','nose_y'
 ]
 
 class SimplifiedBinaryClassificationModel(nn.Module):
@@ -197,9 +197,14 @@ class DataAnalyst:
 
             df[prediction_column_name] = df.apply(
                 lambda row: (
-                        print(f"sensor4_2_diff: {row['sensor4_2_diff']}, threshold: {get_threshold(row)}") or
-                        (0 if row['sensor4_2_diff'] > get_threshold(row) else 1)
-                ) if not pd.isnull(row['sensor4_2_diff']) else np.nan,
+                        print(f"nose_y: {row['nose_y']}, threshold: 180") or
+                        (0 if row['nose_y'] > 160 else (
+                                print(f"sensor4_2_diff: {row['sensor4_2_diff']}, threshold: {get_threshold(row)}") or
+                                (0 if row['sensor4_2_diff'] > get_threshold(row) else 1)
+                        ))
+                ) if not pd.isnull(row['nose_y']) else (
+                    np.nan
+                ),
                 axis=1
             )
 
