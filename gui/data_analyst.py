@@ -11,11 +11,15 @@ import onnxruntime as ort
 import math
 
 # Define input columns for each model
-model1_input_columns = ['bbox_y1', 'bbox_y1',
-                        'left_eye_y',
-'right_eye_y', 'nose_y', 'mouth_left_y', 'mouth_right_y',
-                        'facew', 'faceh', 'facea', 'left_eye_x', 'right_eye_x', 'mouth_left_x', 'mouth_right_x',
-                        'nose_x', 'bbox_x1','bbox_x2'] # checked and tuning, scaler bug fixed
+model1_input_columns = ['Sensor 2', 'Sensor 4',
+                 'bbox_x1', 'bbox_y1', 'bbox_x2', 'bbox_y2',
+                 'left_eye_x', 'left_eye_y', 'right_eye_x', 'right_eye_y',
+                 'nose_x', 'nose_y',
+                 'mouth_left_x', 'mouth_left_y', 'mouth_right_x', 'mouth_right_y',
+                 'sensor4_2_diff',
+                'facew', 'faceh', 'facea',
+                 'facea2', 'facea4',
+                 'diff2', 'diff4']
 
 model2_input_columns = [
     'weight', 'height', 'sensor4_2_diff', 'Sensor 2', 'Sensor 4'
@@ -31,31 +35,30 @@ threshold_input_columns = [
 class SimplifiedBinaryClassificationModel(nn.Module):
     def __init__(self):
         super(SimplifiedBinaryClassificationModel, self).__init__()
+        self.input_dropout = nn.Dropout(0.1)  # Dropout added to input layer
+
         self.fc1 = nn.Linear(len(model1_input_columns), 128)
         self.bn1 = nn.BatchNorm1d(128)
-        self.dropout1 = nn.Dropout(0.5)
+        self.dropout1 = nn.Dropout(0.2)
 
         self.fc2 = nn.Linear(128, 64)
         self.bn2 = nn.BatchNorm1d(64)
-        self.dropout2 = nn.Dropout(0.5)
+        self.dropout2 = nn.Dropout(0.2)
 
-        # New hidden layer
         self.fc3 = nn.Linear(64, 32)
         self.bn3 = nn.BatchNorm1d(32)
-        self.dropout3 = nn.Dropout(0.5)
+        self.dropout3 = nn.Dropout(0.2)
 
-        self.fc4 = nn.Linear(32, 1)  # Updated final layer
+        self.fc4 = nn.Linear(32, 1)
 
     def forward(self, x):
+        x = self.input_dropout(x)  # Apply dropout to the input
         x = torch.relu(self.bn1(self.fc1(x)))
         x = self.dropout1(x)
         x = torch.relu(self.bn2(self.fc2(x)))
         x = self.dropout2(x)
-
-        # Forward pass through the new hidden layer
         x = torch.relu(self.bn3(self.fc3(x)))
         x = self.dropout3(x)
-
         x = self.fc4(x)  # No activation for final layer (logits)
         return x
 
@@ -197,7 +200,7 @@ class DataAnalyst:
 
             df[prediction_column_name] = df.apply(
                 lambda row: (
-                        print(f"nose_y: {row['nose_y']}, threshold: 180") or
+                        print(f"nose_y: {row['nose_y']}, threshold: 170") or
                         (0 if row['nose_y'] > 160 else (
                                 print(f"sensor4_2_diff: {row['sensor4_2_diff']}, threshold: {get_threshold(row)}") or
                                 (0 if row['sensor4_2_diff'] > get_threshold(row) else 1)
@@ -258,7 +261,12 @@ class DataAnalyst:
         self.data = data
 
         models_dir = ui_config.FilePaths.model_path.value
-
+        """
+        目前的问题：
+        差距过小的时候，也有坏动作。尤其是距离远的情况。
+        但是目前的投票机制其实很看重模型二的结果，因为要全部同意。
+        为什么部改称输出可能性>1呢？
+        """
         # Model 1 (PyTorch)
         model1_path = os.path.join(models_dir, 'voting_model1.pth')
         model1_scaler_path = os.path.join(models_dir, 'voting_model1_scaler.joblib')
