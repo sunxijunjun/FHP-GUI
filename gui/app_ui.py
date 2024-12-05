@@ -1037,7 +1037,7 @@ class App(ThemedTk):
     def create_clock_label(self, txt_frame: str) -> None:
         labelframe = ttk.LabelFrame(self.info_panel, text=txt_frame)
         labelframe.grid(row=self.info_panel_wnum, column=0, padx=10, pady=5)
-        clock = Clock(labelframe)
+        clock = Clock(labelframe, self)
         clock.pack(fill="both", expand=True)
         self.info_panel_wnum += 1
 

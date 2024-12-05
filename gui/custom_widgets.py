@@ -40,18 +40,31 @@ class TkCustomImage:
 class Clock(ttk.Frame):
     """ The clock widget to show the time elapsed """
 
-    def __init__(self, parent, start=True):
+    def __init__(self, parent, app, start=True):
         super().__init__(parent)
+        self.app = app
         self.is_started = start
         self.start_time = datetime.now()
+        self.paused_time = None
+        self.total_paused_duration = timedelta(0)
         self.time_label = ttk.Label(self, font=("Helvetica", 48))
         self.time_label.pack(pady=20)
         self.update_time()
 
     def update_time(self):
-        elapsed_time = datetime.now() - self.start_time
-        time_str = str(timedelta(seconds=int(elapsed_time.total_seconds())))
-        self.time_label.configure(text=time_str)
+        if not self.app.is_paused:
+            if self.paused_time:
+                # Calculate the total paused duration
+                self.total_paused_duration += datetime.now() - self.paused_time
+                self.paused_time = None
+
+            elapsed_time = datetime.now() - self.start_time - self.total_paused_duration
+            time_str = str(timedelta(seconds=int(elapsed_time.total_seconds())))
+            self.time_label.configure(text=time_str)
+        else:
+            if not self.paused_time:
+                self.paused_time = datetime.now()
+        
         self.after(1000, self.update_time)
 
 
