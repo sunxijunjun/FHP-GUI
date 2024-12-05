@@ -88,8 +88,8 @@ class ThreadManager:
     def connect(self, data_entry=None) -> None:
         """ Connect to the COM port """
         while not self.app.is_stopped:
+            line = self.serial_manager.read_line()
             if not self.app.is_paused:
-                line = self.serial_manager.read_line()
                 if line is None:
                     continue
                 clean_line = self.clean_line(line)
