@@ -8,71 +8,109 @@
         body {
             font-family: Arial, sans-serif;
             text-align: center;
-            margin: 50px;
-            background-color: #f8f9fa; /* 添加背景色 */
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa; /* Add background color */
         }
         .container {
-            max-width: 800px; /* 限制最大宽度 */
-            margin: auto; /* 使内容居中 */
-            background-color: #ffffff; /* 背景色为白色 */
-            padding: 20px; /* 内边距 */
-            border-radius: 8px; /* 圆角边框 */
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* 轻微阴影 */
+            max-width: 800px; /* Limit maximum width */
+            margin: 50px auto; /* Center content with vertical margin */
+            background-color: #ffffff; /* Background color */
+            padding: 20px; /* Padding */
+            border-radius: 8px; /* Rounded corners */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Slight shadow */
+            position: relative; /* Ensure relative positioning */
+        }
+        .container img.logo {
+            position: absolute; /* Position the logo absolutely */
+            top: -100px; /* Align with the top of the container */
+            left: 30px; /* Align with the left of the container */
+            width: 200px; /* Resize logo */
+            height: auto;
         }
         h1 {
-            color: #333; /* 修改标题颜色 */
+            color: #333; /* Change title color */
             margin-bottom: 30px;
         }
         p {
-            font-size: 18px; /* 调整字体大小 */
-            line-height: 1.6; /* 增加行高 */
+            font-size: 18px; /* Adjust font size */
+            line-height: 1.6; /* Increase line height */
             margin-bottom: 20px;
         }
         ol {
-            text-align: left; /* 左对齐 */
-            display: inline-block; /* 使列表居中 */
+            text-align: left; /* Align text to the left */
             margin-top: 20px;
             margin-bottom: 30px;
         }
+        ol li {
+            margin-bottom: 10px; /* Add space between list items */
+            font-size: 18px; /* Match font size with paragraphs */
+        }
         button {
-            padding: 15px 30px; /* 调整按钮尺寸 */
+            padding: 15px 30px; /* Adjust button size */
             background-color: #007BFF;
             color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            font-size: 16px; /* 调整按钮字体大小 */
+            font-size: 16px; /* Adjust button font size */
+            margin: 20px auto; /* Add margin and center the button */
+            display: block; /* Make button a block element */
         }
         button:hover {
             background-color: #0056b3;
         }
-        img {
-            margin: 10px 0; /* 增加图片与文字间的间距 */
+        .highlight {
+            background-color: yellow; /* Highlight important text */
+            font-weight: bold; /* Make the highlighted text bold */
+        }
+        .arrow {
+            display: inline-block; /* Display arrows inline with text */
+            font-size: 24px; /* Increase arrow size */
+            vertical-align: middle; /* Align arrows with text */
+            margin: 0 10px; /* Add margin around arrows */
+        }
+        .step-icon {
+            vertical-align: middle; /* Align icons with text */
+            margin: 0 10px; /* Add margin around icons */
         }
     </style>
 </head>
 <body>
     <div class="container">
+        <img src="support/PolyU_Icon.png" alt="PolyU Icon" class="logo">
         <h1>Welcome to the Smart Posture Monitoring App!</h1>
         <p>Follow the steps below to install the application:</p>
         <p>
-            Please first ensure that the Type-A connector is plugged into your computer’s main unit, and the Type-C connector is inserted into the port on the device where the video icon is located:
-            <br><img src="support/video_icon.jpg" alt="视频图标" style="width:60px;height:50px;">
+            <span class="highlight">Step 1:</span> Ensure that the Type-A connector is plugged into your computer’s main unit, and the Type-C connector is inserted into the port on the device where the video icon is located.
+            <img src="support/video_icon.jpg" alt="Video Icon" class="step-icon" style="width:auto;height:50px;">
+        </p>
+        <p style="text-align: left;">
+            <span class="highlight" >Step 2:</span>
+            <ol>
+                <li>
+                    <span class="arrow">➤</span> Click the <span class="highlight">Install Now</span> button below.
+                </li>
+                <!-- Start local main.exe -->
+                <button onclick="window.location.href='main.exe'">Install Now</button>
+                <li>
+                    <span class="arrow">➤</span> Follow the instructions in the installer.
+                </li>
+                <li>
+                    <span class="arrow">➤</span> Start using the app!
+                </li>
+            </ol>
         </p>
 
-        <ol>
-            <li>Click the "Install Now" button below.</li>
-            <li>Follow the instructions in the installer.</li>
-            <li>Start using the app!</li>
-        </ol>
-        <!-- 启动本地的 main.exe -->
-        <p><button onclick="window.location.href='main.exe'">Install Now</button></p>
-
+        <p style="text-align: left;">
+            <span class="highlight" >Step 3:</span>
+        </p>
         <p>
-            After the installation is complete, please remove the Type-C connector and insert it into the port on the side of the device that has a battery icon:
-            <br><img src="support/bat_icon.jpg" alt="电池图标" style="width:70px;height:60px;">
-            <br>
-        You’re all set—go ahead and start using the device!
+            <span style="font-weight: bold;">After installation:</span> Remove the Type-C connector and insert it into the port on the side of the device that has a battery icon.
+            <img src="support/bat_icon.jpg" alt="Battery Icon" class="step-icon" style="width:70px;height:50px;">
+        </p>
+        <p>
+            You’re all set—go ahead and start using the device!
         </p>
     </div>
 </body>
