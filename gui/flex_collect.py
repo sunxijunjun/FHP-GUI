@@ -26,6 +26,10 @@ class PostureDataCollection(tk.Toplevel):
         super().__init__()
         self.title("Dynamic Data Collection")
         self.geometry("580x300")
+        self.update_idletasks()
+        x = (self.winfo_screenwidth() // 2) - (self.winfo_width() // 2)
+        y = (self.winfo_screenheight() // 2) - (self.winfo_height() // 2)
+        self.geometry(f"{self.winfo_width()}x{self.winfo_height()}+{x}+{y}")
         self.serial_manager = serial_manager
         self.db_manager = db_manager
         self.user_features = dict()
@@ -63,7 +67,7 @@ class PostureDataCollection(tk.Toplevel):
                 readings = self.read_sensor_data()
                 for reading in readings:
                     data.append(reading + [posture])
-                self.after(1000, collect_posture_data, posture_index + 1)  # Wait for 15 seconds before next posture
+                self.after(100, collect_posture_data, posture_index + 1)  # Wait for 15 seconds before next posture
             else:
                 filename = self.save_data(data)
                 # Now, perform the checking
@@ -131,6 +135,14 @@ class PostureDataCollection(tk.Toplevel):
         countdown_window = tk.Toplevel(self)
         countdown_window.geometry("400x200")
 
+        # Update window to ensure correct width and height are used
+        countdown_window.update_idletasks()
+        # Calculate the position to center the window
+        x = (countdown_window.winfo_screenwidth() // 2) - (countdown_window.winfo_width() // 2)
+        y = (countdown_window.winfo_screenheight() // 2) - (countdown_window.winfo_height() // 2)
+        # Set the window's position
+        countdown_window.geometry(f"{countdown_window.winfo_width()}x{countdown_window.winfo_height()}+{x}+{y}")
+
         label_message = tk.Label(countdown_window, text="Remain position, Collecting data...")
         label_message.pack(pady=10)
 
@@ -182,7 +194,7 @@ class PostureDataCollection(tk.Toplevel):
                             }
                     if self.last_timestamp and self.last_timestamp in data_dict:
                         self.parse_data(line, data_dict[self.last_timestamp])
-                    print(f"Collecting data: {int(end_time - time.time())} seconds remaining...")
+                    print(f"Collecting data: {int(end_time - time.time()) + 1} seconds remaining...")
                 self.after(10, read_data)  # Schedule the next read
             else:
                 for key, value in data_dict.items():

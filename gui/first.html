@@ -9,46 +9,71 @@
             font-family: Arial, sans-serif;
             text-align: center;
             margin: 50px;
+            background-color: #f8f9fa; /* 添加背景色 */
+        }
+        .container {
+            max-width: 800px; /* 限制最大宽度 */
+            margin: auto; /* 使内容居中 */
+            background-color: #ffffff; /* 背景色为白色 */
+            padding: 20px; /* 内边距 */
+            border-radius: 8px; /* 圆角边框 */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* 轻微阴影 */
+        }
+        h1 {
+            color: #333; /* 修改标题颜色 */
+            margin-bottom: 30px;
+        }
+        p {
+            font-size: 18px; /* 调整字体大小 */
+            line-height: 1.6; /* 增加行高 */
+            margin-bottom: 20px;
+        }
+        ol {
+            text-align: left; /* 左对齐 */
+            display: inline-block; /* 使列表居中 */
+            margin-top: 20px;
+            margin-bottom: 30px;
         }
         button {
-            padding: 10px 20px;
+            padding: 15px 30px; /* 调整按钮尺寸 */
             background-color: #007BFF;
             color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
+            font-size: 16px; /* 调整按钮字体大小 */
         }
         button:hover {
             background-color: #0056b3;
         }
+        img {
+            margin: 10px 0; /* 增加图片与文字间的间距 */
+        }
     </style>
 </head>
 <body>
-    <h1>Welcome to the smart posture monitoring App!</h1>
-    <p>Follow the steps below to install the application:</p>
-    <p>
-        Please first ensure that the Type-A connector is plugged into your computer’s main unit, and the Type-C connector is inserted into the port on the device where the video icon is located:
-        <img src="support/video_icon.jpg" alt="视频图标" style="width:60px;height:50px;">
-    </p>
+    <div class="container">
+        <h1>Welcome to the Smart Posture Monitoring App!</h1>
+        <p>Follow the steps below to install the application:</p>
+        <p>
+            Please first ensure that the Type-A connector is plugged into your computer’s main unit, and the Type-C connector is inserted into the port on the device where the video icon is located:
+            <br><img src="support/video_icon.jpg" alt="视频图标" style="width:60px;height:50px;">
+        </p>
 
-    <ol>
-        <li>Click the "Install Now" button below.</li>
-        <li>Follow the instructions in the installer.</li>
-        <li>Start using the app!</li>
-    </ol>
-    <!-- 启动本地的 main.exe -->
-    <button onclick="window.location.href='main.exe'">Install Now</button>
+        <ol>
+            <li>Click the "Install Now" button below.</li>
+            <li>Follow the instructions in the installer.</li>
+            <li>Start using the app!</li>
+        </ol>
+        <!-- 启动本地的 main.exe -->
+        <p><button onclick="window.location.href='main.exe'">Install Now</button></p>
 
-
-    <p>
-        After the installation is complete, please remove the Type-C connector and insert it into the port on the side of the device that has a battery icon:
-        <img src="support/bat_icon.jpg" alt="视频图标" style="width:70px;height:60px;">
-        <br>
-    You’re all set—go ahead and start using the device!
-    </p>
-
-
-
-
+        <p>
+            After the installation is complete, please remove the Type-C connector and insert it into the port on the side of the device that has a battery icon:
+            <br><img src="support/bat_icon.jpg" alt="电池图标" style="width:70px;height:60px;">
+            <br>
+        You’re all set—go ahead and start using the device!
+        </p>
+    </div>
 </body>
 </html>
