@@ -698,12 +698,12 @@ class App(ThemedTk):
             "Sensor value valid": {
                 "condition_id": 0,
                 "pass_condition": sens_2 <= self.dist_max and sens_4 <= self.dist_max,
-                "error_msg": "Sensor cannot detect distance to participant!\nPlease adjust the posture or sensor!"
+                "error_msg": "You are too far away!\nSeat closer!"
             },
             "Sensor difference valid": {
                 "condition_id": 1,
-                "pass_condition": sens_2 - sens_4 < 60,
-                "error_msg": "Sensor values differ unexpectedly!\nPlease adjust the posture or sensor!"
+                "pass_condition": sens_2 - sens_4 < 80,
+                "error_msg": "Your seat is too low!\nPlease adjust!"
             },
             "Appropriate distance": {
                 "condition_id": 2,

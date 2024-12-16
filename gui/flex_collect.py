@@ -118,13 +118,29 @@ class PostureDataCollection(tk.Toplevel):
     def reset_threshold_from_cali(self, new_value: float):
         try:
             self.user_features["threshold"] = new_value
-            try:
-                self.db_manager.modify_user_info("Threshold", self.user_features["threshold"])
-            except Exception as e:
-                print(f"Database error: Threshold update failed. Details: {e}")
-        except KeyError:
-            print("The user's threshold is not defined.")
+            self.db_manager.modify_user_info("Threshold", new_value)
+        except Exception as e:
+            print(f"Database error: Threshold update failed. Details: {e}")
             return
+
+        if self.main_app and hasattr(self.main_app, "data_analyst"):
+            data_analyst = self.main_app.data_analyst
+
+            old_height = data_analyst.user_features.get('height', np.nan)
+            old_weight = data_analyst.user_features.get('weight', np.nan)
+
+            updated_features = np.array([
+                np.nan,  # index 0
+                np.nan,  # index 1
+                old_weight,  # index 2 => weight
+                old_height,  # index 3 => height
+                np.nan,
+                np.nan,
+                new_value  # index 6 => threshold
+            ])
+
+            data_analyst.set_user_features(updated_features)
+            print(f"[CALIBRATION] Updated threshold to {new_value}, re-called set_user_features()")
 
     def read_sensor_data(self):
         readings = []
