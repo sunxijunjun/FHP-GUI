@@ -90,9 +90,9 @@ class Measurements(Enum):
 
     num_bad_posture_commands = 10  # max total posture commands
     val_replacing_limit = 200  # threshold when the notification should popup
-    sensor_val_replacing_limit = 100  # 传感器最大容忍异常次数
+    sensor_val_replacing_limit = 120  # 传感器最大容忍异常次数
     camera_val_replacing_limit = 1000  # 摄像头最大容忍异常次数
-    default_val_replacing_limit = 200# 默认容忍异常次数
+    default_val_replacing_limit = 120 # 默认容忍异常次数
     false_responses_limit = 1  # specify after how many responses the model threshold should be changed
     
     threshold = {
