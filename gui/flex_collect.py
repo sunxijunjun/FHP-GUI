@@ -38,8 +38,8 @@ class PostureDataCollection(tk.Toplevel):
 
     def init_ui(self):
         instruction = (
-            "Warning:This operation will change the default settings of the device!\n "
-            "Please proceed with caution!!!\n"
+            "Dear User, \n "
+            "Please calibrate it and follow the instructions below:\n"
             "Please make sure the device is properly placed and the user is in a comfortable sitting position.\n"
             "Calibration will require you to maintain 2 specific static postures, collect data, and process it.\n"
             "This operation will take approximately 30 seconds.\n"

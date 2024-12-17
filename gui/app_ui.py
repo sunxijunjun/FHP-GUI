@@ -1234,8 +1234,13 @@ class App(ThemedTk):
         sign_in_button: ttk.Button = self.control_buttons[uc.ElementNames.sign_in_button_txt.value]
         sign_in_button.configure(text=uc.ElementNames.sign_in_button_txt.value, command=self.show_sign_in_popup)
         # Remove the button with name:
-        button_txt: str = uc.ElementNames.edit_photo_button_txt.value
-        self.control_buttons[button_txt].destroy()
+        button_txt = uc.ElementNames.edit_photo_button_txt.value
+        if button_txt in self.control_buttons:
+            self.control_buttons[button_txt].destroy()
+            del self.control_buttons[button_txt]
+        else:
+            print(f"Button '{button_txt}' not found in control_buttons.")
+
         self.user_name.destroy()
 
     def register_user(self):
@@ -1243,18 +1248,17 @@ class App(ThemedTk):
         user_details: UserDetails = popup.get_entered_details()
         saved: bool = self.db_manager.save_user(user_details)
         if saved:
-            popup.show_message_frame(subject="Success",
-                                     details="Your personal details has been saved!\n"
-                                             "Please try to sign in to your account.",
-                                     row=popup.message_location[0],
-                                     col=popup.message_location[1])
+            messagebox.showinfo(
+                title="Success",
+                message="Your personal details have been saved!\nSince this is your first time using the device, please click OK to calibrate the device."
+            )
             self.sign_in(popup)
+            popup.destroy()
         else:
-            popup.show_message_frame(subject="Error",
-                                     details="User with similar personal details already exists!\n"
-                                             "Please try to sign in.",
-                                     row=popup.message_location[0],
-                                     col=popup.message_location[1])
+            messagebox.showerror(
+                title="Error",
+                message="User with similar personal details already exists!\nPlease try to sign in."
+            )
 
     def start_20_timer(self):
         timer_root = ttkbt.Toplevel()       #creat a new top level for 20-20-20 reminder
