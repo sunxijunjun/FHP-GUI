@@ -83,12 +83,12 @@ class PostureDataCollection(tk.Toplevel):
 
                 if (median_values <= -50).any():
                     messagebox.showerror("Error", "Please adjust device and sitting position: upper sensor is miss-focusing.")
-                    self.exit()
+                    self.restart()
                     return
 
                 if (median_values > 180).any():
                     messagebox.showerror("Error", "Please recalibrate: sensor difference out of range.")
-                    self.exit()
+                    self.restart()
                     return
 
                 average_median = median_values.mean()
@@ -104,7 +104,7 @@ class PostureDataCollection(tk.Toplevel):
 
                 else:
                     messagebox.showerror("Error", "Please recalibrate: sensor difference out of range.")
-                    self.exit()
+                    self.restart()
                     return
 
         collect_posture_data(0)        
@@ -114,6 +114,12 @@ class PostureDataCollection(tk.Toplevel):
             self.main_app.resume()
             self.main_app.deiconify()
         self.destroy()
+
+    def restart(self):
+        # Re-instantiate the class
+        new_instance = self.__class__(self.serial_manager, self.db_manager, self.main_app)
+        self.destroy()
+        new_instance.mainloop()
     
     def reset_threshold_from_cali(self, new_value: float):
         try:

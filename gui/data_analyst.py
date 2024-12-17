@@ -96,6 +96,7 @@ class DataAnalyst:
             print(f"using threshold {self.user_features['threshold']} (NaN detected, auto calibration triggered)")
 
             if self.main_app is not None:
+                self.main_app.pause()
                 self.main_app.calibration()
                 print("calibration() called from set_user_features()")
             else:

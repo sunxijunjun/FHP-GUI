@@ -1221,7 +1221,8 @@ class App(ThemedTk):
                                  row=self.footer_row,
                                  col=0,
                                  master=self.header_frame)
-        self.resume()
+        if self.calibration_window is None:
+            self.resume()
 
     def sign_out(self):
         # Forget session
