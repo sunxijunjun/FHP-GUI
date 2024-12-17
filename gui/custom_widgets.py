@@ -187,7 +187,7 @@ class UserDetailsWindow(AbstractWindow):
 
     def create_widgets(self):
         # Full name label and entry
-        full_name_label = ttk.Label(self, text="Full Name:")
+        full_name_label = ttk.Label(self, text="Full Name (e.g. Zhang San):")
         full_name_label.grid(row=0, column=0, padx=10, pady=10, sticky="e")
         self.full_name_entry = ttk.Entry(self)
         self.full_name_entry.grid(row=0, column=1, padx=10, pady=10)
