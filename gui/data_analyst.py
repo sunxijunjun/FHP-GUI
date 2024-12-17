@@ -67,13 +67,15 @@ class DataAnalyst:
     Provide convenience in testing and modification of algorithms
     Note: the dict is immutable object
     """
-    def __init__(self):
+    def __init__(self,main_app):
+        self.main_app = main_app
         self.recent_data = {"sensor_2": np.nan, "sensor_4": np.nan}
         self.data = dict()
         self.thresholds = ui_config.Measurements.threshold.value
         self.user_features = dict()
 
     def set_user_features(self, user_features: np.array):
+        print("set_user_features called")
         self.user_features['height'] = user_features[3]
         self.user_features['weight'] = user_features[2]
         def map_size(height):
@@ -88,8 +90,19 @@ class DataAnalyst:
             else:
                 return 'XL'
         self.user_features['size'] = map_size(self.user_features['height'])
-        self.user_features['threshold'] = self.thresholds[self.user_features['size']] if np.isnan(user_features[6]) else user_features[6]
-        print(f"using threshold {self.user_features['threshold']}" ) #cheked and ok, can read and use user feature threshold 86.0
+
+        if np.isnan(user_features[6]):
+            self.user_features['threshold'] = self.thresholds[self.user_features['size']]
+            print(f"using threshold {self.user_features['threshold']} (NaN detected, auto calibration triggered)")
+
+            if self.main_app is not None:
+                self.main_app.calibration()
+                print("calibration() called from set_user_features()")
+            else:
+                print("Warning: main_app is None, cannot call calibration()")
+        else:
+            self.user_features['threshold'] = user_features[6]
+            print(f"using threshold {self.user_features['threshold']}")
     
     @staticmethod
     def detect_anomaly_test(data: dict[str, list[int]]) -> Union[None, int]:

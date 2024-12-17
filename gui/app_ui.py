@@ -127,7 +127,7 @@ class App(ThemedTk):
         self.footer_frame = ttk.Frame(self)
         self.db_manager = DatabaseManager()
         self.logger = Logger(session_id=self.db_manager.session.id, test=test)
-        self.data_analyst = DataAnalyst()
+        self.data_analyst = DataAnalyst(main_app=self)
         self.settings_popup = None
         self.countdown_time = 0
 
@@ -1173,6 +1173,7 @@ class App(ThemedTk):
         self.logger.log_all_data()
 
     def sign_in(self, pop_up=None):
+        print("sing_in called")
         pop_up: UserDetailsWindow = self.sign_in_popup if pop_up is None else pop_up
         user_details: UserDetails = pop_up.get_entered_details()
         if not self.db_manager.is_valid_sign_in(details=user_details):
