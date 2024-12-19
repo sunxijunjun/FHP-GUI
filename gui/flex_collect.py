@@ -86,7 +86,7 @@ class PostureDataCollection(tk.Toplevel):
                     self.restart()
                     return
 
-                if (median_values > 180).any():
+                if (median_values > 200).any():
                     messagebox.showerror("Error", "Please recalibrate: sensor difference out of range.")
                     self.restart()
                     return
@@ -94,7 +94,7 @@ class PostureDataCollection(tk.Toplevel):
                 average_median = median_values.mean()
                 print("Average of the two medians is:", average_median)
 
-                if 50 < average_median < 110:
+                if 30 < average_median < 180:
                     print("OK")
                     messagebox.showinfo("Success", "Calibration successful.")
                     # 调用 reset_threshold_from_cali 方法，将 average_median 作为新的阈值存入

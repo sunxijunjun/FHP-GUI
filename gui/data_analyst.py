@@ -314,14 +314,18 @@ class DataAnalyst:
         # Estimation of distance from camera
         df_predictions = single_camera_rangefinder(df_predictions, rangefinder_input_columns, "estimated_range")
 
-        df_predictions['voting_result'] = df_predictions.apply(
-            lambda row: 0 if row['prediction_threshold'] == 0
-            else (0 if row['prediction_model1'] == 0 and row['prediction_model2'] == 0 else 1),
-            axis=1
-        )
-        print(
-            f"{df_predictions.iloc[:,27:]}\nfor data:\n{df}"
-        )
+        if self.user_features['threshold'] < 96:
+            df_predictions['voting_result'] = df_predictions.apply(
+                lambda row: 0 if row['prediction_threshold'] == 0
+                else (0 if row['prediction_model1'] == 0 and row['prediction_model2'] == 0 else 1),
+                axis=1
+            )
+        else:
+            df_predictions['voting_result'] = df_predictions.apply(
+                lambda row: 0 if row['prediction_threshold'] == 0
+                else 1,
+                axis=1
+            )
         return df_predictions['voting_result'].iloc[-1]
 
     def get_time_interval(self, alarm_times: list[str]) -> float:
