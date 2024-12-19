@@ -91,7 +91,7 @@ class PostureDataCollection(tk.Toplevel):
                     self.restart()
                     return
 
-                average_median = median_values.mean() + 10
+                average_median = median_values.mean() + 5
                 print("Average of the two medians is:", average_median)
 
                 if 30 < average_median < 180:
