@@ -307,16 +307,9 @@ class ReportWriter:
             return 0.0  # 如果格式不正确，返回0或其他默认值
 
     def get_header(self) -> str:
-        graph_path = self.session.get_graph_save_path()
         content = f"""# User Report\n
         The report represents the basic information over the usage of the app\n
-        ## Sensor Readings:\n        
         """
-
-        self.latest_header = content + f"![Sensor Values]({graph_path})\n"
-
-        graph_path = self.convert_path_to_url(graph_path)
-        content += f"![Sensor Values]({graph_path})\n"
 
         return content
 

@@ -206,11 +206,11 @@ class App(ThemedTk):
         self.add_menu_button("Generate Report", self.show_generate_report_window)
 
     def show_generate_report_window(self):
-        self.save_graph()
+        # self.save_graph()
         
         report_window = tk.Toplevel(self)
         report_window.title("Generate Report")
-        report_window.geometry("375x900")  # 调整窗口大小
+        report_window.geometry("375x700")  # 调整窗口大小
         ###.md文件的内容移动到这里　TODO
         # 生成报告内容
         report_content = self.db_manager.report_writer.get_header() + self.db_manager.report_writer.get_stats()
@@ -508,6 +508,7 @@ class App(ThemedTk):
         style = ttk.Style()
         style.configure("TFrame", background=color_code)  # 设置所有 Frame 的背景颜色
         style.configure("TLabel", background=color_code)  # 设置所有 Label 的背景颜色
+        self.graph.update_canvas_color(color_code)
 
         # 手动设置其它需要改变的组件
         self.check_boxes_frame.configure(style="TFrame")
@@ -587,16 +588,16 @@ class App(ThemedTk):
         # Local flags
         anomaly_detected = False
         anomaly_graph_position = None
-        for i, sensor_name in enumerate(self.sensor_values.keys()):
-            x, y = self.data_analyst.get_axes_values(self.sensor_values,
-                                                     self.elapsed_time,
-                                                     sensor_name,
-                                                     upper_limit=ur,
-                                                     lower_limit=lr)
-            self.graph.ax.plot(x, y, label=sensor_name)
-            self.graph.lines[i].set_data(list(range(len(y))), y)
-            if x[0] != x[-1]:
-                self.graph.ax.set_xlim(x[0], x[-1])
+        # for i, sensor_name in enumerate(self.sensor_values.keys()):
+        #     x, y = self.data_analyst.get_axes_values(self.sensor_values,
+        #                                              self.elapsed_time,
+        #                                              sensor_name,
+        #                                              upper_limit=ur,
+        #                                              lower_limit=lr)
+        #     self.graph.ax.plot(x, y, label=sensor_name)
+        #     self.graph.lines[i].set_data(list(range(len(y))), y)
+        #     if x[0] != x[-1]:
+        #         self.graph.ax.set_xlim(x[0], x[-1])
 
         if self.is_test_mode:
             self.lastest_prediction = self.data_analyst.detect_anomaly_test(data=self.sensor_values)
@@ -631,13 +632,14 @@ class App(ThemedTk):
             anomaly_detected = True
             anomaly_graph_position = len(self.sensor_values['Sensor 2']) - 1
 
-        for collection in self.graph.ax.collections:
-            if isinstance(collection, matplotlib.collections.PolyCollection):
-                collection.remove()
+        # for collection in self.graph.ax.collections:
+        #     if isinstance(collection, matplotlib.collections.PolyCollection):
+        #         collection.remove()
         if anomaly_detected:
             self.show_alarm(pos=anomaly_graph_position)
             print("Alarm raised.")
         else:
+            self.graph.update_light("green")
             self.last_alarm_time = None
             self.db_manager.session.alarm_times.append("|")
 
@@ -728,21 +730,22 @@ class App(ThemedTk):
 
     def update_graph(self, event=None, lower_range=None, upper_range=None):
         # Prepare the graph
-        self.graph.ax.clear()
-        self.graph.ax.set_ylim(self.dist_min, self.dist_max)
+        # self.graph.ax.clear()
+        # self.graph.ax.set_ylim(self.dist_min, self.dist_max)
 
         # Plot new values
         if upper_range is None:
             upper_range = self.x_range
         if lower_range is not None and upper_range is not None:
-            self.scrollbar_update(lr=lower_range, ur=upper_range)
-            self.graph.redraw_vert_spans(visible_range=None)
+            # self.scrollbar_update(lr=lower_range, ur=upper_range)
+            # self.graph.redraw_vert_spans(visible_range=None)
+            pass
         else:
             self.default_update(lr=lower_range, ur=upper_range)
-            self.graph.redraw_vert_spans(visible_range=self.x_range)
+            # self.graph.redraw_vert_spans(visible_range=self.x_range)
         # Add annotations
-        self.graph.ax.legend()
-        self.graph.canvas.draw()
+        # self.graph.ax.legend()
+        # self.graph.canvas.draw()
 
     def update_sensor_values(self, sens_2: int, sens_4: int, timestamp: int, local_time: str) -> None:
         if pd.isna(sens_2) or pd.isna(sens_4):
@@ -801,7 +804,8 @@ class App(ThemedTk):
         self.rand_quest_notification = None
 
     def show_alarm(self, pos: int) -> None:
-        if not self.alarm_num_label or not self.graph.ax or pos == self.prev_alarm_pos:
+        # if not self.alarm_num_label or not self.graph.ax or pos == self.prev_alarm_pos:
+        if not self.alarm_num_label or pos == self.prev_alarm_pos:
             return None
         self.alarm_num += 1
         
@@ -814,7 +818,7 @@ class App(ThemedTk):
             self.last_alarm_time = self.last_sensor_time
         alarm_duration_text = str(datetime.timedelta(seconds=math.ceil(int(self.alarm_duration) / 1000)))
         self.alarm_num_label.config(text=alarm_duration_text)
-        self.graph.draw_vert_span(x=pos)
+        # self.graph.draw_vert_span(x=pos)
         self.prev_alarm_pos = pos
         self.add_alarm_text()
         this_time = datetime.datetime.now().strftime(uc.Measurements.time_format.value)
@@ -823,19 +827,21 @@ class App(ThemedTk):
         interval /= 1000 # convert to seconds
         self.db_manager.session.update_total_alarm_time(interval)
         if not self.is_bad_posture_notification_required(interval):
+            self.graph.update_light("amber")
             return None
+        self.graph.update_light("red")
         self.notification_frame = NotificationIncorrectPosture(self.footer_frame,
                                                                interval=interval)
         self.notification_frame.show(x=uc.Positions.incorrect_posture.value[0],
                                      y=uc.Positions.incorrect_posture.value[1],
                                      callback=self.remove_notification)
-        self.graph.canvas.draw()
+        # self.graph.canvas.draw()
         self.db_manager.session.alarm_times.append('|')
         self.logger.update_alarm_notification_status(interval=int(interval))
         if not (self.feedback_collector is None):
             self.feedback_collector.destroy()  # update the feedback collector
             self.feedback_collector = None
-        self.pause()  # give time for the participant to response
+        self.pause(pause_light = False)  # give time for the participant to response
         self.feedback_collector = FeedbackCollector(self.footer_frame, logger=self.logger,
                                                     closing_callback=self.forget_feedback_collector,
                                                     response_callback=self.update_model_thresholds)
@@ -1151,7 +1157,7 @@ class App(ThemedTk):
         pass
 
     def save_last_data(self):
-        self.save_graph()
+        # self.save_graph()
         save_paths: dict[str, str] = self.db_manager.save_data()
         self.logger.log_buffer()  # save the remaining values in the buffer
         notify_content = (f"Report saved in {save_paths['report_path']}\n"
@@ -1288,21 +1294,22 @@ class App(ThemedTk):
         self.resume()
         self.deiconify()
 
-    def pause(self):
+    def pause(self, pause_light: bool = True):
         self.pause_comm()
-        self.graph.pause()
+        if pause_light:
+            self.graph.pause()
         button = self.control_buttons[uc.ElementNames.pause_button_txt.value]
         resume_txt: str = uc.ElementNames.resume_button_txt.value
         button.config(text=resume_txt, command=self.resume)
         # Add scroll bar for the Graph
-        if self.scroll_bar_frame:
-            self.remove_graph_scrollbar()
-        self.scroll_bar_frame = tk.Frame(self.body_frame)
-        self.scroll_bar_frame.grid(row=3, column=1, pady=10, padx=10, sticky=tk.NSEW)
-        options: list[int] = [sen[0] for sen in self.sensor_time]
-        self.graph_scroll_bar = GraphScrollBar(parent=self.scroll_bar_frame,
-                                               options=options,
-                                               figure_func=self.update_graph)
+        # if self.scroll_bar_frame:
+        # #     self.remove_graph_scrollbar()
+        # self.scroll_bar_frame = tk.Frame(self.body_frame)
+        # self.scroll_bar_frame.grid(row=3, column=1, pady=10, padx=10, sticky=tk.NSEW)
+        # options: list[int] = [sen[0] for sen in self.sensor_time]
+        # self.graph_scroll_bar = GraphScrollBar(parent=self.scroll_bar_frame,
+        #                                        options=options,
+        #                                        figure_func=self.update_graph)
 
     def remove_graph_scrollbar(self) -> None:
         if self.scroll_bar_frame:
@@ -1325,10 +1332,10 @@ class App(ThemedTk):
         self.remove_note_frame()
         self.remove_graph_scrollbar()
 
-    def save_graph(self):
-        file_path = self.db_manager.session.get_graph_save_path(ask_path=False)
-        self.graph.figure.savefig(file_path)
-        print(f"Graph saved to {file_path}")
+    # def save_graph(self):
+    #     file_path = self.db_manager.session.get_graph_save_path(ask_path=False)
+    #     self.graph.figure.savefig(file_path)
+    #     print(f"Graph saved to {file_path}")
 
     @staticmethod
     def load_user_data(filepath: str) -> Union[pd.DataFrame, None]:

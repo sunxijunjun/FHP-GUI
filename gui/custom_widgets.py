@@ -901,94 +901,156 @@ class Graph:
         self.values = values
         self.timestamps = times
         self.frame = self.create_frame(parent, row, col)
-        self.figure, self.ax, self.canvas, self.lines = self.create_figure()
+
+        self.status = 0
+        self.light_canvas, self.light = self.create_light(self.frame, 128)
+        self.update_canvas_color("#E8F4F8")
+
+        # self.figure, self.ax, self.canvas, self.lines = self.create_figure()
         self.span_rect = None
         self.selected_span = (0, 0)
         self.spans_storage = list()  # list[span]
         self.is_paused = paused
         if self.is_paused:
-            self.span_selector = self.add_values_selector()
+            self.update_light("gray")
+            # self.span_selector = self.add_values_selector()
 
     def resume(self):
         self.is_paused = False
         if not self.is_paused:
-            self.span_selector = None
+            self.update_light(None)
+            # self.span_selector = None
 
     def pause(self):
         self.is_paused = True
         if self.is_paused:
-            self.span_selector = self.add_values_selector()
+            self.update_light("gray")
+            # self.span_selector = self.add_values_selector()
 
-    def add_values_selector(self) -> SpanSelector:
-        def on_select_span(vertical_min: float, vertical_max: float):
-            self.selected_span = (vertical_min, vertical_max)
-            if self.span_rect:
-                self.span_rect.remove()
-            self.span_rect = self.ax.add_patch(Rectangle((vertical_min, self.ax.get_ylim()[0]),
-                                                         vertical_max - vertical_min,
-                                                         self.ax.get_ylim()[1] - self.ax.get_ylim()[0],
-                                                         color='green', alpha=0.3))
-            self.canvas.draw()
+    # def add_values_selector(self) -> SpanSelector:
+    #     def on_select_span(vertical_min: float, vertical_max: float):
+    #         self.selected_span = (vertical_min, vertical_max)
+    #         if self.span_rect:
+    #             self.span_rect.remove()
+    #         self.span_rect = self.ax.add_patch(Rectangle((vertical_min, self.ax.get_ylim()[0]),
+    #                                                      vertical_max - vertical_min,
+    #                                                      self.ax.get_ylim()[1] - self.ax.get_ylim()[0],
+    #                                                      color='green', alpha=0.3))
+    #         self.canvas.draw()
 
-        return SpanSelector(self.ax, on_select_span, "horizontal", useblit=True, minspan=0.1)
+    #     return SpanSelector(self.ax, on_select_span, "horizontal", useblit=True, minspan=0.1)
 
     def create_frame(self, parent, row: int, col: int) -> ttk.Frame:
         frame = ttk.Frame(parent)
         frame.grid(row=row, column=col, padx=self.padx, pady=self.pady)
         return frame
 
-    def create_figure(self) -> tuple[Figure, Axes, FigureCanvasTkAgg, list]:
-        fig = Figure(figsize=self.graph_size, dpi=self.dpi)
-        ax = fig.add_subplot(111)
-        ax.set_xlabel(self.x_label)
-        ax.set_ylabel(self.y_label)
-        ax.set_title(self.title)
-        graph_lns = []
-        for sensor_name in self.sensor_names:
-            x, y = DataAnalyst.get_axes_values(sensor_values=self.values,
-                                               sensor_timestamps=self.timestamps,
-                                               sensor=sensor_name,
-                                               upper_limit=self.limit,
-                                               lower_limit=None)
-            line, = ax.plot(x, y, label=sensor_name)
-            graph_lns.append(line)
-        ax.legend()
-        canvas = FigureCanvasTkAgg(fig, master=self.frame)
-        canvas.draw()
-        canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
+    # def create_figure(self) -> tuple[Figure, Axes, FigureCanvasTkAgg, list]:
+    #     fig = Figure(figsize=self.graph_size, dpi=self.dpi)
+    #     ax = fig.add_subplot(111)
+    #     ax.set_xlabel(self.x_label)
+    #     ax.set_ylabel(self.y_label)
+    #     ax.set_title(self.title)
+    #     graph_lns = []
+    #     for sensor_name in self.sensor_names:
+    #         x, y = DataAnalyst.get_axes_values(sensor_values=self.values,
+    #                                            sensor_timestamps=self.timestamps,
+    #                                            sensor=sensor_name,
+    #                                            upper_limit=self.limit,
+    #                                            lower_limit=None)
+    #         line, = ax.plot(x, y, label=sensor_name)
+    #         graph_lns.append(line)
+    #     ax.legend()
+    #     canvas = FigureCanvasTkAgg(fig, master=self.frame)
+    #     canvas.draw()
+    #     canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
 
-        result = fig, ax, canvas, graph_lns
-        return result
-
-    def get_subplot_title(self) -> Union[None, str]:
-        if self.ax:
-            title = self.ax.get_title()
-            return title
+    #     result = fig, ax, canvas, graph_lns
+    #     return result
+    
+    def create_light(self, container: ttk.Frame, size: int, color="#E0E0E0", border_color="#E6E6E6"):        
+        outer_r = size
+        inner_r = size * 0.8
+        border_weight = size / 10
+        canvas_size = size * 2 + border_weight
+        ratio = 2
+        padding = size / 2
+        x = canvas_size * ratio / 2 + padding / 2
+        y = size + border_weight / 2 + padding / 2
+        
+        # Create canvas for drawing
+        canvas = tk.Canvas(container, 
+                         width=canvas_size * ratio + padding,
+                         height=canvas_size + padding,
+                         bg='#E8F4F8',
+                         highlightthickness=0)
+        canvas.pack()
+    
+        # Outer white background
+        canvas.create_oval(x-outer_r, y-outer_r, x+outer_r, y+outer_r,
+                         fill='white',
+                         outline=border_color,
+                         width=border_weight)
+        
+        # Inner colored circle
+        light = canvas.create_oval(x-inner_r, y-inner_r, x+inner_r, y+inner_r,
+                         fill=color,
+                         outline='')
+        
+        return canvas, light
+    
+    def update_light(self, color: str):
+        color_list = ["#27AE60", "#FFC107", "#FF5252", "#E0E0E0"]
+        if color == "green":
+            self.status = 0
+            color = color_list[self.status]
+        elif color == "amber":
+            if self.status > 1:
+                return
+            self.status = 1
+            color = color_list[self.status]
+        elif color == "red":
+            self.status = 2
+            color = color_list[self.status]
+        elif color == "gray":
+            color = color_list[-1]
         else:
-            return None
+            color = color_list[self.status]
 
-    def draw_vert_span(self, x: int, width=1):
-        # Add a vertical span to the background
-        span: Rectangle = self.ax.axvspan(x - width / 2, x + width / 2, facecolor='red', alpha=1.0, zorder=1)
-        self.spans_storage.append(span)
+        self.light_canvas.itemconfig(self.light, fill=color)
 
-    def draw_graph_arrow(self, x: int, height: int, values: dict[str, list[int]]):
-        # Draw the arrow
-        y_min = min(min(y) for y in values.values())
-        self.ax.annotate('',
-                         xy=(x, y_min),
-                         xytext=(x, y_min + height),
-                         arrowprops=dict(arrowstyle='->',
-                                         color='r',
-                                         linewidth=2))
+    def update_canvas_color(self, color: str):
+        self.light_canvas.configure(background=color)
 
-    def redraw_vert_spans(self, visible_range: Union[None, int]) -> None:
-        if len(self.spans_storage) == 0:
-            return None
-        if visible_range is not None:
-            selected_spans = self.spans_storage[-visible_range:]  # select latest N number
-        else:
-            selected_spans = self.spans_storage  # select all
-        for span in selected_spans:
-            self.ax.add_artist(span)
-        time.sleep(0.01)
+    # def get_subplot_title(self) -> Union[None, str]:
+    #     if self.ax:
+    #         title = self.ax.get_title()
+    #         return title
+    #     else:
+    #         return None
+
+    # def draw_vert_span(self, x: int, width=1):
+    #     # Add a vertical span to the background
+    #     span: Rectangle = self.ax.axvspan(x - width / 2, x + width / 2, facecolor='red', alpha=1.0, zorder=1)
+    #     self.spans_storage.append(span)
+
+    # def draw_graph_arrow(self, x: int, height: int, values: dict[str, list[int]]):
+    #     # Draw the arrow
+    #     y_min = min(min(y) for y in values.values())
+    #     self.ax.annotate('',
+    #                      xy=(x, y_min),
+    #                      xytext=(x, y_min + height),
+    #                      arrowprops=dict(arrowstyle='->',
+    #                                      color='r',
+    #                                      linewidth=2))
+
+    # def redraw_vert_spans(self, visible_range: Union[None, int]) -> None:
+    #     if len(self.spans_storage) == 0:
+    #         return None
+    #     if visible_range is not None:
+    #         selected_spans = self.spans_storage[-visible_range:]  # select latest N number
+    #     else:
+    #         selected_spans = self.spans_storage  # select all
+    #     for span in selected_spans:
+    #         self.ax.add_artist(span)
+    #     time.sleep(0.01)
