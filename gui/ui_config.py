@@ -113,7 +113,7 @@ class FilePaths(Enum):
     """ Notes:
     Absolute path for user photos are preferred
     """
-    project_root = os.path.dirname(os.path.abspath(__file__))
+    project_root = project_root = get_project_root()
 
     """ Specific file paths """
     user_photo_icon = project_root + '/data/img/user_photo.jpeg'
