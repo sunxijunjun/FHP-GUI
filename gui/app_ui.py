@@ -361,7 +361,6 @@ class App(ThemedTk):
                 "5. Registrieren Sie ein Konto und geben Sie Ihre Daten wie Größe und Gewicht korrekt an.\n"
                 "6. Aktivieren Sie die Option 'Benachrichtigung bei schlechter Haltung nach X Sekunden' in den Einstellungen.\n\n"
 
-
                 "Haltungsanzeigeleuchten:\n\n"
                 "- Rot zeigt an, dass eine schlechte Haltung das vom Benutzer definierte Zeitfenster überschritten hat.\n\n"
                 "- Gelb zeigt an, dass eine schlechte Haltung das vom Benutzer definierte Zeitfenster noch nicht überschritten hat.\n\n"
@@ -420,12 +419,13 @@ class App(ThemedTk):
         self.pause()
         self.settings_popup = tk.Toplevel(self)
         self.settings_popup.title("Settings")
-        self.settings_popup.geometry("400x350")
+        self.settings_popup.geometry("400x400")
         self.settings_popup.attributes('-topmost', True)
 
         enable_sound = tk.BooleanVar(value=self.check_boxes_frame.check_boxes[uc.CheckBoxesKeys.enable_sound.value][1].get())
         enable_light = tk.BooleanVar(value=self.check_boxes_frame.check_boxes[uc.CheckBoxesKeys.enable_light.value][1].get())
         notification_bad_posture = tk.BooleanVar(value=self.check_boxes_frame.check_boxes[uc.CheckBoxesKeys.notification_bad_posture.value][1].get())
+        disable_alarm_feedback = tk.BooleanVar(value=self.check_boxes_frame.check_boxes[uc.CheckBoxesKeys.disable_alarm_feedback.value][1].get())
 
         # 设置列和行的布局
         self.settings_popup.columnconfigure([0, 1, 2], weight=1, uniform="columns")  # Adjusting 3 columns
@@ -468,6 +468,12 @@ class App(ThemedTk):
         notify_time_entry.grid(row=2, column=2, pady=5, padx=5, sticky="w")
         notify_time_entry.insert(0, self.check_boxes_frame.check_boxes[uc.CheckBoxesKeys.notification_bad_posture.value][2].get())
 
+        # Enable/Disable Alarm Feedback
+        alarm_feedback_check = ttk.Checkbutton(sensor_labelframe,variable=disable_alarm_feedback)
+        alarm_feedback_check.grid(row=3, column=0, pady=5, padx=5, sticky="w")
+        alarm_feedback_label = ttk.Label(sensor_labelframe, text="Enable/Disable Alarm Feedback")
+        alarm_feedback_label.grid(row=3, column=1, pady=5, padx=5, sticky="w")
+
         # 创建 Save 按钮
         def save_settings():
             self.check_boxes_frame.check_boxes[uc.CheckBoxesKeys.enable_sound.value][1].set(enable_sound.get())
@@ -478,6 +484,8 @@ class App(ThemedTk):
             current_tuple[2].insert(0, notify_time_entry.get())
             self.check_boxes_frame.check_boxes[uc.CheckBoxesKeys.notification_bad_posture.value] = \
                 (current_tuple[0], notification_bad_posture, current_tuple[2])
+            # Save the state of the new checkbox
+            self.check_boxes_frame.check_boxes[uc.CheckBoxesKeys.disable_alarm_feedback.value][1].set(disable_alarm_feedback.get())
             close_settings()
 
         def close_settings():
@@ -488,7 +496,7 @@ class App(ThemedTk):
         
         # Create a frame to hold the buttons
         buttons_frame = ttk.Frame(sensor_labelframe)
-        buttons_frame.grid(row=3, column=0, columnspan=3, pady=5, padx=5)
+        buttons_frame.grid(row=4, column=0, columnspan=3, pady=5, padx=5)
 
         # Create Save button
         save_button = ttk.Button(buttons_frame, text="Save", command=save_settings)
@@ -863,16 +871,43 @@ class App(ThemedTk):
             self.feedback_collector.destroy()  # update the feedback collector
             self.feedback_collector = None
         self.pause(pause_light = False)  # give time for the participant to response
-        self.feedback_collector = FeedbackCollector(self.footer_frame, logger=self.logger,
-                                                    closing_callback=self.forget_feedback_collector,
-                                                    response_callback=self.update_model_thresholds)
-        self.feedback_collector.show(x=uc.Positions.feedback.value[0],
-                                     y=uc.Positions.feedback.value[1],
-                                     timestamp=self.logger.last_timestamp,
-                                     local_time=self.logger.get_last_local_time(),
-                                     x_position=pos)
+
+        if self.check_boxes_frame.check_boxes[uc.CheckBoxesKeys.disable_alarm_feedback.value][1].get():
+            self.feedback_collector = FeedbackCollector(self.footer_frame, logger=self.logger,
+                                                        closing_callback=self.forget_feedback_collector,
+                                                        response_callback=self.update_model_thresholds)
+            self.feedback_collector.show(x=uc.Positions.feedback.value[0],
+                                         y=uc.Positions.feedback.value[1],
+                                         timestamp=self.logger.last_timestamp,
+                                         local_time=self.logger.get_last_local_time(),
+                                         x_position=pos)
+        else:
+            self.show_simple_notification(x=uc.Positions.feedback.value[0],
+                                          y=uc.Positions.feedback.value[1],
+                                          message="Bad posture detected")
+
         self.sound_controller.send_command(self.sound_controller.get_sound_command())
         self.light_controller.send_command(self.light_controller.get_light_command())
+
+    def show_simple_notification(self, x: int, y: int, message: str):
+        simple_notification = tk.Toplevel(self)
+        simple_notification.title("Notification")
+        label = ttk.Label(simple_notification, text=message)
+        label.pack(pady=10, padx=10)
+        dismiss_button = ttk.Button(simple_notification, text="Dismiss", command=simple_notification.destroy)
+        dismiss_button.pack(pady=5)
+
+        # Calculate the screen width and height
+        screen_width = self.winfo_screenwidth()
+        screen_height = self.winfo_screenheight()
+
+        # Ensure the notification is within the screen boundaries
+        x = max(0, min(x, screen_width - simple_notification.winfo_width()))
+        y = max(0, min(y, screen_height - simple_notification.winfo_height()))
+
+        # Position the notification
+        simple_notification.geometry(f"+{x}+{y}")
+        play_sound_in_thread()
 
     def update_model_thresholds(self, response: bool) -> None:
         if response is True:

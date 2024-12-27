@@ -585,6 +585,7 @@ class CheckBoxesFrame(ttk.Frame):
         self.add_check_box(text="Enable Sound",
                            access_key=ui_config.CheckBoxesKeys.enable_sound.value)
         self.add_check_box("Enable Light", access_key=ui_config.CheckBoxesKeys.enable_light.value)
+        self.add_check_box("Enable/Disable Alarm Feedback", access_key=ui_config.CheckBoxesKeys.disable_alarm_feedback.value)
         self.grid_remove()
 
     def add_check_box(self, text: str, access_key: str, add_input=False) -> None:
@@ -821,6 +822,7 @@ class FeedbackCollector(tk.Toplevel):
         self.buttons_frame = self.add_buttons_field()
         self.add_button(text="True", func=self.receive_true)
         self.add_button(text="False", func=self.receive_false)
+        self.dismiss_button = None
 
     def show(self, x: int, y: int, timestamp: str, local_time: str, x_position: int):
         self.timestamp = timestamp
