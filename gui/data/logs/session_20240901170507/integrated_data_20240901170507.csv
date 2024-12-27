@@ -1,4 +1,0 @@
-timestamp,local_time,sensor_2,sensor_4,bbox_x1,bbox_y1,bbox_x2,bbox_y2,mv_1,mv_2,mv_3,mv_4,left_eye_x,left_eye_y,right_eye_x,right_eye_y,nose_x,nose_y,mouth_left_x,mouth_left_y,mouth_right_x,mouth_right_y,fhp,prediction,notes,user_id,alarm_notification,notification_interval,feedback,model_threshold,model_notes
-2035809,2024-09-01 17:05:07,,,,,,,288.0,312.0,300.0,296.0,,,,,,,,,,,,,,-1,no,,,,
-2035819,2024-09-01 17:05:07,,,,,,,84.0,82.0,80.0,81.0,,,,,,,,,,,,,,-1,no,,,,
-2035829,2024-09-01 17:05:07,299.0,82.0,,,,,,,,,,,,,,,,,,,,,,-1,no,,,,
