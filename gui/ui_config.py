@@ -1,5 +1,6 @@
 import os.path
 from enum import Enum
+import sys
 
 
 main_theme = 'adapta'
@@ -113,12 +114,18 @@ class Fonts(Enum):
     button_font = ("Arial", 14, "bold")
     title_font = ("Helvetica", 24, "bold")
 
+def get_project_root():
+    """Get the root directory when running."""
+    if hasattr(sys, '_MEIPASS'):
+        # PyInstaller will place resources inside when building.
+        return sys._MEIPASS
+    return os.path.dirname(os.path.abspath(__file__))
 
 class FilePaths(Enum):
     """ Notes:
     Absolute path for user photos are preferred
     """
-    project_root = os.path.dirname(os.path.abspath(__file__))
+    project_root = project_root = get_project_root()
 
     """ Specific file paths """
     user_photo_icon = project_root + '/data/img/user_photo.jpeg'
