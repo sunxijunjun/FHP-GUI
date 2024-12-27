@@ -15,17 +15,19 @@ import numpy as np
 from statistics import median
 import sys
 from database_manager import DatabaseManager, UserDetails
+from PIL import Image, ImageTk
+
 
 # flexibility collection
 class PostureDataCollection(tk.Toplevel):
-    def __init__(self, serial_manager: SerialManager,db_manager = DatabaseManager(), main_app = None):
+    def __init__(self, serial_manager: SerialManager, db_manager=DatabaseManager(), main_app=None):
         self.main_app = main_app
         if not tk._default_root:
             root = tk.Tk()
             root.withdraw()
         super().__init__()
         self.title("Dynamic Data Collection")
-        self.geometry("580x300")
+        self.geometry("580x350")
         self.update_idletasks()
         x = (self.winfo_screenwidth() // 2) - (self.winfo_width() // 2)
         y = (self.winfo_screenheight() // 2) - (self.winfo_height() // 2)
@@ -45,69 +47,115 @@ class PostureDataCollection(tk.Toplevel):
             "This operation will take approximately 30 seconds.\n"
             "Please click start and follow the steps:\n"
         )
+
+        # Load and resize images using Pillow
+        image1 = Image.open("support/Rounded-shoulders.jpg")
+        image1 = image1.resize((100, 100))  # Adjust the size as needed
+        image2 = Image.open("support/Upright-neutral.jpg")
+        image2 = image2.resize((100, 100))  # Adjust the size as needed
+
+        # Convert images to PhotoImage
+        self.posture_image1 = ImageTk.PhotoImage(image1)
+        self.posture_image2 = ImageTk.PhotoImage(image2)
+
         self.instruction_text = tk.Label(self, text=instruction)
         self.instruction_text.pack(pady=15)
         self.start_button = tk.Button(self, text="Start collecting", command=self.on_start)
         self.start_button.pack(pady=15)
 
+        # Create a frame to hold the images side by side
+        image_frame = tk.Frame(self)
+        image_frame.pack(pady=5)
+
+        # Add images to the frame
+        self.image_label1 = tk.Label(image_frame, image=self.posture_image1)
+        self.image_label1.pack(side="left", padx=5)
+        self.image_label2 = tk.Label(image_frame, image=self.posture_image2)
+        self.image_label2.pack(side="left", padx=5)
+
     def on_start(self):
         self.withdraw()
-        postures = [
+        self.postures = [
             "a round shoulder with poking chin posture",
             "an upright neutral posture"
         ]
-        data = []
+        self.data = []
+        self.collect_posture_data(0)
 
-        def collect_posture_data(posture_index):
-            if posture_index < len(postures):
-                posture = postures[posture_index]
-                print(f"Collecting data for posture: {posture}")
-                messagebox.showinfo("Instruction", f"Please maintain posture: {posture} for 10 seconds.\nWill start in 2 seconds after click.")
-                time.sleep(2)
-                readings = self.read_sensor_data()
-                for reading in readings:
-                    data.append(reading + [posture])
-                self.after(100, collect_posture_data, posture_index + 1)  # Wait for 15 seconds before next posture
+    def collect_posture_data(self, posture_index):
+        if posture_index < len(self.postures):
+            posture = self.postures[posture_index]
+            print(f"Collecting data for posture: {posture}")
+
+            # Load and display the corresponding image for the posture
+            if posture == "a round shoulder with poking chin posture":
+                image_path = "support/Rounded-shoulders.jpg"
+            elif posture == "an upright neutral posture":
+                image_path = "support/Upright-neutral.jpg"
             else:
-                filename = self.save_data(data)
-                # Now, perform the checking
-                df = pd.read_csv(filename)
-                df = df.dropna(subset=['Sensor 2', 'Sensor 4'])
-                df['sensor4_2_diff'] = df['Sensor 4'] - df['Sensor 2']
+                image_path = None
 
-                median_values = (
-                    df.groupby('Posture', group_keys=False)
-                    .apply(lambda group: group.iloc[len(group) // 2:]['sensor4_2_diff'].median())
-                )
-                print(median_values)
+            if image_path:
+                image = Image.open(image_path)
+                image = image.resize((200, 200))  # Adjust the size as needed
+                posture_image = ImageTk.PhotoImage(image)
 
-                if (median_values <= -50).any():
-                    messagebox.showerror("Error", "Please adjust device and sitting position: upper sensor is miss-focusing.")
-                    self.restart()
-                    return
+                # Create a new window to display the image
+                image_window = tk.Toplevel(self)
+                image_window.title("Posture Instruction")
+                image_label = tk.Label(image_window, image=posture_image)
+                image_label.image = posture_image  # Keep a reference to avoid garbage collection
+                image_label.pack(pady=10)
 
-                if (median_values > 200).any():
-                    messagebox.showerror("Error", "Please recalibrate: sensor difference out of range.")
-                    self.restart()
-                    return
+                # Display the instruction message
+                messagebox.showinfo("Instruction",
+                                    f"Please maintain posture: {posture} for 10 seconds.\nWill start in 2 seconds after click.")
+                time.sleep(2)
+                image_window.destroy()  # Close the image window after the delay
 
-                average_median = median_values.mean() + 8
-                print("Average of the two medians is:", average_median)
+            readings = self.read_sensor_data()
+            for reading in readings:
+                self.data.append(reading + [posture])
+            self.after(100, self.collect_posture_data, posture_index + 1)  # Wait for 15 seconds before next posture
+        else:
+            filename = self.save_data(self.data)
+            # Now, perform the checking
+            df = pd.read_csv(filename)
+            df = df.dropna(subset=['Sensor 2', 'Sensor 4'])
+            df['sensor4_2_diff'] = df['Sensor 4'] - df['Sensor 2']
 
-                if 30 < average_median < 180:
-                    print("OK")
-                    messagebox.showinfo("Success", "Calibration successful.")
-                    # 调用 reset_threshold_from_cali 方法，将 average_median 作为新的阈值存入
-                    self.reset_threshold_from_cali(average_median)
-                    self.exit()
-                    return
+            median_values = (
+                df.groupby('Posture', group_keys=False)
+                .apply(lambda group: group.iloc[len(group) // 2:]['sensor4_2_diff'].median())
+            )
+            print(median_values)
 
-                else:
-                    messagebox.showerror("Error", "Please recalibrate: sensor difference out of range.")
-                    self.restart()
-                    return
+            if (median_values <= -50).any():
+                messagebox.showerror("Error",
+                                     "Please adjust device and sitting position: upper sensor is miss-focusing.")
+                self.restart()
+                return
 
-        collect_posture_data(0)        
+            if (median_values > 200).any():
+                messagebox.showerror("Error", "Please recalibrate: sensor difference out of range.")
+                self.restart()
+                return
+
+            average_median = median_values.mean() + 8
+            print("Average of the two medians is:", average_median)
+
+            if 30 < average_median < 180:
+                print("OK")
+                messagebox.showinfo("Success", "Calibration successful.")
+                # 调用 reset_threshold_from_cali 方法，将 average_median 作为新的阈值存入
+                self.reset_threshold_from_cali(average_median)
+                self.exit()
+                return
+
+            else:
+                messagebox.showerror("Error", "Please recalibrate: sensor difference out of range.")
+                self.restart()
+                return
 
     def exit(self):
         if self.main_app:
@@ -120,7 +168,7 @@ class PostureDataCollection(tk.Toplevel):
         new_instance = self.__class__(self.serial_manager, self.db_manager, self.main_app)
         self.destroy()
         new_instance.mainloop()
-    
+
     def reset_threshold_from_cali(self, new_value: float):
         try:
             self.user_features["threshold"] = new_value
