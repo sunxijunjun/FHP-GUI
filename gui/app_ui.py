@@ -282,6 +282,11 @@ class App(ThemedTk):
                 "7. When notified of bad posture, please click 'True/False' as this will help the program make more accurate and personalized alerts.\n\n"
                 "8. If the device fails to correctly detect bad posture, click the calibration button and follow the prompts to complete the calibration procedure. The system will check sensor status and analyze possible causes of errors.\n\n"
                 "9. The preparation is complete. Fantastic!\n\n"
+                
+                "Posture Indicator Lights:\n\n"
+                "- Red indicates that a bad posture has exceeded the user-defined time window.\n\n"
+                "- Yellow indicates a bad posture that has not yet exceeded the user-defined time window.\n\n"
+                "- Green indicates a good posture.\n\n"
 
                 "User Guidelines:\n\n"
                 "1. Due to the time required for signal communication and data processing, there will be a slight delay between the sensor signal display and the actual situation.\n\n"
@@ -304,6 +309,11 @@ class App(ThemedTk):
                 "7.当收到警报时，请点击'True/False'，这会帮助程序更加准确且个性化的发出警报。\n\n"
                 "8.当设备无法正确检出不良姿态时，请点击校准按钮，并按照提示完成校准程序。系统会检测传感器状态，并且分析可能的错误原因。\n\n"
                 "9.准备工作已经完成，太棒了！\n\n"
+                
+                "姿势指示灯：\n\n"
+                "- 红色表示不良姿势已超过用户定义的时间窗口。\n\n"
+                "- 黄色表示不良姿势尚未超过用户定义的时间窗口。\n\n"
+                "- 绿色表示良好姿势。\n\n"
 
                 "用户须知:\n\n"
                 "1.由于信号通信和数据处理所需的时间，传感器信号图像会和实际情况有短暂延迟。\n\n"
@@ -325,6 +335,11 @@ class App(ThemedTk):
                 "7.當收到警報時，請點擊'True/False'，咁樣可以幫助程序更加準確同個性化發出警報。\n\n"
                 "8.當裝置無法準確偵測不良姿勢時，請點擊校準按鈕，並按照提示完成校準程序。系統會檢測傳感器狀態，分析可能嘅錯誤原因。\n\n"
                 "9.準備工作完成，太棒啦！\n\n"
+                
+                "姿勢指示燈：\n\n"
+                "- 紅色表示不良姿勢已超過用戶定義嘅時間窗口。\n\n"
+                "- 黃色表示不良姿勢尚未超過用戶定義嘅時間窗口。\n\n"
+                "- 綠色表示良好姿勢。\n\n"
 
                 "用戶須知:\n\n"
                 "1. 由於信號傳輸和數據處理所需嘅時間，傳感器信號圖像會同實際情況有短暫延遲。\n\n"
@@ -345,7 +360,13 @@ class App(ThemedTk):
                 "4. Ihr Gesicht sollte in der Kameraansicht sichtbar sein, umgeben von einem grünen Rahmen.\n"
                 "5. Registrieren Sie ein Konto und geben Sie Ihre Daten wie Größe und Gewicht korrekt an.\n"
                 "6. Aktivieren Sie die Option 'Benachrichtigung bei schlechter Haltung nach X Sekunden' in den Einstellungen.\n\n"
-                
+
+
+                "Haltungsanzeigeleuchten:\n\n"
+                "- Rot zeigt an, dass eine schlechte Haltung das vom Benutzer definierte Zeitfenster überschritten hat.\n\n"
+                "- Gelb zeigt an, dass eine schlechte Haltung das vom Benutzer definierte Zeitfenster noch nicht überschritten hat.\n\n"
+                "- Grün zeigt eine gute Haltung an.\n\n"
+         
                 "Benutzerhinweise:\n\n"
                 "1. Aufgrund der Zeit, die für die Signalübertragung und Datenverarbeitung benötigt wird, gibt es eine leichte Verzögerung zwischen der Anzeige des Sensorsignals und der tatsächlichen Situation.\n\n"
                 "2. Wenn Sie feststellen, dass sich die Vorhersageergebnisse über einen längeren Zeitraum nicht ändern, könnte dies durch fehlende Daten verursacht werden. Wenn das Gesicht nicht erkannt werden kann, gibt das Modell wiederholt die letzte historische Vorhersage aus und erinnert Sie nach einiger Zeit daran, dass das Gesicht nicht erkannt werden konnte.\n\n"

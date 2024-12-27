@@ -107,6 +107,15 @@ class PostureDataCollection(tk.Toplevel):
                 image_label.image = posture_image  # Keep a reference to avoid garbage collection
                 image_label.pack(pady=10)
 
+                # Calculate the position to place the image window next to the messagebox
+                screen_width = self.winfo_screenwidth()
+                screen_height = self.winfo_screenheight()
+                window_width = 200  # Width of the image window
+                window_height = 200  # Height of the image window
+                x = (screen_width // 2) + (window_width // 2) + 150  # Adjust the x position to be next to the messagebox
+                y = (screen_height // 2) - (window_height // 2)
+                image_window.geometry(f"{window_width}x{window_height}+{x}+{y}")
+
                 # Display the instruction message
                 messagebox.showinfo("Instruction",
                                     f"Please maintain posture: {posture} for 10 seconds.\nWill start in 2 seconds after click.")
