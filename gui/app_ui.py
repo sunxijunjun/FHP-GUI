@@ -884,30 +884,48 @@ class App(ThemedTk):
         else:
             self.show_simple_notification(x=uc.Positions.feedback.value[0],
                                           y=uc.Positions.feedback.value[1],
-                                          message="Bad posture detected")
+                                          message="Bad posture detected",
+                                          callback=self.resume)
 
         self.sound_controller.send_command(self.sound_controller.get_sound_command())
         self.light_controller.send_command(self.light_controller.get_light_command())
 
-    def show_simple_notification(self, x: int, y: int, message: str):
+    def show_simple_notification(self, x: int, y: int, message: str, callback: Callable):
         simple_notification = tk.Toplevel(self)
         simple_notification.title("Notification")
-        label = ttk.Label(simple_notification, text=message)
-        label.pack(pady=10, padx=10)
-        dismiss_button = ttk.Button(simple_notification, text="Dismiss", command=simple_notification.destroy)
-        dismiss_button.pack(pady=5)
+
+        # Increase the size of the notification window
+        window_width = 300
+        window_height = 150
+
+        # Set the size of the window
+        simple_notification.geometry(f"{window_width}x{window_height}")
+
+        label = ttk.Label(simple_notification, text=message, font=("Helvetica", 14))
+        label.pack(pady=20, padx=20)
+        dismiss_button = ttk.Button(simple_notification, text="Dismiss",
+                                    command=lambda: self.dismiss_notification(simple_notification, callback))
+        dismiss_button.pack(pady=10)
 
         # Calculate the screen width and height
         screen_width = self.winfo_screenwidth()
         screen_height = self.winfo_screenheight()
 
-        # Ensure the notification is within the screen boundaries
-        x = max(0, min(x, screen_width - simple_notification.winfo_width()))
-        y = max(0, min(y, screen_height - simple_notification.winfo_height()))
+        # Calculate the position to center the window
+        x = (screen_width // 2) - (window_width // 2)
+        y = (screen_height // 2) - (window_height // 2)
 
-        # Position the notification
-        simple_notification.geometry(f"+{x}+{y}")
+        # Position the notification in the center of the screen
+        simple_notification.geometry(f"{window_width}x{window_height}+{x}+{y}")
+
+        # Ensure the main loop continues running
+        self.update()
+
         play_sound_in_thread()
+
+    def dismiss_notification(self, window: tk.Toplevel, callback: Callable):
+        window.destroy()
+        callback()
 
     def update_model_thresholds(self, response: bool) -> None:
         if response is True:
