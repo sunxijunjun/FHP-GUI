@@ -11,11 +11,15 @@ import onnxruntime as ort
 import math
 
 # Define input columns for each model
-model1_input_columns = ['bbox_y1', 'bbox_y1',
-                        'left_eye_y',
-'right_eye_y', 'nose_y', 'mouth_left_y', 'mouth_right_y',
-                        'facew', 'faceh', 'facea', 'left_eye_x', 'right_eye_x', 'mouth_left_x', 'mouth_right_x',
-                        'nose_x', 'bbox_x1','bbox_x2'] # checked and tuning, scaler bug fixed
+model1_input_columns = ['Sensor 2', 'Sensor 4',
+                 'bbox_x1', 'bbox_y1', 'bbox_x2', 'bbox_y2',
+                 'left_eye_x', 'left_eye_y', 'right_eye_x', 'right_eye_y',
+                 'nose_x', 'nose_y',
+                 'mouth_left_x', 'mouth_left_y', 'mouth_right_x', 'mouth_right_y',
+                 'sensor4_2_diff',
+                'facew', 'faceh', 'facea',
+                 'facea2', 'facea4',
+                 'diff2', 'diff4']
 
 model2_input_columns = [
     'weight', 'height', 'sensor4_2_diff', 'Sensor 2', 'Sensor 4'
@@ -25,37 +29,36 @@ rangefinder_input_columns = ['left_eye_x', 'left_eye_y', 'right_eye_x', 'right_e
 
 # Input columns for threshold method
 threshold_input_columns = [
-    'sensor4_2_diff','size'
+    'sensor4_2_diff','size','nose_y'
 ]
 
 class SimplifiedBinaryClassificationModel(nn.Module):
     def __init__(self):
         super(SimplifiedBinaryClassificationModel, self).__init__()
+        self.input_dropout = nn.Dropout(0.1)  # Dropout added to input layer
+
         self.fc1 = nn.Linear(len(model1_input_columns), 128)
         self.bn1 = nn.BatchNorm1d(128)
-        self.dropout1 = nn.Dropout(0.5)
+        self.dropout1 = nn.Dropout(0.2)
 
         self.fc2 = nn.Linear(128, 64)
         self.bn2 = nn.BatchNorm1d(64)
-        self.dropout2 = nn.Dropout(0.5)
+        self.dropout2 = nn.Dropout(0.2)
 
-        # New hidden layer
         self.fc3 = nn.Linear(64, 32)
         self.bn3 = nn.BatchNorm1d(32)
-        self.dropout3 = nn.Dropout(0.5)
+        self.dropout3 = nn.Dropout(0.2)
 
-        self.fc4 = nn.Linear(32, 1)  # Updated final layer
+        self.fc4 = nn.Linear(32, 1)
 
     def forward(self, x):
+        x = self.input_dropout(x)  # Apply dropout to the input
         x = torch.relu(self.bn1(self.fc1(x)))
         x = self.dropout1(x)
         x = torch.relu(self.bn2(self.fc2(x)))
         x = self.dropout2(x)
-
-        # Forward pass through the new hidden layer
         x = torch.relu(self.bn3(self.fc3(x)))
         x = self.dropout3(x)
-
         x = self.fc4(x)  # No activation for final layer (logits)
         return x
 
@@ -64,13 +67,15 @@ class DataAnalyst:
     Provide convenience in testing and modification of algorithms
     Note: the dict is immutable object
     """
-    def __init__(self):
+    def __init__(self,main_app):
+        self.main_app = main_app
         self.recent_data = {"sensor_2": np.nan, "sensor_4": np.nan}
         self.data = dict()
         self.thresholds = ui_config.Measurements.threshold.value
         self.user_features = dict()
 
     def set_user_features(self, user_features: np.array):
+        print("set_user_features called")
         self.user_features['height'] = user_features[3]
         self.user_features['weight'] = user_features[2]
         def map_size(height):
@@ -85,8 +90,20 @@ class DataAnalyst:
             else:
                 return 'XL'
         self.user_features['size'] = map_size(self.user_features['height'])
-        self.user_features['threshold'] = self.thresholds[self.user_features['size']] if np.isnan(user_features[6]) else user_features[6]
-        print(f"using threshold {self.user_features['threshold']}" ) #cheked and ok, can read and use user feature threshold 86.0
+
+        if np.isnan(user_features[6]):
+            self.user_features['threshold'] = self.thresholds[self.user_features['size']]
+            print(f"using threshold {self.user_features['threshold']} (NaN detected, auto calibration triggered)")
+
+            if self.main_app is not None:
+                self.main_app.pause()
+                self.main_app.calibration()
+                print("calibration() called from set_user_features()")
+            else:
+                print("Warning: main_app is None, cannot call calibration()")
+        else:
+            self.user_features['threshold'] = user_features[6]
+            print(f"using threshold {self.user_features['threshold']}")
     
     @staticmethod
     def detect_anomaly_test(data: dict[str, list[int]]) -> Union[None, int]:
@@ -178,7 +195,9 @@ class DataAnalyst:
                 predictions[valid_indices] = binary_predictions
 
             df[prediction_column_name] = predictions
+            print(f"ONNX Model Output: {predictions}")
             df[f"{prediction_column_name}_raw"] = probabilities # Record model output probabilities
+            print(f"ONNX Model Probabilities: {probabilities}")
             return df
 
         # Threshold method prediction
@@ -195,9 +214,14 @@ class DataAnalyst:
 
             df[prediction_column_name] = df.apply(
                 lambda row: (
-                        print(f"sensor4_2_diff: {row['sensor4_2_diff']}, threshold: {get_threshold(row)}") or
-                        (0 if row['sensor4_2_diff'] > get_threshold(row) else 1)
-                ) if not pd.isnull(row['sensor4_2_diff']) else np.nan,
+                        print(f"nose_y: {row['nose_y']}, threshold: 170") or
+                        (0 if row['nose_y'] > 160 else (
+                                print(f"sensor4_2_diff: {row['sensor4_2_diff']}, threshold: {get_threshold(row)}") or
+                                (0 if row['sensor4_2_diff'] > get_threshold(row) else 1)
+                        ))
+                ) if not pd.isnull(row['nose_y']) else (
+                    np.nan
+                ),
                 axis=1
             )
 
@@ -231,7 +255,6 @@ class DataAnalyst:
 
             df[prediction_column_name] = distance_mm
             return df
-            
 
         if self.user_features is None:
             print("No user features available.")
@@ -252,7 +275,12 @@ class DataAnalyst:
         self.data = data
 
         models_dir = ui_config.FilePaths.model_path.value
-
+        """
+        目前的问题：
+        差距过小的时候，也有坏动作。尤其是距离远的情况。
+        但是目前的投票机制其实很看重模型二的结果，因为要全部同意。
+        为什么部改称输出可能性>1呢？
+        """
         # Model 1 (PyTorch)
         model1_path = os.path.join(models_dir, 'voting_model1.pth')
         model1_scaler_path = os.path.join(models_dir, 'voting_model1_scaler.joblib')
@@ -286,14 +314,18 @@ class DataAnalyst:
         # Estimation of distance from camera
         df_predictions = single_camera_rangefinder(df_predictions, rangefinder_input_columns, "estimated_range")
 
-        df_predictions['voting_result'] = df_predictions.apply(
-            lambda row: 0 if row['prediction_threshold'] == 0
-            else (0 if row['prediction_model1'] == 0 and row['prediction_model2'] == 0 else 1),
-            axis=1
-        )
-        print(
-            f"{df_predictions.iloc[:,27:]}\nfor data:\n{df}"
-        )
+        if self.user_features['threshold'] < 96:
+            df_predictions['voting_result'] = df_predictions.apply(
+                lambda row: 0 if row['prediction_threshold'] == 0
+                else (0 if row['prediction_model1'] == 0 and row['prediction_model2'] == 0 else 1),
+                axis=1
+            )
+        else:
+            df_predictions['voting_result'] = df_predictions.apply(
+                lambda row: 0 if row['prediction_threshold'] == 0
+                else 1,
+                axis=1
+            )
         return df_predictions['voting_result'].iloc[-1]
 
     def get_time_interval(self, alarm_times: list[str]) -> float:

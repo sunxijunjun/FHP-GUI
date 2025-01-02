@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Installation Guide</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa; /* Add background color */
+        }
+        .container {
+            max-width: 800px; /* Limit maximum width */
+            margin: 50px auto; /* Center content with vertical margin */
+            background-color: #ffffff; /* Background color */
+            padding: 20px; /* Padding */
+            border-radius: 8px; /* Rounded corners */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Slight shadow */
+            position: relative; /* Ensure relative positioning */
+        }
+        .container img.logo {
+            position: absolute; /* Position the logo absolutely */
+            top: -100px; /* Align with the top of the container */
+            left: 30px; /* Align with the left of the container */
+            width: 200px; /* Resize logo */
+            height: auto;
+        }
+        h1 {
+            color: #333; /* Change title color */
+            margin-bottom: 30px;
+        }
+        p {
+            font-size: 18px; /* Adjust font size */
+            line-height: 1.6; /* Increase line height */
+            margin-bottom: 20px;
+        }
+        ol {
+            text-align: left; /* Align text to the left */
+            margin-top: 20px;
+            margin-bottom: 30px;
+        }
+        ol li {
+            margin-bottom: 10px; /* Add space between list items */
+            font-size: 18px; /* Match font size with paragraphs */
+        }
+        button {
+            padding: 15px 30px; /* Adjust button size */
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px; /* Adjust button font size */
+            margin: 20px auto; /* Add margin and center the button */
+            display: block; /* Make button a block element */
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .highlight {
+            background-color: yellow; /* Highlight important text */
+            font-weight: bold; /* Make the highlighted text bold */
+        }
+        .arrow {
+            display: inline-block; /* Display arrows inline with text */
+            font-size: 24px; /* Increase arrow size */
+            vertical-align: middle; /* Align arrows with text */
+            margin: 0 10px; /* Add margin around arrows */
+        }
+        .step-icon {
+            vertical-align: middle; /* Align icons with text */
+            margin: 0 10px; /* Add margin around icons */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img src="support/PolyU_Icon.png" alt="PolyU Icon" class="logo">
+        <h1>Welcome to the Smart Posture Monitoring App!</h1>
+        <p>Follow the steps below to install the application:</p>
+        <p>
+            <span class="highlight">Step 1:</span> Ensure that the Type-A connector is plugged into your computer’s main unit, and the Type-C connector is inserted into the port on the device where the video icon is located.
+            <img src="support/video_icon.jpg" alt="Video Icon" class="step-icon" style="width:auto;height:50px;">
+        </p>
+        <p style="text-align: left;">
+            <span class="highlight" >Step 2:</span>
+            <ol>
+                <li>
+                    <span class="arrow">➤</span> Click the <span class="highlight">Install Now</span> button below.
+                </li>
+                <!-- Start local main.exe -->
+                <button onclick="window.location.href='main.exe'">Install Now</button>
+                <li>
+                    <span class="arrow">➤</span> Follow the instructions in the installer.
+                </li>
+                <li>
+                    <span class="arrow">➤</span> Start using the app!
+                </li>
+            </ol>
+        </p>
+
+        <p style="text-align: left;">
+            <span class="highlight" >Step 3:</span>
+        </p>
+        <p>
+            <span style="font-weight: bold;"> After installation completed:</span> Remove the Type-C connector and insert it into the port on the side of the device that has a battery icon.
+            <img src="support/bat_icon.jpg" alt="Battery Icon" class="step-icon" style="width:70px;height:50px;">
+        </p>
+        <p>
+            🎉 You’re all set—go ahead and start using the device!
+        </p>
+    </div>
+</body>
+</html>

@@ -20,7 +20,7 @@ class TimerApp:
         self.tk_icon = ImageTk.PhotoImage(self.icon)
         self.root.iconphoto(False, self.tk_icon)
 
-        self.total_time = 2 * 6  # 20 minutes in seconds
+        self.total_time = 20 * 60  # 20 minutes in seconds
         self.remaining_time = self.total_time
         self.running = False
 

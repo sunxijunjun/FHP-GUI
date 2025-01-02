@@ -90,10 +90,10 @@ class Measurements(Enum):
     rand_quest_duration = [30, 60]  # clock duration range
 
     num_bad_posture_commands = 10  # max total posture commands
-    val_replacing_limit = 20  # threshold when the notification should popup
-    sensor_val_replacing_limit = 10  # 传感器最大容忍异常次数
-    camera_val_replacing_limit = 100  # 摄像头最大容忍异常次数
-    default_val_replacing_limit = 20 # 默认容忍异常次数
+    val_replacing_limit = 200  # threshold when the notification should popup
+    sensor_val_replacing_limit = 120  # 传感器最大容忍异常次数
+    camera_val_replacing_limit = 1000  # 摄像头最大容忍异常次数
+    default_val_replacing_limit = 120 # 默认容忍异常次数
     false_responses_limit = 1  # specify after how many responses the model threshold should be changed
     
     threshold = {
@@ -125,7 +125,7 @@ class FilePaths(Enum):
     """ Notes:
     Absolute path for user photos are preferred
     """
-    project_root = project_root = get_project_root()
+    project_root = os.path.dirname(os.path.abspath(__file__))
 
     """ Specific file paths """
     user_photo_icon = project_root + '/data/img/user_photo.jpeg'
@@ -142,6 +142,7 @@ class FilePaths(Enum):
 
 
 class CheckBoxesKeys(Enum):
+    disable_alarm_feedback = "disable_alarm_feedback"
     notification_bad_posture = "notify_bad_posture"
     enable_sound = "enable_sound"
     enable_light = "enable_light"

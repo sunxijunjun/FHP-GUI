@@ -127,7 +127,7 @@ class App(ThemedTk):
         self.footer_frame = ttk.Frame(self)
         self.db_manager = DatabaseManager()
         self.logger = Logger(session_id=self.db_manager.session.id, test=test)
-        self.data_analyst = DataAnalyst()
+        self.data_analyst = DataAnalyst(main_app=self)
         self.settings_popup = None
         self.countdown_time = 0
 
@@ -206,11 +206,11 @@ class App(ThemedTk):
         self.add_menu_button("Generate Report", self.show_generate_report_window)
 
     def show_generate_report_window(self):
-        self.save_graph()
+        # self.save_graph()
         
         report_window = tk.Toplevel(self)
         report_window.title("Generate Report")
-        report_window.geometry("375x900")  # 调整窗口大小
+        report_window.geometry("375x700")  # 调整窗口大小
         ###.md文件的内容移动到这里　TODO
         # 生成报告内容
         report_content = self.db_manager.report_writer.get_header() + self.db_manager.report_writer.get_stats()
@@ -243,32 +243,31 @@ class App(ThemedTk):
     def show_user_guide_window(self):
         guide_window = tk.Toplevel(self)
         guide_window.title("User Guide")
-        guide_window.geometry("450x400")  # 调整窗口大小
+        guide_window.geometry("450x600")  # 调整窗口大小
 
         # Create a canvas
         canvas = tk.Canvas(guide_window)
         canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
-        # Reuse Previous Code:
-        # guide_window = NotesEntryFrame()
-
         # Add a scrollbar to the canvas
         scrollbar = ttk.Scrollbar(guide_window, orient=tk.VERTICAL, command=canvas.yview)
         scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+
+        def _on_mouse_wheel(event):
+            canvas.yview_scroll(-1 * int((event.delta / 120)), "units")
+
+        canvas.bind_all("<MouseWheel>", _on_mouse_wheel)  # For Windows and macOS
+        canvas.bind_all("<Button-4>", _on_mouse_wheel)  # For Linux (scroll up)
+        canvas.bind_all("<Button-5>", _on_mouse_wheel)  # For Linux (scroll down)
 
         # Configure the canvas
         canvas.configure(yscrollcommand=scrollbar.set)
         canvas.bind('<Configure>', lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
 
         # Create another frame inside the canvas
-        inner_frame = tk.Frame(canvas, width = 330)
+        inner_frame = tk.Frame(canvas)
+        canvas.create_window((0, 0), window=inner_frame, anchor="nw")  # 使用 "nw" 确保顶部对齐
 
-        # Add that frame to a window in the canvas
-        canvas.create_window((0, 0), window=inner_frame, anchor="center")
-
-
-
-        # 多语言文本字典
         guide_texts = {
             "English": (
                 "Welcome to the Beta Prototype.\n\n"
@@ -276,12 +275,25 @@ class App(ThemedTk):
                 "For optimal accuracy, please follow the calibration steps below:\n\n"
                 "1. Adjust the height of your chair and screen so that the top edge of the screen is level with or slightly below your eyes.\n\n"
                 "2. Secure the device at the center of the top edge of your monitor.\n\n"
-                "3. At this point, you should see your face appear in the center of the camera view, surrounded by a small green box.\n\n"
-                "4. Please register a personal account and accurately fill in your height, weight, and other information.\n\n"
-                "5. Enable 'Notify Bad Posture After X Seconds' in the settings and input the desired time interval in seconds in the text box.\n\n"
-                "6. When notified of bad posture, please click 'True/False' as this will help the program make more accurate and personalized alerts.\n\n"
-                "7. If the device fails to correctly detect bad posture, click the calibration button and follow the prompts to complete the calibration procedure. The system will check sensor status and analyze possible causes of errors.\n\n"
-                "8. The preparation is complete. Fantastic!\n\n"
+                "3. Lean your back against the chair’s backrest to ensure proper support for your back and lumbar region.\n\n"
+                "4. At this point, you should see your face appear in the center of the camera view, surrounded by a small green box.\n\n"
+                "5. Please register a personal account and accurately fill in your height, weight, and other information.\n\n"
+                "6. Enable 'Notify Bad Posture After X Seconds' in the settings and input the desired time interval in seconds in the text box.\n\n"
+                "7. When notified of bad posture, please click 'True/False' as this will help the program make more accurate and personalized alerts.\n\n"
+                "8. If the device fails to correctly detect bad posture, click the calibration button and follow the prompts to complete the calibration procedure. The system will check sensor status and analyze possible causes of errors.\n\n"
+                "9. The preparation is complete. Fantastic!\n\n"
+                
+                "Posture Indicator Lights:\n\n"
+                "- Red indicates that a bad posture has exceeded the user-defined time window.\n\n"
+                "- Yellow indicates a bad posture that has not yet exceeded the user-defined time window.\n\n"
+                "- Green indicates a good posture.\n\n"
+
+                "User Guidelines:\n\n"
+                "1. Due to the time required for signal communication and data processing, there will be a slight delay between the sensor signal display and the actual situation.\n\n"
+                "2. If you notice that the prediction results remain unchanged for an extended period, it may be caused by missing data. When the face cannot be detected, the model will repeatedly output the last historical prediction and will remind you after some time that the face could not be detected.\n\n"
+                "3. Maintaining a proper sitting height and an appropriate distance from the screen is crucial. If only part of your body is within the detection range, or if your arms/other objects block the front of your torso, the prediction accuracy cannot be guaranteed.\n\n"
+                "4. Lowering your head, rapid posture changes, or leaving the detection range may also trigger alerts. In such cases, please do not report them as \"false alarms.\"\n\n"
+                "5. Please only provide feedback on \"false alarms\" when a natural posture is incorrectly predicted as a bad posture.\n\n"
 
             ),
             "中文": (
@@ -290,50 +302,89 @@ class App(ThemedTk):
                 "为了达到最佳准确性，请按照以下校准步骤操作：\n\n"
                 "1.调整椅子和屏幕的高度，使屏幕上边缘的高度应该平齐于或略低于您的眼睛。\n\n"
                 "2.将设备固定在显示器上边缘的中央。\n\n"
-                "3.这时您应该看到您的脸出现在相机视图的中心，并且周围有一个小的绿色框。\n\n"
-                "4.请注册个人账户，并且如实填写身高体重等信息。\n\n"
-                "5.请在设置中打开Notify Bad Posture After X Seconds，并在方框中填入您希望被通知的时间间隔，单位是秒。\n\n"
-                "6.当收到警报时，请点击True/False，这会帮助程序更加准确且个性化的发出警报。\n\n"
-                "7.当设备无法正确检出不良姿态时，请点击校准按钮，并按照提示完成校准程序。系统会检测传感器状态，并且分析可能的错误原因。\n\n"
-                "8.准备工作已经完成，太棒了！\n\n"
-            ),
+                "3.后背靠在椅子靠背上，确保椅子对您的腰部和背部有很好的支撑。\n\n"
+                "4.这时您应该看到您的脸出现在相机视图的中心，并且周围有一个小的绿色框。\n\n"
+                "5.请注册个人账户，并且如实填写身高体重等信息。\n\n"
+                "6.请在设置中打开'X秒后通知不良姿势'，并在方框中填入您希望被通知的时间间隔，单位是秒。\n\n"
+                "7.当收到警报时，请点击'True/False'，这会帮助程序更加准确且个性化的发出警报。\n\n"
+                "8.当设备无法正确检出不良姿态时，请点击校准按钮，并按照提示完成校准程序。系统会检测传感器状态，并且分析可能的错误原因。\n\n"
+                "9.准备工作已经完成，太棒了！\n\n"
+                
+                "姿势指示灯：\n\n"
+                "- 红色表示不良姿势已超过用户定义的时间窗口。\n\n"
+                "- 黄色表示不良姿势尚未超过用户定义的时间窗口。\n\n"
+                "- 绿色表示良好姿势。\n\n"
 
+                "用户须知:\n\n"
+                "1.由于信号通信和数据处理所需的时间，传感器信号图像会和实际情况有短暂延迟。\n\n"
+                "2.如果您发现预测结果在一段时间内未发生变化，有可能是数据缺失引起的。当面部无法被检测到的时候，模型会重复输出上一次的历史预测，并且在一段时间后弹窗提醒您无法检测到面部的情况。\n\n"
+                "3.保持坐姿高度以及和屏幕的适当距离至关重要，如果您的身体只有部分在设备的检测范围内，或者您的手臂/其它物品遮挡在您的躯干前方，无法保证预测的准确率。\n\n"
+                "4.低头、快速的姿态变化、人物离开检测范围等状况也可能会触发警报，这种情况下，请不要反馈“假警报”。\n\n"
+                "5.请仅在合适的自然姿态被预测为不良姿态的时候，反馈“假警报”。\n\n"
+            ),
             "粤语": (
                 "歡迎使用Beta原型機。\n\n"
                 "此裝置會偵測你使用電腦時嘅不良姿勢，主要係圓肩、駝背同埋頸前伸嘅姿態。\n\n"
                 "為咗達到最佳準確性，請按照以下校準步驟操作：\n\n"
-                "1. 調整椅子同顯示屏嘅高度，顯示屏嘅上邊緣應該同你眼睛平齊，或者稍低過眼睛。\n\n"
-                "2. 將裝置固定喺顯示器上邊緣嘅中間位置。\n\n"
-                "3. 呢個時候你應該見到你嘅面出現喺相機視圖嘅中間，並且周圍有一個細細嘅綠色框。\n\n"
-                "4. 請註冊個人帳戶，並且如實填寫你嘅身高、體重等資料。\n\n"
-                "5. 請喺設定中打開'X秒後通知不良姿勢'，並喺文本框中輸入你希望嘅通知時間間隔（秒）。\n\n"
-                "6. 當收到警報時，請點擊'True/False'，咁樣可以幫助程序更加準確同個性化發出警報。\n\n"
-                "7. 當裝置無法準確偵測不良姿勢時，請點擊校準按鈕，並按照提示完成校準程序。系統會檢測傳感器狀態，分析可能嘅錯誤原因。\n\n"
-                "8. 準備工作完成，太棒啦！\n\n"
+                "1.調整椅子同顯示屏嘅高度，顯示屏嘅上邊緣應該同你眼睛平齊，或者稍低過眼睛。\n\n"
+                "2.將裝置固定喺顯示器上邊緣嘅中間位置。\n\n"
+                "3.背部靠喺椅背上，確保椅背對你腰部同背部有良好支持。\n\n"
+                "4.呢個時候你應該見到你嘅面出現喺相機視圖嘅中間，並且周圍有一個細細嘅綠色框。\n\n"
+                "5.請註冊個人帳戶，並且如實填寫你嘅身高、體重等資料。\n\n"
+                "6.請喺設定中打開'X秒後通知不良姿勢'，並喺文本框中輸入你希望嘅通知時間間隔（秒）。\n\n"
+                "7.當收到警報時，請點擊'True/False'，咁樣可以幫助程序更加準確同個性化發出警報。\n\n"
+                "8.當裝置無法準確偵測不良姿勢時，請點擊校準按鈕，並按照提示完成校準程序。系統會檢測傳感器狀態，分析可能嘅錯誤原因。\n\n"
+                "9.準備工作完成，太棒啦！\n\n"
+                
+                "姿勢指示燈：\n\n"
+                "- 紅色表示不良姿勢已超過用戶定義嘅時間窗口。\n\n"
+                "- 黃色表示不良姿勢尚未超過用戶定義嘅時間窗口。\n\n"
+                "- 綠色表示良好姿勢。\n\n"
+
+                "用戶須知:\n\n"
+                "1. 由於信號傳輸和數據處理所需嘅時間，傳感器信號圖像會同實際情況有短暫延遲。\n\n"
+                "2. 如果你發現預測結果喺一段時間內無變化，有可能係數據缺失引起嘅。當面部無法被檢測到嘅時候，模型會重複輸出上一次嘅歷史預測，並且喺一段時間後彈窗提醒你無法檢測到面部嘅情況。\n\n"
+                "3. 保持坐姿高度以及同屏幕嘅適當距離至關重要，如果你嘅身體只有部分喺設備嘅檢測範圍內，或者你嘅手臂/其他物品遮擋喺你嘅軀幹前方，無法保證預測嘅準確率。\n\n"
+                "4. 低頭、快速嘅姿態變化、人物離開檢測範圍等情況都可能會觸發警報，喺呢啲情況下，請唔好反饋「假警報」。\n\n"
+                "5. 請僅喺合適嘅自然姿態被預測為不良姿態嘅時候，反饋「假警報」。\n\n"
 
             ),
 
             "Deutsch": (
                 "Willkommen beim Beta-Prototyp.\n\n"
-                "Dieses Gerät wird schlechte Körperhaltungen erkennen, insbesondere Rundrücken und vorgestreckten Kopf.\n\n"
-                "Für optimale Genauigkeit folgen Sie bitte den folgenden Kalibrierschritten:\n\n"
-                "1. Passen Sie die Höhe Ihres Stuhls und Monitors so an, dass die obere Kante des Bildschirms auf Augenhöhe oder leicht darunter ist.\n\n"
-                "2. Befestigen Sie das Gerät in der Mitte der oberen Kante Ihres Monitors.\n\n"
-                "3. Zu diesem Zeitpunkt sollten Sie Ihr Gesicht in der Mitte der Kameraansicht sehen, umgeben von einem kleinen grünen Rahmen.\n\n"
-                "4. Bitte registrieren Sie ein persönliches Konto und geben Sie Ihre Körpergröße, Ihr Gewicht und andere Informationen korrekt an.\n\n"
-                "5. Aktivieren Sie 'Benachrichtigung bei schlechter Haltung nach X Sekunden' in den Einstellungen und geben Sie das gewünschte Zeitintervall (in Sekunden) in das Textfeld ein.\n\n"
-                "6. Wenn Sie benachrichtigt werden, klicken Sie bitte auf 'Wahr/Falsch', um dem Programm zu helfen, genauere und personalisierte Warnungen auszugeben.\n\n"
-                "7. Falls das Gerät schlechte Haltung nicht korrekt erkennt, klicken Sie auf die Kalibrierungsschaltfläche und folgen Sie den Anweisungen zur Durchführung des Kalibrierungsverfahrens. Das System überprüft den Sensorstatus und analysiert mögliche Fehlerursachen.\n\n"
-                "8. Die Vorbereitungen sind abgeschlossen. Großartig!\n\n"
+                "Dieses Gerät erkennt schlechte Körperhaltungen wie Rundrücken und vorgestreckten Kopf.\n\n"
+                "Kalibrierungsschritte:\n\n"
+                "1. Stellen Sie die Bildschirmhöhe so ein, dass die obere Kante auf Augenhöhe oder leicht darunter liegt.\n"
+                "2. Befestigen Sie das Gerät oben mittig am Monitor.\n"
+                "3. Lehnen Sie sich an die Rückenlehne des Stuhls und sorgen Sie für eine stabile Haltung.\n"
+                "4. Ihr Gesicht sollte in der Kameraansicht sichtbar sein, umgeben von einem grünen Rahmen.\n"
+                "5. Registrieren Sie ein Konto und geben Sie Ihre Daten wie Größe und Gewicht korrekt an.\n"
+                "6. Aktivieren Sie die Option 'Benachrichtigung bei schlechter Haltung nach X Sekunden' in den Einstellungen.\n\n"
 
+                "Haltungsanzeigeleuchten:\n\n"
+                "- Rot zeigt an, dass eine schlechte Haltung das vom Benutzer definierte Zeitfenster überschritten hat.\n\n"
+                "- Gelb zeigt an, dass eine schlechte Haltung das vom Benutzer definierte Zeitfenster noch nicht überschritten hat.\n\n"
+                "- Grün zeigt eine gute Haltung an.\n\n"
+         
+                "Benutzerhinweise:\n\n"
+                "1. Aufgrund der Zeit, die für die Signalübertragung und Datenverarbeitung benötigt wird, gibt es eine leichte Verzögerung zwischen der Anzeige des Sensorsignals und der tatsächlichen Situation.\n\n"
+                "2. Wenn Sie feststellen, dass sich die Vorhersageergebnisse über einen längeren Zeitraum nicht ändern, könnte dies durch fehlende Daten verursacht werden. Wenn das Gesicht nicht erkannt werden kann, gibt das Modell wiederholt die letzte historische Vorhersage aus und erinnert Sie nach einiger Zeit daran, dass das Gesicht nicht erkannt werden konnte.\n\n"
+                "3. Die Aufrechterhaltung einer angemessenen Sitzhöhe und eines geeigneten Abstands zum Bildschirm ist entscheidend. Wenn nur ein Teil Ihres Körpers im Erfassungsbereich liegt oder wenn Ihre Arme/andere Gegenstände vor Ihrem Oberkörper blockieren, kann die Vorhersagegenauigkeit nicht garantiert werden.\n\n"
+                "4. Das Senken des Kopfes, schnelle Haltungsänderungen oder das Verlassen des Erfassungsbereichs können ebenfalls Warnungen auslösen. In solchen Fällen melden Sie bitte keine \"Fehlalarme\".\n\n"
+                "5. Bitte geben Sie nur dann Feedback zu \"Fehlalarmen\", wenn eine natürliche Haltung fälschlicherweise als schlechte Haltung vorhergesagt wird.\n\n"
             )
 
         }
 
         # 默认显示的语言是英语
-        guide_label = tk.Label(inner_frame, text=guide_texts["English"], font=("Arial", 10), justify="left",
-                               wraplength=300)
-        guide_label.pack(pady=(20,10), fill=tk.X)
+        guide_label = tk.Label(
+            inner_frame,
+            text=guide_texts["English"],
+            font=("Arial", 10),
+            justify="left",
+            wraplength=400  # 调整为更大值，避免换行问题
+        )
+        guide_label.pack(pady=(20, 10), fill=tk.X)
 
         # 选择语言的下拉菜单
         def update_language(event):
@@ -343,7 +394,7 @@ class App(ThemedTk):
         language_frame = tk.Frame(inner_frame)
         language_frame.pack(fill=tk.X, pady=10)
 
-        language_combobox = ttk.Combobox(language_frame, values=["English", "中文", "粤语","Deutsch"])
+        language_combobox = ttk.Combobox(language_frame, values=["English", "中文", "粤语", "Deutsch"])
         language_combobox.current(0)  # 默认选择英语
         language_combobox.bind("<<ComboboxSelected>>", update_language)
         language_combobox.pack(pady=10)
@@ -368,12 +419,13 @@ class App(ThemedTk):
         self.pause()
         self.settings_popup = tk.Toplevel(self)
         self.settings_popup.title("Settings")
-        self.settings_popup.geometry("400x350")
+        self.settings_popup.geometry("400x400")
         self.settings_popup.attributes('-topmost', True)
 
         enable_sound = tk.BooleanVar(value=self.check_boxes_frame.check_boxes[uc.CheckBoxesKeys.enable_sound.value][1].get())
         enable_light = tk.BooleanVar(value=self.check_boxes_frame.check_boxes[uc.CheckBoxesKeys.enable_light.value][1].get())
         notification_bad_posture = tk.BooleanVar(value=self.check_boxes_frame.check_boxes[uc.CheckBoxesKeys.notification_bad_posture.value][1].get())
+        disable_alarm_feedback = tk.BooleanVar(value=self.check_boxes_frame.check_boxes[uc.CheckBoxesKeys.disable_alarm_feedback.value][1].get())
 
         # 设置列和行的布局
         self.settings_popup.columnconfigure([0, 1, 2], weight=1, uniform="columns")  # Adjusting 3 columns
@@ -416,6 +468,12 @@ class App(ThemedTk):
         notify_time_entry.grid(row=2, column=2, pady=5, padx=5, sticky="w")
         notify_time_entry.insert(0, self.check_boxes_frame.check_boxes[uc.CheckBoxesKeys.notification_bad_posture.value][2].get())
 
+        # Enable/Disable Alarm Feedback
+        alarm_feedback_check = ttk.Checkbutton(sensor_labelframe,variable=disable_alarm_feedback)
+        alarm_feedback_check.grid(row=3, column=0, pady=5, padx=5, sticky="w")
+        alarm_feedback_label = ttk.Label(sensor_labelframe, text="Enable/Disable Alarm Feedback")
+        alarm_feedback_label.grid(row=3, column=1, pady=5, padx=5, sticky="w")
+
         # 创建 Save 按钮
         def save_settings():
             self.check_boxes_frame.check_boxes[uc.CheckBoxesKeys.enable_sound.value][1].set(enable_sound.get())
@@ -426,6 +484,8 @@ class App(ThemedTk):
             current_tuple[2].insert(0, notify_time_entry.get())
             self.check_boxes_frame.check_boxes[uc.CheckBoxesKeys.notification_bad_posture.value] = \
                 (current_tuple[0], notification_bad_posture, current_tuple[2])
+            # Save the state of the new checkbox
+            self.check_boxes_frame.check_boxes[uc.CheckBoxesKeys.disable_alarm_feedback.value][1].set(disable_alarm_feedback.get())
             close_settings()
 
         def close_settings():
@@ -436,7 +496,7 @@ class App(ThemedTk):
         
         # Create a frame to hold the buttons
         buttons_frame = ttk.Frame(sensor_labelframe)
-        buttons_frame.grid(row=3, column=0, columnspan=3, pady=5, padx=5)
+        buttons_frame.grid(row=4, column=0, columnspan=3, pady=5, padx=5)
 
         # Create Save button
         save_button = ttk.Button(buttons_frame, text="Save", command=save_settings)
@@ -477,6 +537,7 @@ class App(ThemedTk):
         style = ttk.Style()
         style.configure("TFrame", background=color_code)  # 设置所有 Frame 的背景颜色
         style.configure("TLabel", background=color_code)  # 设置所有 Label 的背景颜色
+        self.graph.update_canvas_color(color_code)
 
         # 手动设置其它需要改变的组件
         self.check_boxes_frame.configure(style="TFrame")
@@ -556,16 +617,16 @@ class App(ThemedTk):
         # Local flags
         anomaly_detected = False
         anomaly_graph_position = None
-        for i, sensor_name in enumerate(self.sensor_values.keys()):
-            x, y = self.data_analyst.get_axes_values(self.sensor_values,
-                                                     self.elapsed_time,
-                                                     sensor_name,
-                                                     upper_limit=ur,
-                                                     lower_limit=lr)
-            self.graph.ax.plot(x, y, label=sensor_name)
-            self.graph.lines[i].set_data(list(range(len(y))), y)
-            if x[0] != x[-1]:
-                self.graph.ax.set_xlim(x[0], x[-1])
+        # for i, sensor_name in enumerate(self.sensor_values.keys()):
+        #     x, y = self.data_analyst.get_axes_values(self.sensor_values,
+        #                                              self.elapsed_time,
+        #                                              sensor_name,
+        #                                              upper_limit=ur,
+        #                                              lower_limit=lr)
+        #     self.graph.ax.plot(x, y, label=sensor_name)
+        #     self.graph.lines[i].set_data(list(range(len(y))), y)
+        #     if x[0] != x[-1]:
+        #         self.graph.ax.set_xlim(x[0], x[-1])
 
         if self.is_test_mode:
             self.lastest_prediction = self.data_analyst.detect_anomaly_test(data=self.sensor_values)
@@ -600,13 +661,14 @@ class App(ThemedTk):
             anomaly_detected = True
             anomaly_graph_position = len(self.sensor_values['Sensor 2']) - 1
 
-        for collection in self.graph.ax.collections:
-            if isinstance(collection, matplotlib.collections.PolyCollection):
-                collection.remove()
+        # for collection in self.graph.ax.collections:
+        #     if isinstance(collection, matplotlib.collections.PolyCollection):
+        #         collection.remove()
         if anomaly_detected:
             self.show_alarm(pos=anomaly_graph_position)
             print("Alarm raised.")
         else:
+            self.graph.update_light("green")
             self.last_alarm_time = None
             self.db_manager.session.alarm_times.append("|")
 
@@ -667,12 +729,12 @@ class App(ThemedTk):
             "Sensor value valid": {
                 "condition_id": 0,
                 "pass_condition": sens_2 <= self.dist_max and sens_4 <= self.dist_max,
-                "error_msg": "Sensor cannot detect distance to participant!\nPlease adjust the posture or sensor!"
+                "error_msg": "You are too far away!\nSeat closer!"
             },
             "Sensor difference valid": {
                 "condition_id": 1,
-                "pass_condition": sens_2 - sens_4 < 60,
-                "error_msg": "Sensor values differ unexpectedly!\nPlease adjust the posture or sensor!"
+                "pass_condition": sens_2 - sens_4 < 80,
+                "error_msg": "Your seat is too low!\nPlease adjust!"
             },
             "Appropriate distance": {
                 "condition_id": 2,
@@ -697,21 +759,22 @@ class App(ThemedTk):
 
     def update_graph(self, event=None, lower_range=None, upper_range=None):
         # Prepare the graph
-        self.graph.ax.clear()
-        self.graph.ax.set_ylim(self.dist_min, self.dist_max)
+        # self.graph.ax.clear()
+        # self.graph.ax.set_ylim(self.dist_min, self.dist_max)
 
         # Plot new values
         if upper_range is None:
             upper_range = self.x_range
         if lower_range is not None and upper_range is not None:
-            self.scrollbar_update(lr=lower_range, ur=upper_range)
-            self.graph.redraw_vert_spans(visible_range=None)
+            # self.scrollbar_update(lr=lower_range, ur=upper_range)
+            # self.graph.redraw_vert_spans(visible_range=None)
+            pass
         else:
             self.default_update(lr=lower_range, ur=upper_range)
-            self.graph.redraw_vert_spans(visible_range=self.x_range)
+            # self.graph.redraw_vert_spans(visible_range=self.x_range)
         # Add annotations
-        self.graph.ax.legend()
-        self.graph.canvas.draw()
+        # self.graph.ax.legend()
+        # self.graph.canvas.draw()
 
     def update_sensor_values(self, sens_2: int, sens_4: int, timestamp: int, local_time: str) -> None:
         if pd.isna(sens_2) or pd.isna(sens_4):
@@ -770,7 +833,8 @@ class App(ThemedTk):
         self.rand_quest_notification = None
 
     def show_alarm(self, pos: int) -> None:
-        if not self.alarm_num_label or not self.graph.ax or pos == self.prev_alarm_pos:
+        # if not self.alarm_num_label or not self.graph.ax or pos == self.prev_alarm_pos:
+        if not self.alarm_num_label or pos == self.prev_alarm_pos:
             return None
         self.alarm_num += 1
         
@@ -783,7 +847,7 @@ class App(ThemedTk):
             self.last_alarm_time = self.last_sensor_time
         alarm_duration_text = str(datetime.timedelta(seconds=math.ceil(int(self.alarm_duration) / 1000)))
         self.alarm_num_label.config(text=alarm_duration_text)
-        self.graph.draw_vert_span(x=pos)
+        # self.graph.draw_vert_span(x=pos)
         self.prev_alarm_pos = pos
         self.add_alarm_text()
         this_time = datetime.datetime.now().strftime(uc.Measurements.time_format.value)
@@ -792,29 +856,76 @@ class App(ThemedTk):
         interval /= 1000 # convert to seconds
         self.db_manager.session.update_total_alarm_time(interval)
         if not self.is_bad_posture_notification_required(interval):
+            self.graph.update_light("amber")
             return None
+        self.graph.update_light("red")
         self.notification_frame = NotificationIncorrectPosture(self.footer_frame,
                                                                interval=interval)
         self.notification_frame.show(x=uc.Positions.incorrect_posture.value[0],
                                      y=uc.Positions.incorrect_posture.value[1],
                                      callback=self.remove_notification)
-        self.graph.canvas.draw()
+        # self.graph.canvas.draw()
         self.db_manager.session.alarm_times.append('|')
         self.logger.update_alarm_notification_status(interval=int(interval))
         if not (self.feedback_collector is None):
             self.feedback_collector.destroy()  # update the feedback collector
             self.feedback_collector = None
-        self.pause()  # give time for the participant to response
-        self.feedback_collector = FeedbackCollector(self.footer_frame, logger=self.logger,
-                                                    closing_callback=self.forget_feedback_collector,
-                                                    response_callback=self.update_model_thresholds)
-        self.feedback_collector.show(x=uc.Positions.feedback.value[0],
-                                     y=uc.Positions.feedback.value[1],
-                                     timestamp=self.logger.last_timestamp,
-                                     local_time=self.logger.get_last_local_time(),
-                                     x_position=pos)
+        self.pause(pause_light = False)  # give time for the participant to response
+
+        if self.check_boxes_frame.check_boxes[uc.CheckBoxesKeys.disable_alarm_feedback.value][1].get():
+            self.feedback_collector = FeedbackCollector(self.footer_frame, logger=self.logger,
+                                                        closing_callback=self.forget_feedback_collector,
+                                                        response_callback=self.update_model_thresholds)
+            self.feedback_collector.show(x=uc.Positions.feedback.value[0],
+                                         y=uc.Positions.feedback.value[1],
+                                         timestamp=self.logger.last_timestamp,
+                                         local_time=self.logger.get_last_local_time(),
+                                         x_position=pos)
+        else:
+            self.show_simple_notification(x=uc.Positions.feedback.value[0],
+                                          y=uc.Positions.feedback.value[1],
+                                          message="Bad posture detected",
+                                          callback=self.resume)
+
         self.sound_controller.send_command(self.sound_controller.get_sound_command())
         self.light_controller.send_command(self.light_controller.get_light_command())
+
+    def show_simple_notification(self, x: int, y: int, message: str, callback: Callable):
+        simple_notification = tk.Toplevel(self)
+        simple_notification.title("Notification")
+
+        # Increase the size of the notification window
+        window_width = 300
+        window_height = 150
+
+        # Set the size of the window
+        simple_notification.geometry(f"{window_width}x{window_height}")
+
+        label = ttk.Label(simple_notification, text=message, font=("Helvetica", 14))
+        label.pack(pady=20, padx=20)
+        dismiss_button = ttk.Button(simple_notification, text="Dismiss",
+                                    command=lambda: self.dismiss_notification(simple_notification, callback))
+        dismiss_button.pack(pady=10)
+
+        # Calculate the screen width and height
+        screen_width = self.winfo_screenwidth()
+        screen_height = self.winfo_screenheight()
+
+        # Calculate the position to center the window
+        x = (screen_width // 2) - (window_width // 2)
+        y = (screen_height // 2) - (window_height // 2)
+
+        # Position the notification in the center of the screen
+        simple_notification.geometry(f"{window_width}x{window_height}+{x}+{y}")
+
+        # Ensure the main loop continues running
+        self.update()
+
+        play_sound_in_thread()
+
+    def dismiss_notification(self, window: tk.Toplevel, callback: Callable):
+        window.destroy()
+        callback()
 
     def update_model_thresholds(self, response: bool) -> None:
         if response is True:
@@ -1006,7 +1117,7 @@ class App(ThemedTk):
     def create_clock_label(self, txt_frame: str) -> None:
         labelframe = ttk.LabelFrame(self.info_panel, text=txt_frame)
         labelframe.grid(row=self.info_panel_wnum, column=0, padx=10, pady=5)
-        clock = Clock(labelframe)
+        clock = Clock(labelframe, self)
         clock.pack(fill="both", expand=True)
         self.info_panel_wnum += 1
 
@@ -1120,7 +1231,7 @@ class App(ThemedTk):
         pass
 
     def save_last_data(self):
-        self.save_graph()
+        # self.save_graph()
         save_paths: dict[str, str] = self.db_manager.save_data()
         self.logger.log_buffer()  # save the remaining values in the buffer
         notify_content = (f"Report saved in {save_paths['report_path']}\n"
@@ -1142,6 +1253,7 @@ class App(ThemedTk):
         self.logger.log_all_data()
 
     def sign_in(self, pop_up=None):
+        print("sing_in called")
         pop_up: UserDetailsWindow = self.sign_in_popup if pop_up is None else pop_up
         user_details: UserDetails = pop_up.get_entered_details()
         if not self.db_manager.is_valid_sign_in(details=user_details):
@@ -1189,7 +1301,8 @@ class App(ThemedTk):
                                  row=self.footer_row,
                                  col=0,
                                  master=self.header_frame)
-        self.resume()
+        if self.calibration_window is None:
+            self.resume()
 
     def sign_out(self):
         # Forget session
@@ -1202,8 +1315,13 @@ class App(ThemedTk):
         sign_in_button: ttk.Button = self.control_buttons[uc.ElementNames.sign_in_button_txt.value]
         sign_in_button.configure(text=uc.ElementNames.sign_in_button_txt.value, command=self.show_sign_in_popup)
         # Remove the button with name:
-        button_txt: str = uc.ElementNames.edit_photo_button_txt.value
-        self.control_buttons[button_txt].destroy()
+        button_txt = uc.ElementNames.edit_photo_button_txt.value
+        if button_txt in self.control_buttons:
+            self.control_buttons[button_txt].destroy()
+            del self.control_buttons[button_txt]
+        else:
+            print(f"Button '{button_txt}' not found in control_buttons.")
+
         self.user_name.destroy()
 
     def register_user(self):
@@ -1211,18 +1329,17 @@ class App(ThemedTk):
         user_details: UserDetails = popup.get_entered_details()
         saved: bool = self.db_manager.save_user(user_details)
         if saved:
-            popup.show_message_frame(subject="Success",
-                                     details="Your personal details has been saved!\n"
-                                             "Please try to sign in to your account.",
-                                     row=popup.message_location[0],
-                                     col=popup.message_location[1])
+            messagebox.showinfo(
+                title="Success",
+                message="Your personal details have been saved!\nSince this is your first time using the device, please click OK to calibrate the device."
+            )
             self.sign_in(popup)
+            popup.destroy()
         else:
-            popup.show_message_frame(subject="Error",
-                                     details="User with similar personal details already exists!\n"
-                                             "Please try to sign in.",
-                                     row=popup.message_location[0],
-                                     col=popup.message_location[1])
+            messagebox.showerror(
+                title="Error",
+                message="User with similar personal details already exists!\nPlease try to sign in."
+            )
 
     def start_20_timer(self):
         timer_root = ttkbt.Toplevel()       #creat a new top level for 20-20-20 reminder
@@ -1251,21 +1368,22 @@ class App(ThemedTk):
         self.resume()
         self.deiconify()
 
-    def pause(self):
+    def pause(self, pause_light: bool = True):
         self.pause_comm()
-        self.graph.pause()
+        if pause_light:
+            self.graph.pause()
         button = self.control_buttons[uc.ElementNames.pause_button_txt.value]
         resume_txt: str = uc.ElementNames.resume_button_txt.value
         button.config(text=resume_txt, command=self.resume)
         # Add scroll bar for the Graph
-        if self.scroll_bar_frame:
-            self.remove_graph_scrollbar()
-        self.scroll_bar_frame = tk.Frame(self.body_frame)
-        self.scroll_bar_frame.grid(row=3, column=1, pady=10, padx=10, sticky=tk.NSEW)
-        options: list[int] = [sen[0] for sen in self.sensor_time]
-        self.graph_scroll_bar = GraphScrollBar(parent=self.scroll_bar_frame,
-                                               options=options,
-                                               figure_func=self.update_graph)
+        # if self.scroll_bar_frame:
+        # #     self.remove_graph_scrollbar()
+        # self.scroll_bar_frame = tk.Frame(self.body_frame)
+        # self.scroll_bar_frame.grid(row=3, column=1, pady=10, padx=10, sticky=tk.NSEW)
+        # options: list[int] = [sen[0] for sen in self.sensor_time]
+        # self.graph_scroll_bar = GraphScrollBar(parent=self.scroll_bar_frame,
+        #                                        options=options,
+        #                                        figure_func=self.update_graph)
 
     def remove_graph_scrollbar(self) -> None:
         if self.scroll_bar_frame:
@@ -1288,10 +1406,10 @@ class App(ThemedTk):
         self.remove_note_frame()
         self.remove_graph_scrollbar()
 
-    def save_graph(self):
-        file_path = self.db_manager.session.get_graph_save_path(ask_path=False)
-        self.graph.figure.savefig(file_path)
-        print(f"Graph saved to {file_path}")
+    # def save_graph(self):
+    #     file_path = self.db_manager.session.get_graph_save_path(ask_path=False)
+    #     self.graph.figure.savefig(file_path)
+    #     print(f"Graph saved to {file_path}")
 
     @staticmethod
     def load_user_data(filepath: str) -> Union[pd.DataFrame, None]:

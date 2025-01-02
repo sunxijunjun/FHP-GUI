@@ -51,7 +51,10 @@ def DetectUSBPorts():
 def GetPortName():
     """ Detect the USB serial ports automatically. """
     serial_port = ReadPortName()
-    isPortAvailable = CheckPortAvailability(serial_port)
+    if serial_port is None:
+        isPortAvailable = False
+    else:
+        isPortAvailable = CheckPortAvailability(serial_port)
     attempts = 0
     while not isPortAvailable:
         ports = DetectUSBPorts()

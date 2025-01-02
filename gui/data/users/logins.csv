@@ -1,7 +1,7 @@
 First Name,Second Name,Middle Name,Password,Photo Path,Gender,Age,Shoulder Size,Height,Weight,Threshold
 Alt,Alt,,$2b$12$2hlsqft1KuADASEYHAyzBeYp6VOnidIhVeP1RgpfHSOG4XYEXhXyW,,Male,10-10-2002,XL,100,30,
 Test,Test,,$2b$12$UsofZZBNfwAXuRJYyVWope/IiO8MDbHnGfDqUvXP0tX335168Ck5G,,Male,10-12-2001,XL,100,30,
-XIJUN,SUN,,$2b$12$8hALpuJ46pnRwLCpBzEqcuO3dQR3RO1P7/N3WsuGyoc3ZRLKii7Bu,C:/Users/icadmin/Pictures/yanyan.jpg,Female,11-03-1998,M,164,53,
+XIJUN,SUN,,$2b$12$8hALpuJ46pnRwLCpBzEqcuO3dQR3RO1P7/N3WsuGyoc3ZRLKii7Bu,C:/Users/icadmin/Pictures/yanyan.jpg,Female,11-03-1998,M,164,53,88.25
 YAN,YAN,,$2b$12$eRXpfQyEPI1JymMfZQKcAe0zDHAdqyud0XCJlvzeKAIIR3.bsHsuW,,Female,01-01-2023,L,160,30,
 wang,test,,$2b$12$kCoaMx2FN5IisCyDm5Ski.lhs.3y56aWK6Zugb3OJG8rkDXfKTOTm,,Male,16-06-1998,XL,178,100,
 suki,liu,,$2b$12$jKbblDPxeo/spoiFgjNV0u.QJZbjUNCd2ZKJ7.4hXCrlLD08TTHqC,C:\Users\icadmin\Desktop\PostureResearchApp\PostureResearchProject\gui/data/img/user_photo.jpeg,Female,01-01-2023,M,170,60,
@@ -11,5 +11,12 @@ WONG,A,,$2b$12$mDFnxX5.hjnQFrQL.u1t4Of14dz9lcy8x8Mm5Iq8gD9wvURgimqfi,C:\Users\ic
 05,05,,$2b$12$Wbf7N.YgB5MvrCxBpQpAHuMmVoY2x9jbfznyhhAmAt2Kf7rksSdhS,C:\Users\icadmin\Desktop\PostureResearchProject V2\PostureResearchProject\gui/data/img/user_photo.jpeg,Male,05-10-1999,M,174,52,
 Andy,Z,,$2b$12$JCUpmOsxjL9jA/ntBmjn2enGyXous4jbWLGiG7WAlAwmyJJcASBV.,/Users/kataru_/Documents/PostureResearchProject/gui/data/img/user_photo.jpeg,Male,24-05-2003,M,176,46,
 208,208,,$2b$12$4TKVW05fiN6TUTP1t9b2S.BSTNOyhnu/mzuUq2xSrN/yB3.2/vlG.,C:\Users\icadmin\Desktop\PostureResearchProject V2\PostureResearchProject\gui/data/img/user_photo.jpeg,Male,16-12-2000,XL,100,30,
-qg,z,,$2b$12$QMK4..ZfX.kZ/.7Q5HVp8OThKIlIbtJXbpy9KLoYgq7TbB1vhZHji,D:\Data\Documents\GitHub\1\FHP-GUI\gui/data/img/user_photo.jpeg,Male,29-11-2002,XL,180,70,
+qg,z,,$2b$12$QMK4..ZfX.kZ/.7Q5HVp8OThKIlIbtJXbpy9KLoYgq7TbB1vhZHji,D:\Data\Documents\GitHub\1\FHP-GUI\gui/data/img/user_photo.jpeg,Male,29-11-2002,XL,180,70,91.5
 ic,user,,$2b$12$BluPsZ8sDiszACsPGxlir.ChvYqX3zO/Mczm5lifkXWGV5y/u9jHO,C:/Users/icadmin/Pictures/FENGJING.jfif,Male,06-06-1990,L,170,50,
+10,44,,$2b$12$GaXUQgRXFUncT4JZd8c3tOfuWvNv3nBiyTrKu/S2MtaQcKNFw.Z5S,C:\Users\icadmin\user_ui\gui/data/img/user_photo.jpeg,Female,01-01-1990,M,165,55,81.5
+1218,test,,$2b$12$OESrPeRHlyTDTN7mfyCgmOHMLg8FDzFMdvBLnvNaagNHQ9WcFdB8m,C:\Users\icadmin\user_ui\gui/data/img/user_photo.jpeg,Female,01-01-1990,M,165,55,93.0
+12,03,,$2b$12$q5sKup6eSSc4IPKKZzG8o.1GdUfrGDLcXRPar6FKRP3iyWrdcSZea,C:\Users\icadmin\user_ui\gui/data/img/user_photo.jpeg,Female,01-01-1990,M,165,55,97.25
+13,25,,$2b$12$0rB6TrS8K.ZnEWU6o089L.qjOG5jhj3nG7JpSjqzmjFYfgKMHqeDO,C:\Users\icadmin\user_ui\gui/data/img/user_photo.jpeg,Female,01-01-1990,M,165,55,90.25
+14,09,,$2b$12$dcd1MO6pBNbZBHGYuOfExuc/H48yFM4d5qqqjsmExG6gl0qWNskGa,C:/Users/icadmin/Pictures/yanyan.jpg,Female,01-01-1990,M,165,55,90.5
+A,W,,$2b$12$NMPvhNKKKr./6dB5jtbRde5xpM1fdjafDNWiRy4YvU2tIXMJcte7a,C:\Users\icadmin\user_ui\gui/data/img/user_photo.jpeg,Male,01-01-1990,M,173,64,123.0
+15,24,,$2b$12$qZ4ip6twnsXQuN3q.WKOxuca3AHQSS1fjSEO9Nj.a1zGT07FQoyXW,C:\Users\icadmin\user_ui\gui/data/img/user_photo.jpeg,Female,01-01-1990,M,165,55,107.0
