@@ -128,17 +128,18 @@ class FilePaths(Enum):
     project_root = get_project_root()
 
     """ Specific file paths """
-    user_photo_icon = project_root + '/data/img/user_photo.jpeg'
-    user_login_db_path = project_root + "/data/users/logins.csv"
-    flex_collect_csv_path = project_root + '/data/dynamic_data_collected/posture_data_20240713145850.csv'
+    user_photo_icon = os.path.join(project_root, 'data', 'img', 'user_photo.jpeg')
+    user_login_db_path = os.path.join(project_root, 'data', 'users', 'logins.csv')
+    flex_collect_csv_path = os.path.join(project_root, 'data', 'dynamic_data_collected', 'posture_data_20240713145850.csv')
 
     """ Folder paths """
-    values_folder_path = project_root + "/data/values"
-    graph_folder_path = project_root + "/data/img/graphs"
-    piechart_folder_path = project_root + "/data/img/piecharts"
-    reports_folder_path = project_root + "/data/reports"
-    logs_folder_path = project_root + "/data/logs"
-    model_path = project_root + '/models'
+    values_folder_path = os.path.join(project_root, 'data', 'values')
+    graph_folder_path = os.path.join(project_root, 'data', 'img', 'graphs')
+    piechart_folder_path = os.path.join(project_root, 'data', 'img', 'piecharts')
+    reports_folder_path = os.path.join(project_root, 'data', 'reports')
+    logs_folder_path = os.path.join(project_root, 'data', 'logs')  
+    model_path = os.path.join(project_root, 'models')
+    support_folder_path = os.path.join(project_root, 'support')
 
 
 class CheckBoxesKeys(Enum):

@@ -49,9 +49,9 @@ class PostureDataCollection(tk.Toplevel):
         )
 
         # Load and resize images using Pillow
-        image1 = Image.open("support/Rounded-shoulders.jpg")
+        image1 = Image.open(os.path.join(uc.FilePaths.support_folder_path.value, "Rounded-shoulders.jpg"))
         image1 = image1.resize((100, 100))  # Adjust the size as needed
-        image2 = Image.open("support/Upright-neutral.jpg")
+        image2 = Image.open(os.path.join(uc.FilePaths.support_folder_path.value, "Upright-neutral.jpg"))
         image2 = image2.resize((100, 100))  # Adjust the size as needed
 
         # Convert images to PhotoImage
@@ -89,9 +89,9 @@ class PostureDataCollection(tk.Toplevel):
 
             # Load and display the corresponding image for the posture
             if posture == "a round shoulder with poking chin posture":
-                image_path = "support/Rounded-shoulders.jpg"
+                image_path = os.path.join(uc.FilePaths.support_folder_path.value, "Rounded-shoulders.jpg")
             elif posture == "an upright neutral posture":
-                image_path = "support/Upright-neutral.jpg"
+                image_path = os.path.join(uc.FilePaths.support_folder_path.value, "Upright-neutral.jpg")
             else:
                 image_path = None
 
